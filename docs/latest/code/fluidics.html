@@ -45,10 +45,10 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'code/fluidics';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.17.1';
@@ -532,7 +532,7 @@
 <p>It converts the specified sample and sheath flow rates into a focused sample region and provides the velocity field used to model particle transport.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.flow_cell.FlowCell">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FlowCell</span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">FlowCell</span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Represents a rectangular flow cell in which the velocity field is computed from an
 analytical Fourier series solution for pressure driven flow. The focused sample region
@@ -551,13 +551,13 @@ is estimated from the volumetric flow rates of the sample and sheath fluids.</p>
 \sin\left(\frac{n\pi (z+b)}{2b}\right)\]</div>
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.flow_cell.FlowCell.area">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">area</span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.area" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">area</span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.area" title="Link to this definition">#</a></dt>
 <dd><p>Return the cross sectional area of the flow cell.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.flow_cell.FlowCell.event_scheme">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">event_scheme</span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.event_scheme" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">event_scheme</span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.event_scheme" title="Link to this definition">#</a></dt>
 <dd><p>Return the default event sampling scheme used by the flow cell.</p>
 </dd></dl>
 
@@ -580,13 +580,13 @@ is estimated from the volumetric flow rates of the sample and sheath fluids.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.flow_cell.FlowCell.height">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">height</span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.height" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">height</span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.height" title="Link to this definition">#</a></dt>
 <dd><p>Return the height of the flow cell.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.flow_cell.FlowCell.sample">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample</span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.sample" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">sample</span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.sample" title="Link to this definition">#</a></dt>
 <dd><p>Sample fluid region of the flow cell.
 This region represents the focused sample area with its dimensions, volume flow rate,
 maximum flow speed, and average flow speed.</p>
@@ -594,7 +594,7 @@ maximum flow speed, and average flow speed.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.flow_cell.FlowCell.sample_arrival_times">
-<span class="sig-name descname"><span class="pre">sample_arrival_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.fluidics.flow_cell.FlowCell" title="FlowCyPy.fluidics.flow_cell.FlowCell"><span class="pre">FlowCyPy.fluidics.flow_cell.FlowCell</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_events</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsInt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_flux</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.sample_arrival_times" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">sample_arrival_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.fluidics.flow_cell.FlowCell" title="FlowCyPy.fluidics.flow_cell.FlowCell"><span class="pre">FlowCyPy.fluidics.flow_cell.FlowCell</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_events</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsInt</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsIndex</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_flux</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsIndex</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.sample_arrival_times" title="Link to this definition">#</a></dt>
 <dd><p>Sample event arrival times over a specified run duration using the flow cell’s configured event scheme.</p>
 <section id="configured-schemes">
 <h3>Configured schemes<a class="headerlink" href="#configured-schemes" title="Link to this heading">#</a></h3>
@@ -639,7 +639,7 @@ In this mode, <code class="docutils literal notranslate"><span class="pre">n_eve
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.flow_cell.FlowCell.sample_transverse_profile">
-<span class="sig-name descname"><span class="pre">sample_transverse_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.fluidics.flow_cell.FlowCell" title="FlowCyPy.fluidics.flow_cell.FlowCell"><span class="pre">FlowCyPy.fluidics.flow_cell.FlowCell</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsInt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.sample_transverse_profile" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">sample_transverse_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.fluidics.flow_cell.FlowCell" title="FlowCyPy.fluidics.flow_cell.FlowCell"><span class="pre">FlowCyPy.fluidics.flow_cell.FlowCell</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsInt</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsIndex</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">object</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.sample_transverse_profile" title="Link to this definition">#</a></dt>
 <dd><p>Sample the transverse velocity profile of the focused sample region.</p>
 <p>This method draws random transverse coordinates within the sample region and
 evaluates the corresponding local axial velocity in the channel.</p>
@@ -668,7 +668,7 @@ are sampled uniformly over the sample region instead.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.flow_cell.FlowCell.sheath">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sheath</span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.sheath" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">sheath</span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.sheath" title="Link to this definition">#</a></dt>
 <dd><p>Sheath fluid region of the flow cell.
 This region represents the remaining sheath area with its dimensions, volume flow rate,
 maximum flow speed, and average flow speed.</p>
@@ -676,13 +676,13 @@ maximum flow speed, and average flow speed.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.flow_cell.FlowCell.transverse_sampling_scheme">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">transverse_sampling_scheme</span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.transverse_sampling_scheme" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">transverse_sampling_scheme</span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.transverse_sampling_scheme" title="Link to this definition">#</a></dt>
 <dd><p>Return the transverse position sampling scheme used by the flow cell.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.flow_cell.FlowCell.width">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">width</span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.width" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">width</span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.width" title="Link to this definition">#</a></dt>
 <dd><p>Return the width of the flow cell.</p>
 </dd></dl>
 
@@ -695,7 +695,7 @@ maximum flow speed, and average flow speed.</p>
 <p>It provides a convenient interface for combining multiple populations, applying dilution, and passing the resulting sample definition to the fluidics engine.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.scatterer_collection.ScattererCollection">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ScattererCollection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">populations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/fluidics/scatterer_collection.html#ScattererCollection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ScattererCollection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">populations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/fluidics/scatterer_collection.html#ScattererCollection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Defines and manages the diameter and refractive index distributions of scatterers (particles)
 passing through a flow cytometer. This class generates random scatterer diameters and refractive
@@ -724,7 +724,7 @@ indices based on a list of provided distributions (e.g., Normal, LogNormal, Unif
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.scatterer_collection.ScattererCollection.concentrations">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">concentrations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Concentration</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.concentrations" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">concentrations</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Concentration</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.concentrations" title="Link to this definition">#</a></dt>
 <dd><p>Gets the concentration of each population in the ScattererCollection instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -805,7 +805,7 @@ of 0.5 reduces the population density by half.</p>
 <p>Use this class for homogeneous spherical particles.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.populations.SpherePopulation">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SpherePopulation</span></span><a class="headerlink" href="#FlowCyPy.fluidics.populations.SpherePopulation" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">SpherePopulation</span></span><a class="headerlink" href="#FlowCyPy.fluidics.populations.SpherePopulation" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BasePopulation</span></code></p>
 <p>Spherical population with distribution based physical parameters.</p>
 <div class="admonition seealso">
@@ -817,7 +817,7 @@ of 0.5 reduces the population density by half.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.populations.SpherePopulation.sample">
-<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.fluidics.populations.SpherePopulation" title="FlowCyPy.fluidics.populations.SpherePopulation"><span class="pre">FlowCyPy.fluidics.populations.SpherePopulation</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsInt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.populations.SpherePopulation.sample" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.fluidics.populations.SpherePopulation" title="FlowCyPy.fluidics.populations.SpherePopulation"><span class="pre">FlowCyPy.fluidics.populations.SpherePopulation</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsInt</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsIndex</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.populations.SpherePopulation.sample" title="Link to this definition">#</a></dt>
 <dd><p>Sample particle properties from the population distributions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -846,7 +846,7 @@ of 0.5 reduces the population density by half.</p>
 <p>Use this class for layered particles composed of a core and a shell with distinct optical properties.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.populations.CoreShellPopulation">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CoreShellPopulation</span></span><a class="headerlink" href="#FlowCyPy.fluidics.populations.CoreShellPopulation" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">CoreShellPopulation</span></span><a class="headerlink" href="#FlowCyPy.fluidics.populations.CoreShellPopulation" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BasePopulation</span></code></p>
 <p>Core shell population with distribution based physical parameters.</p>
 <p>The shell thickness is sampled independently from the core diameter. If you need
@@ -854,7 +854,7 @@ a constrained relationship (e.g., total diameter fixed), implement a dedicated
 distribution or a custom population class that enforces the constraint.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.populations.CoreShellPopulation.sample">
-<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.fluidics.populations.CoreShellPopulation" title="FlowCyPy.fluidics.populations.CoreShellPopulation"><span class="pre">FlowCyPy.fluidics.populations.CoreShellPopulation</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsInt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.populations.CoreShellPopulation.sample" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.fluidics.populations.CoreShellPopulation" title="FlowCyPy.fluidics.populations.CoreShellPopulation"><span class="pre">FlowCyPy.fluidics.populations.CoreShellPopulation</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsInt</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsIndex</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.populations.CoreShellPopulation.sample" title="Link to this definition">#</a></dt>
 <dd><p>Sample particle properties from the population distributions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -890,30 +890,30 @@ distribution or a custom population class that enforces the constraint.</p>
 <h3>Normal<a class="headerlink" href="#normal" title="Link to this heading">#</a></h3>
 <p>The normal distribution generates values distributed around a mean with symmetric dispersion.</p>
 <p>It is appropriate when fluctuations are approximately Gaussian and negative values are either physically excluded by bounds or unlikely within the chosen parameter range.</p>
-<a class="reference internal image-reference" href="../_images/Normal.png"><img alt="../_images/Normal.png" class="align-center" src="../_images/Normal.png" style="width: 600px;" />
+<a class="reference internal image-reference" href="../_images/Normal.png"><img alt="../_images/Normal.png" class="align-center" src="../_images/Normal.png" width="600" />
 </a>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.Normal">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Normal</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Normal" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">Normal</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Normal" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDistribution</span></code></p>
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.Normal.high_cutoff">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">high_cutoff</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Normal.high_cutoff" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">high_cutoff</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Normal.high_cutoff" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.Normal.low_cutoff">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">low_cutoff</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Normal.low_cutoff" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">low_cutoff</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Normal.low_cutoff" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.Normal.mean">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mean</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Normal.mean" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">mean</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Normal.mean" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.Normal.standard_deviation">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">standard_deviation</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Normal.standard_deviation" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">standard_deviation</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Normal.standard_deviation" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -923,30 +923,30 @@ distribution or a custom population class that enforces the constraint.</p>
 <h3>Log-normal<a class="headerlink" href="#log-normal" title="Link to this heading">#</a></h3>
 <p>The log-normal distribution generates strictly positive values whose logarithm follows a normal distribution.</p>
 <p>It is commonly used for particle sizes and other positive quantities with right-skewed variation.</p>
-<a class="reference internal image-reference" href="../_images/LogNormal.png"><img alt="../_images/LogNormal.png" class="align-center" src="../_images/LogNormal.png" style="width: 600px;" />
+<a class="reference internal image-reference" href="../_images/LogNormal.png"><img alt="../_images/LogNormal.png" class="align-center" src="../_images/LogNormal.png" width="600" />
 </a>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.LogNormal">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LogNormal</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.LogNormal" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">LogNormal</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.LogNormal" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDistribution</span></code></p>
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.LogNormal.high_cutoff">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">high_cutoff</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.LogNormal.high_cutoff" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">high_cutoff</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.LogNormal.high_cutoff" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.LogNormal.low_cutoff">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">low_cutoff</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.LogNormal.low_cutoff" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">low_cutoff</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.LogNormal.low_cutoff" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.LogNormal.mean">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mean</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.LogNormal.mean" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">mean</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.LogNormal.mean" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.LogNormal.standard_deviation">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">standard_deviation</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.LogNormal.standard_deviation" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">standard_deviation</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.LogNormal.standard_deviation" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -956,30 +956,30 @@ distribution or a custom population class that enforces the constraint.</p>
 <h3>Rosin-Rammler<a class="headerlink" href="#rosin-rammler" title="Link to this heading">#</a></h3>
 <p>The Rosin-Rammler distribution is widely used to model particle size distributions in dispersed materials.</p>
 <p>It is particularly useful when the population contains many small particles and progressively fewer large particles.</p>
-<a class="reference internal image-reference" href="../_images/RosinRammler.png"><img alt="../_images/RosinRammler.png" class="align-center" src="../_images/RosinRammler.png" style="width: 600px;" />
+<a class="reference internal image-reference" href="../_images/RosinRammler.png"><img alt="../_images/RosinRammler.png" class="align-center" src="../_images/RosinRammler.png" width="600" />
 </a>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.RosinRammler">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RosinRammler</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.RosinRammler" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">RosinRammler</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.RosinRammler" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDistribution</span></code></p>
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.RosinRammler.high_cutoff">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">high_cutoff</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.RosinRammler.high_cutoff" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">high_cutoff</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.RosinRammler.high_cutoff" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.RosinRammler.low_cutoff">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">low_cutoff</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.RosinRammler.low_cutoff" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">low_cutoff</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.RosinRammler.low_cutoff" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.RosinRammler.scale">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scale</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.RosinRammler.scale" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">scale</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.RosinRammler.scale" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.RosinRammler.shape">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.RosinRammler.shape" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.RosinRammler.shape" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -989,15 +989,15 @@ distribution or a custom population class that enforces the constraint.</p>
 <h3>Delta<a class="headerlink" href="#delta" title="Link to this heading">#</a></h3>
 <p>The delta distribution represents a fixed value with no dispersion.</p>
 <p>It is useful for monodisperse reference populations or for parameters that should remain constant across all simulated particles.</p>
-<a class="reference internal image-reference" href="../_images/Delta.png"><img alt="../_images/Delta.png" class="align-center" src="../_images/Delta.png" style="width: 600px;" />
+<a class="reference internal image-reference" href="../_images/Delta.png"><img alt="../_images/Delta.png" class="align-center" src="../_images/Delta.png" width="600" />
 </a>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.Delta">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Delta</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Delta" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">Delta</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Delta" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDistribution</span></code></p>
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.Delta.value">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Delta.value" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Delta.value" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1007,20 +1007,20 @@ distribution or a custom population class that enforces the constraint.</p>
 <h3>Uniform<a class="headerlink" href="#uniform" title="Link to this heading">#</a></h3>
 <p>The uniform distribution samples values evenly between a lower and an upper bound.</p>
 <p>It is appropriate when all values within an interval are considered equally likely.</p>
-<a class="reference internal image-reference" href="../_images/Uniform.png"><img alt="../_images/Uniform.png" class="align-center" src="../_images/Uniform.png" style="width: 600px;" />
+<a class="reference internal image-reference" href="../_images/Uniform.png"><img alt="../_images/Uniform.png" class="align-center" src="../_images/Uniform.png" width="600" />
 </a>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.Uniform">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Uniform</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Uniform" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">Uniform</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Uniform" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDistribution</span></code></p>
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.Uniform.lower_bound">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lower_bound</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Uniform.lower_bound" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lower_bound</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Uniform.lower_bound" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.Uniform.upper_bound">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">upper_bound</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Uniform.upper_bound" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">upper_bound</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Uniform.upper_bound" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1196,7 +1196,7 @@ distribution or a custom population class that enforces the constraint.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>

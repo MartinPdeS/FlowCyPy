@@ -45,8 +45,8 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'code/digital_processing';</script>
     <script>
@@ -529,7 +529,7 @@
 <p>The <a class="reference internal" href="#FlowCyPy.digital_processing.DigitalProcessing" title="FlowCyPy.digital_processing.DigitalProcessing"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlowCyPy.digital_processing.DigitalProcessing</span></code></a> class groups the discriminator and peak extraction algorithm into a single processing configuration.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.digital_processing.DigitalProcessing">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DigitalProcessing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">discriminator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peak_algorithm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/digital_processing/main.html#DigitalProcessing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.digital_processing.DigitalProcessing" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">DigitalProcessing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">discriminator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peak_algorithm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/digital_processing/main.html#DigitalProcessing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.digital_processing.DigitalProcessing" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Container for analog and digital signal processing stages in a simulated flow cytometry pipeline.</p>
 <p>This class orchestrates the application of analog electronic filtering, digitization, triggering,
@@ -559,7 +559,7 @@ or window-based logic applied to the analog signal.</p></li>
 <p>It is useful when a constant event support is desired for all detected segments.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.digital_processing.discriminator.FixedWindow">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FixedWindow</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.FixedWindow" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">FixedWindow</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.FixedWindow" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDiscriminator</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.digital_processing.discriminator.FixedWindow.run">
@@ -569,7 +569,7 @@ or window-based logic applied to the analog signal.</p></li>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.digital_processing.discriminator.FixedWindow.threshold">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">threshold</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.FixedWindow.threshold" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">threshold</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.FixedWindow.threshold" title="Link to this definition">#</a></dt>
 <dd><p>Threshold object storing the symbolic expression and resolved numeric value.</p>
 </dd></dl>
 
@@ -582,7 +582,7 @@ or window-based logic applied to the analog signal.</p></li>
 <p>It supports threshold based extraction with configurable pre and post buffering and is useful when event duration varies across the dataset.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.digital_processing.discriminator.DynamicWindow">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DynamicWindow</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.DynamicWindow" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">DynamicWindow</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.DynamicWindow" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDiscriminator</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.digital_processing.discriminator.DynamicWindow.run">
@@ -592,7 +592,7 @@ or window-based logic applied to the analog signal.</p></li>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.digital_processing.discriminator.DynamicWindow.threshold">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">threshold</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.DynamicWindow.threshold" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">threshold</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.DynamicWindow.threshold" title="Link to this definition">#</a></dt>
 <dd><p>Threshold object storing the symbolic expression and resolved numeric value.</p>
 </dd></dl>
 
@@ -605,11 +605,11 @@ or window-based logic applied to the analog signal.</p></li>
 <p>This is useful when more stable event opening and closing behavior is needed, especially in noisy traces or when hysteresis is desirable.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.digital_processing.discriminator.DoubleThreshold">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoubleThreshold</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.DoubleThreshold" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">DoubleThreshold</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.DoubleThreshold" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDiscriminator</span></code></p>
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.digital_processing.discriminator.DoubleThreshold.lower_threshold">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lower_threshold</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.DoubleThreshold.lower_threshold" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lower_threshold</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.DoubleThreshold.lower_threshold" title="Link to this definition">#</a></dt>
 <dd><p>Threshold object storing the symbolic expression and resolved numeric value.</p>
 </dd></dl>
 
@@ -627,13 +627,13 @@ or window-based logic applied to the analog signal.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.digital_processing.discriminator.DoubleThreshold.set_min_window_duration">
-<span class="sig-name descname"><span class="pre">set_min_window_duration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.digital_processing.discriminator.DoubleThreshold" title="FlowCyPy.digital_processing.discriminator.DoubleThreshold"><span class="pre">FlowCyPy.digital_processing.discriminator.DoubleThreshold</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_window_duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsInt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.DoubleThreshold.set_min_window_duration" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">set_min_window_duration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.digital_processing.discriminator.DoubleThreshold" title="FlowCyPy.digital_processing.discriminator.DoubleThreshold"><span class="pre">FlowCyPy.digital_processing.discriminator.DoubleThreshold</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_window_duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsInt</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsIndex</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.DoubleThreshold.set_min_window_duration" title="Link to this definition">#</a></dt>
 <dd><p>Update minimum window duration after construction.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.digital_processing.discriminator.DoubleThreshold.threshold">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">threshold</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.DoubleThreshold.threshold" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">threshold</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.DoubleThreshold.threshold" title="Link to this definition">#</a></dt>
 <dd><p>Threshold object storing the symbolic expression and resolved numeric value.</p>
 </dd></dl>
 
@@ -651,7 +651,7 @@ or window-based logic applied to the analog signal.</p></li>
 <p>The global peak locator identifies the dominant peak within each event segment and computes summary features from that support.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GlobalPeakLocator</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">GlobalPeakLocator</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BasePeakLocator</span></code></p>
 <p>Global peak detector for 1D signals.</p>
 <p>This locator identifies a single event over the full signal, then
@@ -661,19 +661,19 @@ and baseline conventions.</p>
 object.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator.baseline_mode">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">baseline_mode</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator.baseline_mode" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">baseline_mode</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator.baseline_mode" title="Link to this definition">#</a></dt>
 <dd><p>Baseline convention used by baseline-aware measurement modes.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator.height_mode">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">height_mode</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator.height_mode" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">height_mode</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator.height_mode" title="Link to this definition">#</a></dt>
 <dd><p>Height measurement mode used for the reported event amplitude.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator.polarity">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">polarity</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator.polarity" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">polarity</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator.polarity" title="Link to this definition">#</a></dt>
 <dd><p>Measurement polarity used to select the event sample.</p>
 </dd></dl>
 
@@ -686,7 +686,7 @@ object.</p>
 <p>It is useful when feature extraction should be tied to localized signal structure rather than the full event segment.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.digital_processing.peak_locator.SlidingWindowPeakLocator">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SlidingWindowPeakLocator</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.peak_locator.SlidingWindowPeakLocator" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">SlidingWindowPeakLocator</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.peak_locator.SlidingWindowPeakLocator" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BasePeakLocator</span></code></p>
 <p>Sliding window peak detector for 1D signals.</p>
 <p>One local maximum is extracted per window. The resulting peaks are
@@ -852,7 +852,7 @@ object.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>

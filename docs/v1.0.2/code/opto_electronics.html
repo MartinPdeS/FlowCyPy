@@ -45,8 +45,8 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'code/opto_electronics';</script>
     <script>
@@ -531,7 +531,7 @@
 <p>The <a class="reference internal" href="#FlowCyPy.opto_electronics.OptoElectronics" title="FlowCyPy.opto_electronics.OptoElectronics"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlowCyPy.opto_electronics.OptoElectronics</span></code></a> class groups the source, detectors, amplifier, digitizer, and optional analog processing stages into a single configuration object.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">OptoElectronics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">digitizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analog_processing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/main.html#OptoElectronics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">OptoElectronics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">digitizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analog_processing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/main.html#OptoElectronics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Base class for optoelectronic components in flow cytometry simulations.</p>
 <p>This class serves as a base for various optoelectronic components, such as detectors and
@@ -567,12 +567,12 @@ column ‘Csca’. Default is False.</p></li>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.amplifier">
-<span class="sig-name descname"><span class="pre">amplifier</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#FlowCyPy.opto_electronics.amplifier.Amplifier" title="FlowCyPy.opto_electronics.amplifier.Amplifier"><span class="pre">Amplifier</span></a></em><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.amplifier" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">amplifier</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#FlowCyPy.opto_electronics.amplifier.Amplifier" title="FlowCyPy.opto_electronics.amplifier.Amplifier"><span class="pre">Amplifier</span></a></span><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.amplifier" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.analog_processing">
-<span class="sig-name descname"><span class="pre">analog_processing</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#FlowCyPy.opto_electronics.circuits.BaseCircuit" title="FlowCyPy.opto_electronics.circuits.BaseCircuit"><span class="pre">BaseCircuit</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">()</span></em><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.analog_processing" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">analog_processing</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#FlowCyPy.opto_electronics.circuits.BaseCircuit" title="FlowCyPy.opto_electronics.circuits.BaseCircuit"><span class="pre">BaseCircuit</span></a><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">()</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.analog_processing" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -702,12 +702,12 @@ column ‘Csca’. Default is False.</p></li>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.detectors">
-<span class="sig-name descname"><span class="pre">detectors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.detector.Detector"><span class="pre">Detector</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.detectors" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">detectors</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.detector.Detector"><span class="pre">Detector</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.detectors" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.digitizer">
-<span class="sig-name descname"><span class="pre">digitizer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">Digitizer</span></a></em><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.digitizer" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">digitizer</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">Digitizer</span></a></span><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.digitizer" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -732,7 +732,7 @@ column ‘Csca’. Default is False.</p></li>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.source">
-<span class="sig-name descname"><span class="pre">source</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BaseSource</span></em><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.source" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">source</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BaseSource</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.source" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -748,7 +748,7 @@ column ‘Csca’. Default is False.</p></li>
 <p>It is suitable for most tightly focused flow cytometry illumination geometries.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.source.Gaussian">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Gaussian</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.source.Gaussian" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">Gaussian</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.source.Gaussian" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSource</span></code></p>
 <p>Gaussian beam source model.</p>
 <p>This source uses a Gaussian transverse intensity profile with
@@ -772,13 +772,13 @@ field amplitude decays smoothly away from the beam center.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.source.Gaussian.waist_y">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">waist_y</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.source.Gaussian.waist_y" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">waist_y</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.source.Gaussian.waist_y" title="Link to this definition">#</a></dt>
 <dd><p>Gaussian beam waist along the y direction.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.source.Gaussian.waist_z">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">waist_z</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.source.Gaussian.waist_z" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">waist_z</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.source.Gaussian.waist_z" title="Link to this definition">#</a></dt>
 <dd><p>Gaussian beam waist along the z direction.</p>
 </dd></dl>
 
@@ -791,7 +791,7 @@ field amplitude decays smoothly away from the beam center.</p>
 <p>It is useful when approximating excitation geometries that are intentionally homogenized across the interrogation region.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.source.FlatTop">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FlatTop</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.source.FlatTop" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">FlatTop</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.source.FlatTop" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSource</span></code></p>
 <p>Flat top beam source model.</p>
 <p>This source approximates an illumination profile with a more uniform
@@ -815,13 +815,13 @@ a relatively homogeneous optical field over the interrogation region.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.source.FlatTop.waist_y">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">waist_y</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.source.FlatTop.waist_y" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">waist_y</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.source.FlatTop.waist_y" title="Link to this definition">#</a></dt>
 <dd><p>Effective flat top beam extent along the y direction.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.source.FlatTop.waist_z">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">waist_z</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.source.FlatTop.waist_z" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">waist_z</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.source.FlatTop.waist_z" title="Link to this definition">#</a></dt>
 <dd><p>Effective flat top beam extent along the z direction.</p>
 </dd></dl>
 
@@ -836,7 +836,7 @@ a relatively homogeneous optical field over the interrogation region.</p>
 <p>These parameters determine the optical collection efficiency and the conversion from collected optical power to photocurrent.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.detector.Detector">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Detector</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">Detector</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Detector model for a flow cytometry acquisition channel.</p>
 <p>A <a class="reference internal" href="#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.detector.Detector"><code class="xref py py-class docutils literal notranslate"><span class="pre">Detector</span></code></a> represents the collection geometry and electrical
@@ -889,7 +889,7 @@ dark-current shot noise and additive current-noise density.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.detector.Detector.bandwidth">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bandwidth</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.bandwidth" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">bandwidth</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.bandwidth" title="Link to this definition">#</a></dt>
 <dd><p>Optional detector bandwidth.</p>
 <p>When defined, this bandwidth is used as the default bandwidth for
 bandwidth dependent detector operations. Setting this attribute to <code class="docutils literal notranslate"><span class="pre">None</span></code> removes the stored bandwidth.</p>
@@ -897,7 +897,7 @@ bandwidth dependent detector operations. Setting this attribute to <code class="
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.detector.Detector.cache_numerical_aperture">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cache_numerical_aperture</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.cache_numerical_aperture" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">cache_numerical_aperture</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.cache_numerical_aperture" title="Link to this definition">#</a></dt>
 <dd><p>Numerical aperture of the central obscuration.</p>
 <p>This value can be used to represent a masked or blocked central
 region in the detector collection geometry, such as the obscuration
@@ -915,7 +915,7 @@ bandwidth.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.detector.Detector.current_noise_density">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_noise_density</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.current_noise_density" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">current_noise_density</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.current_noise_density" title="Link to this definition">#</a></dt>
 <dd><p>Detector current-noise density.</p>
 <p>This value represents an additive current-noise spectral density
 expressed in <code class="docutils literal notranslate"><span class="pre">ampere</span> <span class="pre">/</span> <span class="pre">sqrt(hertz)</span></code>.</p>
@@ -923,7 +923,7 @@ expressed in <code class="docutils literal notranslate"><span class="pre">ampere
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.detector.Detector.dark_current">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dark_current</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.dark_current" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">dark_current</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.dark_current" title="Link to this definition">#</a></dt>
 <dd><p>Mean detector dark current.</p>
 <p>This value is used to model detector dark-current shot noise and
 the mean dark-current offset when a valid bandwidth is available.</p>
@@ -931,7 +931,7 @@ the mean dark-current offset when a valid bandwidth is available.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.detector.Detector.gamma_angle">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gamma_angle</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.gamma_angle" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">gamma_angle</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.gamma_angle" title="Link to this definition">#</a></dt>
 <dd><p>Longitudinal detector angle.</p>
 <p>This angle complements <a class="reference internal" href="#FlowCyPy.opto_electronics.detector.Detector.phi_angle" title="FlowCyPy.opto_electronics.detector.Detector.phi_angle"><code class="xref py py-attr docutils literal notranslate"><span class="pre">phi_angle</span></code></a> and defines the detector
 orientation relative to the optical axis.</p>
@@ -953,7 +953,7 @@ orientation relative to the optical axis.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.detector.Detector.name">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.name" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.name" title="Link to this definition">#</a></dt>
 <dd><p>Detector identifier.</p>
 <p>This name is typically used to label detector channels in the
 acquisition pipeline and in exported results.</p>
@@ -961,7 +961,7 @@ acquisition pipeline and in exported results.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.detector.Detector.numerical_aperture">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">numerical_aperture</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.numerical_aperture" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">numerical_aperture</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.numerical_aperture" title="Link to this definition">#</a></dt>
 <dd><p>Numerical aperture of the detector collection cone.</p>
 <p>Larger values correspond to a wider collection angle and therefore
 a larger accepted range of scattered directions.</p>
@@ -969,7 +969,7 @@ a larger accepted range of scattered directions.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.detector.Detector.phi_angle">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phi_angle</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.phi_angle" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">phi_angle</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.phi_angle" title="Link to this definition">#</a></dt>
 <dd><p>Azimuthal detector angle.</p>
 <p>This angle defines the detector position around the optical axis
 in the transverse plane.</p>
@@ -977,7 +977,7 @@ in the transverse plane.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.detector.Detector.responsivity">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">responsivity</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.responsivity" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">responsivity</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.responsivity" title="Link to this definition">#</a></dt>
 <dd><p>Detector responsivity.</p>
 <p>Responsivity defines the conversion factor between collected optical
 power and detector current.</p>
@@ -985,7 +985,7 @@ power and detector current.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.detector.Detector.sampling">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sampling</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.sampling" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">sampling</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.sampling" title="Link to this definition">#</a></dt>
 <dd><p>Internal sampling density used to represent the detector support.</p>
 <p>Increasing this value may improve geometric resolution at the cost
 of additional computation.</p>
@@ -1001,7 +1001,7 @@ of additional computation.</p>
 <p>This stage strongly influences pulse amplitude, temporal smoothing, and baseline noise before digitization.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.amplifier.Amplifier">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Amplifier</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.amplifier.Amplifier" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">Amplifier</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.amplifier.Amplifier" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Represents a transimpedance amplifier applied to a one dimensional current signal.</p>
 <p>This model converts an input current signal into an output voltage signal using
@@ -1048,25 +1048,25 @@ skipped.</p></li>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.amplifier.Amplifier.bandwidth">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bandwidth</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.amplifier.Amplifier.bandwidth" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">bandwidth</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.amplifier.Amplifier.bandwidth" title="Link to this definition">#</a></dt>
 <dd><p>Bandwidth returned as a pint.Quantity in hertz, or None if unlimited.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.amplifier.Amplifier.current_noise_density">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_noise_density</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.amplifier.Amplifier.current_noise_density" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">current_noise_density</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.amplifier.Amplifier.current_noise_density" title="Link to this definition">#</a></dt>
 <dd><p>Current noise spectral density returned as a pint.Quantity in ampere / hertz ** 0.5.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.amplifier.Amplifier.filter_order">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">filter_order</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.amplifier.Amplifier.filter_order" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">filter_order</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.amplifier.Amplifier.filter_order" title="Link to this definition">#</a></dt>
 <dd><p>Order of the low-pass filter used when bandwidth filtering is enabled.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.amplifier.Amplifier.gain">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gain</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.amplifier.Amplifier.gain" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">gain</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.amplifier.Amplifier.gain" title="Link to this definition">#</a></dt>
 <dd><p>Transimpedance gain returned as a pint.Quantity in volt / ampere.</p>
 </dd></dl>
 
@@ -1086,7 +1086,7 @@ skipped.</p></li>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.amplifier.Amplifier.voltage_noise_density">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">voltage_noise_density</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.amplifier.Amplifier.voltage_noise_density" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">voltage_noise_density</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.amplifier.Amplifier.voltage_noise_density" title="Link to this definition">#</a></dt>
 <dd><p>Voltage noise spectral density returned as a pint.Quantity in volt / hertz ** 0.5.</p>
 </dd></dl>
 
@@ -1100,7 +1100,7 @@ skipped.</p></li>
 <p>These settings determine the temporal resolution, integer encoding, clipping behavior, and effective dynamic range of the recorded waveforms.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Digitizer</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">Digitizer</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Digitize and clip voltage signals.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">Digitizer</span></code> class models a digitization stage for detector
@@ -1137,7 +1137,7 @@ automatic or fixed instance level policy.</p>
 </dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.bandwidth">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bandwidth</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.bandwidth" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">bandwidth</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.bandwidth" title="Link to this definition">#</a></dt>
 <dd><p>Bandwidth of the digitizer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1151,7 +1151,7 @@ automatic or fixed instance level policy.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.bit_depth">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bit_depth</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.bit_depth" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">bit_depth</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.bit_depth" title="Link to this definition">#</a></dt>
 <dd><p>Number of quantization bits.</p>
 <p>A value of <code class="docutils literal notranslate"><span class="pre">0</span></code> disables digitization.</p>
 </dd></dl>
@@ -1187,7 +1187,7 @@ instance level voltage range.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.channel_range_mode">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">channel_range_mode</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.channel_range_mode" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">channel_range_mode</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.channel_range_mode" title="Link to this definition">#</a></dt>
 <dd><p>Automatic range scope for dictionary based channel processing.</p>
 <p>Allowed values are:</p>
 <dl class="simple">
@@ -1332,7 +1332,7 @@ unchanged floating point samples.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.get_channel_voltage_range">
-<span class="sig-name descname"><span class="pre">get_channel_voltage_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">FlowCyPy.opto_electronics.digitizer.Digitizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.get_channel_voltage_range" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_channel_voltage_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">FlowCyPy.opto_electronics.digitizer.Digitizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">object</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.get_channel_voltage_range" title="Link to this definition">#</a></dt>
 <dd><p>Return the explicit voltage range of a channel.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1369,7 +1369,7 @@ unchanged floating point samples.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.get_min_max">
-<span class="sig-name descname"><span class="pre">get_min_max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">FlowCyPy.opto_electronics.digitizer.Digitizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.get_min_max" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_min_max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">FlowCyPy.opto_electronics.digitizer.Digitizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">object</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.get_min_max" title="Link to this definition">#</a></dt>
 <dd><p>Return the minimum and maximum finite values of a signal.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1479,7 +1479,7 @@ unchanged floating point samples.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.max_voltage">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_voltage</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.max_voltage" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">max_voltage</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.max_voltage" title="Link to this definition">#</a></dt>
 <dd><p>Instance level fixed maximum clipping voltage.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1496,7 +1496,7 @@ unless an explicit per channel range overrides it.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.min_voltage">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">min_voltage</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.min_voltage" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">min_voltage</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.min_voltage" title="Link to this definition">#</a></dt>
 <dd><p>Instance level fixed minimum clipping voltage.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1513,7 +1513,7 @@ unless an explicit per channel range overrides it.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.output_signed_codes">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">output_signed_codes</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.output_signed_codes" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">output_signed_codes</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.output_signed_codes" title="Link to this definition">#</a></dt>
 <dd><p>Whether digitized outputs use signed integer like code values.</p>
 </dd></dl>
 
@@ -1543,7 +1543,7 @@ Otherwise returns an integer code array.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.sampling_rate">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sampling_rate</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.sampling_rate" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">sampling_rate</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.sampling_rate" title="Link to this definition">#</a></dt>
 <dd><p>Sampling rate of the digitizer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1604,7 +1604,7 @@ processing policy.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.use_auto_range">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">use_auto_range</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.use_auto_range" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">use_auto_range</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.use_auto_range" title="Link to this definition">#</a></dt>
 <dd><p>Whether voltage ranges are inferred automatically from the data.</p>
 <p>When <code class="docutils literal notranslate"><span class="pre">False</span></code>, processing uses the fixed instance level
 <code class="docutils literal notranslate"><span class="pre">min_voltage</span></code> and <code class="docutils literal notranslate"><span class="pre">max_voltage</span></code>, unless an explicit channel
@@ -1637,7 +1637,7 @@ processing.</p>
 </ul>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.BaseCircuit">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseCircuit</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BaseCircuit" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">BaseCircuit</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BaseCircuit" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
 <p>Abstract base class for analog signal conditioning circuits.</p>
 <p>A <a class="reference internal" href="#FlowCyPy.opto_electronics.circuits.BaseCircuit" title="FlowCyPy.opto_electronics.circuits.BaseCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseCircuit</span></code></a> represents a transformation applied to a
@@ -1679,7 +1679,7 @@ Only the numerical values are transformed by the circuit.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.BaselineRestorationServo">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaselineRestorationServo</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BaselineRestorationServo" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">BaselineRestorationServo</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BaselineRestorationServo" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#FlowCyPy.opto_electronics.circuits.BaseCircuit" title="FlowCyPy.opto_electronics.circuits.BaseCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseCircuit</span></code></a></p>
 <p>Baseline restoration servo circuit.</p>
 <p>This circuit models a baseline restoration stage that continuously
@@ -1692,7 +1692,7 @@ operating point before digitization or event extraction.
 The response speed of the servo is controlled by its time constant.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.BaselineRestorationServo.initialize_with_first_sample">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">initialize_with_first_sample</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BaselineRestorationServo.initialize_with_first_sample" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">initialize_with_first_sample</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BaselineRestorationServo.initialize_with_first_sample" title="Link to this definition">#</a></dt>
 <dd><p>Whether the internal baseline state is initialized from the first sample.</p>
 <p>When enabled, the circuit starts from the first input value,
 which often reduces initial transients.</p>
@@ -1723,7 +1723,7 @@ defined through the servo time constant.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.BaselineRestorationServo.reference_level">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reference_level</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BaselineRestorationServo.reference_level" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">reference_level</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BaselineRestorationServo.reference_level" title="Link to this definition">#</a></dt>
 <dd><p>Target output baseline level.</p>
 <p>After restoration, the signal baseline is driven toward this
 numerical reference value.</p>
@@ -1731,7 +1731,7 @@ numerical reference value.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.BaselineRestorationServo.time_constant">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">time_constant</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BaselineRestorationServo.time_constant" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">time_constant</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BaselineRestorationServo.time_constant" title="Link to this definition">#</a></dt>
 <dd><p>Servo time constant.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1747,7 +1747,7 @@ numerical reference value.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.BesselLowPass">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BesselLowPass</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BesselLowPass" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">BesselLowPass</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BesselLowPass" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#FlowCyPy.opto_electronics.circuits.BaseCircuit" title="FlowCyPy.opto_electronics.circuits.BaseCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseCircuit</span></code></a></p>
 <p>Bessel low pass filter.</p>
 <p>This circuit applies a Bessel low pass response to the input signal.
@@ -1759,7 +1759,7 @@ steepness.
 The output can optionally be scaled by a multiplicative gain factor.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.BesselLowPass.cutoff_frequency">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cutoff_frequency</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BesselLowPass.cutoff_frequency" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">cutoff_frequency</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BesselLowPass.cutoff_frequency" title="Link to this definition">#</a></dt>
 <dd><p>Filter cutoff frequency.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1773,13 +1773,13 @@ The output can optionally be scaled by a multiplicative gain factor.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.BesselLowPass.gain">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gain</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BesselLowPass.gain" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">gain</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BesselLowPass.gain" title="Link to this definition">#</a></dt>
 <dd><p>Multiplicative output gain applied after filtering.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.BesselLowPass.order">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">order</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BesselLowPass.order" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">order</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BesselLowPass.order" title="Link to this definition">#</a></dt>
 <dd><p>Filter order.</p>
 <p>Higher orders increase the sharpness of the low pass transition.</p>
 </dd></dl>
@@ -1811,7 +1811,7 @@ important than maximizing stopband steepness.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.ButterworthLowPass">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ButterworthLowPass</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.ButterworthLowPass" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ButterworthLowPass</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.ButterworthLowPass" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#FlowCyPy.opto_electronics.circuits.BaseCircuit" title="FlowCyPy.opto_electronics.circuits.BaseCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseCircuit</span></code></a></p>
 <p>Butterworth low pass filter.</p>
 <p>This circuit applies a Butterworth low pass response to the input
@@ -1824,7 +1824,7 @@ desired without passband ripple.
 The output can optionally be scaled by a multiplicative gain factor.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.ButterworthLowPass.cutoff_frequency">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cutoff_frequency</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.ButterworthLowPass.cutoff_frequency" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">cutoff_frequency</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.ButterworthLowPass.cutoff_frequency" title="Link to this definition">#</a></dt>
 <dd><p>Filter cutoff frequency.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1838,13 +1838,13 @@ The output can optionally be scaled by a multiplicative gain factor.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.ButterworthLowPass.gain">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gain</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.ButterworthLowPass.gain" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">gain</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.ButterworthLowPass.gain" title="Link to this definition">#</a></dt>
 <dd><p>Multiplicative output gain applied after filtering.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.ButterworthLowPass.order">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">order</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.ButterworthLowPass.order" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">order</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.ButterworthLowPass.order" title="Link to this definition">#</a></dt>
 <dd><p>Filter order.</p>
 <p>Higher orders correspond to a sharper transition between passband
 and stopband.</p>
@@ -1877,7 +1877,7 @@ to the discrete time signal.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.SlidingMinimumBaselineCorrection">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SlidingMinimumBaselineCorrection</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.SlidingMinimumBaselineCorrection" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">SlidingMinimumBaselineCorrection</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.SlidingMinimumBaselineCorrection" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#FlowCyPy.opto_electronics.circuits.BaseCircuit" title="FlowCyPy.opto_electronics.circuits.BaseCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseCircuit</span></code></a></p>
 <p>Sliding minimum baseline correction circuit.</p>
 <p>This circuit estimates the local baseline by tracking the minimum
@@ -1918,7 +1918,7 @@ It may be omitted when the window is infinite.</p></li>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.SlidingMinimumBaselineCorrection.window_size">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">window_size</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.SlidingMinimumBaselineCorrection.window_size" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">window_size</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.SlidingMinimumBaselineCorrection.window_size" title="Link to this definition">#</a></dt>
 <dd><p>Sliding window size used for baseline estimation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -2221,7 +2221,7 @@ A value of <code class="docutils literal notranslate"><span class="pre">-1</span
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
