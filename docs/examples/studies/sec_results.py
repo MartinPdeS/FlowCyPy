@@ -1,15 +1,19 @@
- #install and import FlowCyPy
-import FlowCyPy
-print(f'Active FlowCyPy Version {FlowCyPy.__version__}')
+"""
+Example with SEC columns
+========================
 
-# Other imports
+This example demonstrates how to simulate flow cytometry data for extracellular vesicles (EVs) and lipoproteins (LPs) under different Size Exclusion Chromatography (SEC) scenarios. The simulation includes the generation of scatterer populations, opto-electronic configurations, and digital processing to analyze the resulting data.
+
+"""
 import numpy as np
 import pandas as pd
-from typing import Optional, Any
+from typing import Optional
 from TypedUnit import ureg, AnyUnit
 import seaborn as sns
 import matplotlib.pyplot as plt
 from MPSPlots.styles import scientific
+
+
 from FlowCyPy import fluidics
 from FlowCyPy import opto_electronics
 from FlowCyPy import digital_processing
