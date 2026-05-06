@@ -4,6 +4,10 @@ Examples: Studies
 =================
 
 
+.. raw:: html
+
+  <div id='sg-tag-list' class='sphx-glr-tag-list'></div>
+
 
 .. raw:: html
 
@@ -81,6 +85,23 @@ Examples: Studies
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to simulate flow cytometry data for extracellular vesicles (EVs) and lipoproteins (LPs) under different Size Exclusion Chromatography (SEC) scenarios. The simulation includes the generation of scatterer populations, opto-electronic configurations, and digital processing to analyze the resulting data.">
+
+.. only:: html
+
+  .. image:: /gallery/studies/images/thumb/sphx_glr_sec_results_thumb.png
+    :alt:
+
+  :doc:`/gallery/studies/sec_results`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Example with SEC columns</div>
+    </div>
+
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to apply signal processing techniques to flow cytometry data using FlowCyPy. The simulation is set up with a Gaussian beam, a flow cell, and two detectors. A single population of scatterers (with delta distributions) is used, and the focus here is on processing the forward scatter detector signals. Three acquisitions are performed:">
 
 .. only:: html
@@ -127,6 +148,7 @@ Examples: Studies
    /gallery/studies/cytek_comparison
    /gallery/studies/flowcell_sampling
    /gallery/studies/limit_of_detection
+   /gallery/studies/sec_results
    /gallery/studies/signal_processing
    /gallery/studies/threshold_sensitivity
 
