@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from typing import Optional
+import numpy as np
 from TypedUnit import Power, Time, ureg, validate_units
 
 from FlowCyPy.fluidics import Fluidics
@@ -68,11 +69,68 @@ class FlowCytometer:
             if events.empty:
                 continue
 
+            time_array_seconds = signal_dict["Time"].to("second").magnitude
+
+            if time_array_seconds.size == 0:
+                continue
+
+            if time_array_seconds.size == 1:
+                acquisition_window_seconds = time_array_seconds[0]
+            else:
+                acquisition_window_seconds = (
+                    time_array_seconds[-1] - time_array_seconds[0]
+                    + (time_array_seconds[1] - time_array_seconds[0])
+                )
+
+            event_times = events.get_quantity("Time").to("second")
+            event_velocities = events.get_quantity("Velocity").to("meter / second")
+            pulse_widths = opto_electronics.source.get_particle_width(
+                event_velocities
+            ).to("second")
+
+            event_time_values = event_times.magnitude
+            velocity_values = event_velocities.magnitude
+            pulse_width_values = pulse_widths.magnitude
+            support_margin_seconds = 4.0 * pulse_width_values
+
+            prepend_mask = event_time_values >= (
+                acquisition_window_seconds - support_margin_seconds
+            )
+            append_mask = event_time_values < support_margin_seconds
+
+            wrapped_time_values = np.concatenate(
+                [
+                    event_time_values[prepend_mask] - acquisition_window_seconds,
+                    event_time_values,
+                    event_time_values[append_mask] + acquisition_window_seconds,
+                ]
+            )
+            wrapped_velocity_values = np.concatenate(
+                [
+                    velocity_values[prepend_mask],
+                    velocity_values,
+                    velocity_values[append_mask],
+                ]
+            )
+
+            wrapped_times = wrapped_time_values * ureg.second
+            wrapped_velocities = wrapped_velocity_values * ureg.meter / ureg.second
+
             for detector in opto_electronics.detectors:
+                event_amplitudes = events.get_quantity(detector.name).to("watt")
+                amplitude_values = event_amplitudes.magnitude
+                wrapped_amplitude_values = np.concatenate(
+                    [
+                        amplitude_values[prepend_mask],
+                        amplitude_values,
+                        amplitude_values[append_mask],
+                    ]
+                )
+
                 generated_pulse_signal = opto_electronics.source.generate_pulses(
-                    velocities=events.get_quantity("Velocity"),
-                    pulse_centers=events.get_quantity("Time"),
-                    pulse_amplitudes=events.get_quantity(detector.name),
+                    velocities=wrapped_velocities,
+                    pulse_centers=wrapped_times,
+                    pulse_amplitudes=wrapped_amplitude_values * ureg.watt,
                     time_array=signal_dict["Time"],
                     base_level=0 * ureg.watt,
                 )
