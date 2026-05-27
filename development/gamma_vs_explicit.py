@@ -14,7 +14,7 @@ from FlowCyPy.fluidics import (
     populations,
 )
 from FlowCyPy.opto_electronics import Amplifier, Detector, Digitizer, OptoElectronics, source
-from FlowCyPy.units import ureg
+from FlowCyPy.units import  ureg
 
 
 DETECTOR_NAME = "side"
