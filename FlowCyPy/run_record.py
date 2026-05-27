@@ -163,9 +163,10 @@ class RunRecord:
         signal_units: Voltage = None,
         time_units: Time = None,
         figure_size: tuple[float, float] | None = None,
+        include_scatterer: bool = True,
     ) -> tuple[plt.Figure, dict[str, plt.Axes]]:
         """
-        Create a figure and one axis per detector, plus one scatterer axis.
+        Create a figure and one axis per detector, with an optional scatterer axis.
 
         Parameters
         ----------
@@ -175,26 +176,35 @@ class RunRecord:
             Time unit passed to the event collection plotting helper.
         figure_size : tuple[float, float] | None, optional
             Figure size in inches. If ``None``, matplotlib defaults are used.
+        include_scatterer : bool, optional
+            If ``True``, add the scatterer timeline axis. Defaults to ``True``.
 
         Returns
         -------
         tuple[matplotlib.figure.Figure, dict[str, matplotlib.axes.Axes]]
-            Figure and axis dictionary keyed by detector names plus
-            ``"scatterer"``.
+            Figure and axis dictionary keyed by detector names and, when
+            requested, ``"scatterer"``.
         """
-        number_of_plots = len(self.detector_names) + 1
+        number_of_plots = len(self.detector_names) + int(include_scatterer)
 
         figure, axes_array = plt.subplots(
             nrows=number_of_plots,
             sharex=True,
             sharey=False,
             figsize=figure_size,
-            gridspec_kw={"height_ratios": [1] * (number_of_plots - 1) + [0.5]},
+            gridspec_kw={
+                "height_ratios": [1] * len(self.detector_names)
+                + ([0.5] if include_scatterer else [])
+            },
         )
+
+        axes_array = np.atleast_1d(axes_array)
+
+        axis_names = self.detector_names + (["scatterer"] if include_scatterer else [])
 
         axes = {
             name: axis
-            for name, axis in zip(self.detector_names + ["scatterer"], axes_array)
+            for name, axis in zip(axis_names, axes_array)
         }
 
         for axis in axes.values():
@@ -211,13 +221,14 @@ class RunRecord:
                 labelpad=20,
             )
 
-        self.event_collection._add_to_ax(
-            ax=axes["scatterer"],
-            time_units=time_units,
-        )
+        if include_scatterer:
+            self.event_collection._add_to_ax(
+                ax=axes["scatterer"],
+                time_units=time_units,
+            )
 
-        axes["scatterer"].set_ylabel("Scatterer", labelpad=20)
-        axes["scatterer"].set_yticks([])
+            axes["scatterer"].set_ylabel("Scatterer", labelpad=20)
+            axes["scatterer"].set_yticks([])
 
         return figure, axes
 
@@ -258,6 +269,7 @@ class RunRecord:
         title: str | None = None,
         xlim: tuple[float, float] | None = None,
         ylim: tuple[float, float] | None = None,
+        include_scatterer: bool = True,
     ) -> plt.Figure:
         """
         Plot the analog detector signals together with the event timeline.
@@ -274,6 +286,9 @@ class RunRecord:
             Optional x-axis limits applied to the shared time axis.
         ylim : tuple[float, float] | None, optional
             Optional y-axis limits applied to detector axes.
+        include_scatterer : bool, optional
+            If ``True``, include the scatterer timeline subplot. Defaults to
+            ``True``.
 
         Returns
         -------
@@ -295,6 +310,7 @@ class RunRecord:
                 signal_units=self.signal.analog.signal_units,
                 time_units=self.signal.analog.time_units,
                 figure_size=figure_size,
+                include_scatterer=include_scatterer,
             )
 
             self._plot_analog_on_axes(axes=axes)
@@ -333,6 +349,7 @@ class RunRecord:
         title: str | None = None,
         xlim: tuple[float, float] | None = None,
         ylim: tuple[float, float] | None = None,
+        include_scatterer: bool = True,
     ) -> plt.Figure:
         """
         Plot the triggered digital segments together with the event timeline.
@@ -349,6 +366,9 @@ class RunRecord:
             Optional x-axis limits applied to the shared time axis.
         ylim : tuple[float, float] | None, optional
             Optional y-axis limits applied to detector axes.
+        include_scatterer : bool, optional
+            If ``True``, include the scatterer timeline subplot. Defaults to
+            ``True``.
 
         Returns
         -------
@@ -371,6 +391,7 @@ class RunRecord:
             figure, axes = self.get_axes_dict(
                 time_units=time_units,
                 figure_size=figure_size,
+                include_scatterer=include_scatterer,
             )
 
             self._plot_digital_on_axes(axes=axes)

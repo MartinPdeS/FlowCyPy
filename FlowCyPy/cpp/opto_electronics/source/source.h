@@ -338,15 +338,15 @@ public:
     ) const = 0;
 
     /**
-     * @brief Construct the normalized temporal kernel associated with the source.
+     * @brief Construct the temporal kernel associated with the source.
      *
-     * The kernel is centered and normalized such that the sum of all samples is one.
-     * It represents the temporal footprint induced by the source profile for a particle
-     * moving at the specified mean velocity.
+     * The kernel is centered and represents the discrete temporal footprint induced by
+     * the source profile for a particle moving at the specified mean velocity. Its
+     * amplitude matches the source pulse shape used by explicit event synthesis.
      *
      * @param time_step Sampling interval in second.
      * @param mean_velocity Mean particle velocity in meter / second.
-     * @return Normalized discrete temporal kernel.
+     * @return Discrete temporal kernel.
      */
     virtual std::vector<double> get_temporal_kernel(
         const double time_step,
@@ -558,14 +558,14 @@ public:
     ) const override;
 
     /**
-     * @brief Build a normalized Gaussian temporal kernel.
+     * @brief Build a Gaussian temporal kernel.
      *
-     * The kernel support spans approximately four standard deviations on each side.
-     * The result is normalized such that the discrete sum is one.
+     * The kernel support spans approximately four standard deviations on each side and
+     * preserves the discrete pulse area of the underlying Gaussian transit shape.
      *
      * @param time_step Sampling interval in second.
      * @param mean_velocity Mean particle velocity in meter / second.
-     * @return Normalized Gaussian kernel.
+     * @return Gaussian kernel.
      *
      * @throws std::runtime_error If time_step is non positive or if the derived width is invalid.
      */
@@ -719,14 +719,15 @@ public:
     ) const override;
 
     /**
-     * @brief Build a normalized rectangular temporal kernel.
+     * @brief Build a rectangular temporal kernel.
      *
      * The support length is derived from the transit width in samples, rounded to the
-     * nearest odd integer so that the kernel remains centered.
+     * nearest odd integer so that the kernel remains centered and preserves the
+     * discrete pulse area of the flat-top transit response.
      *
      * @param time_step Sampling interval in second.
      * @param mean_velocity Mean particle velocity in meter / second.
-     * @return Normalized rectangular kernel.
+     * @return Rectangular kernel.
      *
      * @throws std::runtime_error If time_step is non positive or if the derived width is invalid.
      */

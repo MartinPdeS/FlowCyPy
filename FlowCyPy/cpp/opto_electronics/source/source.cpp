@@ -614,7 +614,6 @@ std::vector<double> Gaussian::get_temporal_kernel(
     const int kernel_size = 2 * half_window_size + 1;
 
     std::vector<double> kernel(static_cast<size_t>(kernel_size), 0.0);
-    double kernel_sum = 0.0;
 
     for (int kernel_index = 0; kernel_index < kernel_size; ++kernel_index) {
         const int shifted_index = kernel_index - half_window_size;
@@ -624,11 +623,6 @@ std::vector<double> Gaussian::get_temporal_kernel(
         const double value = std::exp(-0.5 * normalized_time * normalized_time);
 
         kernel[static_cast<size_t>(kernel_index)] = value;
-        kernel_sum += value;
-    }
-
-    for (double& value : kernel) {
-        value /= kernel_sum;
     }
 
     return kernel;
@@ -814,12 +808,6 @@ std::vector<double> FlatTop::get_temporal_kernel(
     }
 
     std::vector<double> kernel(static_cast<size_t>(support_in_samples), 1.0);
-
-    const double normalization = static_cast<double>(support_in_samples);
-
-    for (double& value : kernel) {
-        value /= normalization;
-    }
 
     return kernel;
 }
