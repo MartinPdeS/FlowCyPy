@@ -579,7 +579,7 @@ This example demonstrates how to simulate flow cytometry data for extracellular 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 15.203 seconds)
+   **Total running time of the script:** (1 minutes 8.745 seconds)
 
 
 .. _sphx_glr_download_gallery_studies_sec_results.py:
