@@ -57,7 +57,7 @@ dependencies = [
     "pydantic ~=2.9",
     "numpy >=2.0",
     'pint ~=0.24',
-    'PyMieSim ==5.0.2',
+    'PyMieSim ==5.1.1',
     'MPSPlots >=1.8.9',
     "TypedUnit"
 ]
