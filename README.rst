@@ -53,6 +53,9 @@ Install FlowCyPy via `pip` or `conda``:
 **Requirements**: Python 3.11 or higher with dependencies:
 `numpy`, `pint`, `tabulate`, `seaborn`, `MPSPlots`, `PyMieSim`, `pydantic>=2.6.3`
 
+Prebuilt wheels are published for Linux x86_64 and macOS ARM64. Other platforms
+require building from source with FFTW and OpenMP available.
+
 Quick Start
 -----------
 

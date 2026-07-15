@@ -45,7 +45,8 @@ classifiers = [
     'Topic :: Scientific/Engineering :: Visualization',
     'Topic :: Software Development :: Libraries :: Python Modules',
     'License :: OSI Approved :: MIT License',
-    'Operating System :: OS Independent',
+    'Operating System :: MacOS',
+    'Operating System :: POSIX :: Linux',
     'Framework :: Jupyter',
     'Framework :: Sphinx'
 ]

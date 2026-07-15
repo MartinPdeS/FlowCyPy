@@ -90,6 +90,15 @@ class Workflow:
             self.analog_processing = []
         if self.detectors is None:
             self.detectors = []
+        if self.population_list is None:
+            self.population_list = []
+
+    def _validate_configuration(self) -> None:
+        """Validate configuration required to initialize a simulation."""
+        if not self.population_list:
+            raise ValueError("Workflow requires at least one population.")
+        if not self.detectors:
+            raise ValueError("Workflow requires at least one detector.")
 
     def _get_fluidics(self) -> Fluidics:
         """
@@ -160,6 +169,8 @@ class Workflow:
         It must be called before :meth:`run`.
         """
 
+        self._validate_configuration()
+
         self.fluidics = self._get_fluidics()
         self.opto_electronics = self._get_opto_electronics()
         self.digital_processing = self._get_digital_processing()
@@ -188,6 +199,9 @@ class Workflow:
         :meth:`initialize` must be called first so the workflow components are
         available.
         """
+        if not hasattr(self, "cytometer"):
+            raise RuntimeError("Workflow must be initialized before calling run().")
+
         return self.cytometer.run(
             run_time=run_time,
             opto_electronics=self.opto_electronics,

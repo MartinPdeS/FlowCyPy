@@ -159,5 +159,20 @@ def test_extra(dist):
     scatterer_collection.set_concentrations([CONCENTRATION, CONCENTRATION])
 
 
+@pytest.mark.parametrize("factor", [0, -1, np.nan, np.inf])
+def test_dilute_rejects_non_positive_or_non_finite_factors(factor):
+    scatterer_collection = ScattererCollection()
+
+    with pytest.raises(ValueError, match="finite and greater than zero"):
+        scatterer_collection.dilute(factor)
+
+
+def test_get_population_ratios_rejects_zero_total_particle_count():
+    scatterer_collection = ScattererCollection()
+
+    with pytest.raises(ValueError, match="zero total particle count"):
+        scatterer_collection.get_population_ratios()
+
+
 if __name__ == "__main__":
     pytest.main(["-W error", __file__])

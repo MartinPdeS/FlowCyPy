@@ -463,6 +463,15 @@ PYBIND11_MODULE(detector, module) {
                 const py::object& signal,
                 const py::object& bandwidth
             ) -> py::object {
+                const py::object signal_magnitude = signal.attr("magnitude");
+
+                if (
+                    py::isinstance<py::array>(signal_magnitude) &&
+                    py::len(signal_magnitude) == 0
+                ) {
+                    throw py::value_error("Signal array is empty.");
+                }
+
                 const std::vector<double> signal_vector =
                     Casting::cast_py_to_vector<double>(signal, "signal", "ampere");
 

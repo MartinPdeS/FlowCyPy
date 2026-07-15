@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import math
 from typing import List, Union
 
 import pandas as pd
@@ -33,8 +34,16 @@ class ScattererCollection:
         -------
         list[float]
             A list of concentration ratios for each population.
+
+        Raises
+        ------
+        ValueError
+            If the total particle count is zero.
         """
         total_concentration = sum([p.particle_count for p in self.populations])
+
+        if total_concentration == 0:
+            raise ValueError("Cannot compute population ratios with zero total particle count.")
 
         return [
             (p.particle_count / total_concentration).magnitude for p in self.populations
@@ -109,13 +118,18 @@ class ScattererCollection:
         Parameters
         ----------
         factor : float
-            The dilution factor to apply to each population. For example, a factor
-            of 0.5 reduces the population density by half.
+            Positive divisor applied to each population concentration. For example,
+            a factor of 2 reduces the population density by half.
 
         Returns
         -------
         None
             The method modifies the populations in place.
+
+        Raises
+        ------
+        ValueError
+            If ``factor`` is not finite and positive.
 
         Notes
         -----
@@ -126,7 +140,10 @@ class ScattererCollection:
         Examples
         --------
         Dilute all populations by 50%:
-        >>> system.dilute(0.5)
+        >>> system.dilute(2)
         """
+        if not math.isfinite(factor) or factor <= 0:
+            raise ValueError("Dilution factor must be finite and greater than zero.")
+
         for population in self.populations:
             population.dilute(factor)

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import logging
 from typing import Optional
 import numpy as np
 from TypedUnit import Power, Time, ureg, validate_units
@@ -13,6 +14,9 @@ from FlowCyPy.digital_processing import DigitalProcessing
 from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
 from FlowCyPy.sub_frames.peaks import PeakDataFrame
 from FlowCyPy.sub_frames.triggered import TriggerDataFrame
+
+
+logger = logging.getLogger(__name__)
 
 
 class FlowCytometer:
@@ -296,7 +300,7 @@ class FlowCytometer:
             return run_record
 
         if len(triggered_analog_dict["segment_id"]) == 0:
-            print(
+            logger.debug(
                 "No triggers detected. Returning analog signal without digital processing."
             )
             return run_record

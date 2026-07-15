@@ -11,6 +11,7 @@ import numpy as np
 import pytest
 
 from FlowCyPy import FlowCytometer
+from FlowCyPy.workflow import Workflow
 from FlowCyPy.digital_processing import DigitalProcessing
 from FlowCyPy.digital_processing import discriminator
 from FlowCyPy.digital_processing import peak_locator
@@ -202,7 +203,63 @@ def make_dynamic_window_discriminator() -> discriminator.DynamicWindow:
     )
 
 
+def make_workflow(detector_0, scatterer_collection, **overrides) -> Workflow:
+    configuration = {
+        "wavelength": 1550 * ureg.nanometer,
+        "source": source.Gaussian(
+            waist_z=10 * ureg.micrometer,
+            waist_y=60 * ureg.micrometer,
+            wavelength=1550 * ureg.nanometer,
+            optical_power=100e-3 * ureg.watt,
+        ),
+        "optical_power": 100e-3 * ureg.watt,
+        "sample_volume_flow": 1 * ureg.microliter / ureg.second,
+        "sheath_volume_flow": 6 * ureg.microliter / ureg.second,
+        "width": 10 * ureg.micrometer,
+        "height": 6 * ureg.micrometer,
+        "detectors": [detector_0],
+        "bit_depth": 12,
+        "sampling_rate": 5e6 * ureg.hertz,
+        "population_list": scatterer_collection.populations,
+        "gain": 100 * ureg.volt / ureg.ampere,
+        "bandwidth": 1 * ureg.megahertz,
+        "peak_locator": peak_locator.GlobalPeakLocator(),
+        "discriminator": make_dynamic_window_discriminator(),
+    }
+    configuration.update(overrides)
+    return Workflow(**configuration)
+
+
 # ----------------- UNIT TESTS -----------------
+
+
+def test_workflow_run_requires_initialization(detector_0, scatterer_collection):
+    workflow = make_workflow(detector_0, scatterer_collection)
+
+    with pytest.raises(RuntimeError, match="must be initialized"):
+        workflow.run(0.05 * ureg.millisecond)
+
+
+def test_workflow_initialize_requires_a_population(detector_0, scatterer_collection):
+    workflow = make_workflow(
+        detector_0,
+        scatterer_collection,
+        population_list=[],
+    )
+
+    with pytest.raises(ValueError, match="at least one population"):
+        workflow.initialize()
+
+
+def test_workflow_initialize_requires_a_detector(detector_0, scatterer_collection):
+    workflow = make_workflow(
+        detector_0,
+        scatterer_collection,
+        detectors=[],
+    )
+
+    with pytest.raises(ValueError, match="at least one detector"):
+        workflow.initialize()
 
 
 def test_flow_cytometer_acquisition(flow_cytometer, opto_electronics):

@@ -14,3 +14,12 @@ from .digital_processing import DigitalProcessing
 
 
 debug_mode = False
+
+__all__ = [
+    "__version__",
+    "FlowCytometer",
+    "Fluidics",
+    "OptoElectronics",
+    "DigitalProcessing",
+    "debug_mode",
+]
