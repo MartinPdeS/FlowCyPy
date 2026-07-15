@@ -750,14 +750,17 @@ indices based on a list of provided distributions (e.g., Normal, LogNormal, Unif
 <dd><p>Dilutes the populations in the flow cytometry system by a given factor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>factor</strong> (<em>float</em>) – The dilution factor to apply to each population. For example, a factor
-of 0.5 reduces the population density by half.</p>
+<dd class="field-odd"><p><strong>factor</strong> (<em>float</em>) – Positive divisor applied to each population concentration. For example,
+a factor of 2 reduces the population density by half.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The method modifies the populations in place.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">factor</span></code> is not finite and positive.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -767,7 +770,7 @@ of 0.5 reduces the population density by half.</p>
 </ul>
 <p class="rubric">Examples</p>
 <p>Dilute all populations by 50%:
-&gt;&gt;&gt; system.dilute(0.5)</p>
+&gt;&gt;&gt; system.dilute(2)</p>
 </dd></dl>
 
 <dl class="py method">
@@ -780,6 +783,9 @@ of 0.5 reduces the population density by half.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>list[float]</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the total particle count is zero.</p>
 </dd>
 </dl>
 </dd></dl>

@@ -495,6 +495,7 @@
                   
   <h1>Source code for FlowCyPy.fluidics.scatterer_collection</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -533,8 +534,16 @@
 <span class="sd">        -------</span>
 <span class="sd">        list[float]</span>
 <span class="sd">            A list of concentration ratios for each population.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the total particle count is zero.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">total_concentration</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">particle_count</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">total_concentration</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot compute population ratios with zero total particle count.&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="p">[</span>
             <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">particle_count</span> <span class="o">/</span> <span class="n">total_concentration</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span>
@@ -618,13 +627,18 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        factor : float</span>
-<span class="sd">            The dilution factor to apply to each population. For example, a factor</span>
-<span class="sd">            of 0.5 reduces the population density by half.</span>
+<span class="sd">            Positive divisor applied to each population concentration. For example,</span>
+<span class="sd">            a factor of 2 reduces the population density by half.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        None</span>
 <span class="sd">            The method modifies the populations in place.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If ``factor`` is not finite and positive.</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
@@ -635,8 +649,11 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        Dilute all populations by 50%:</span>
-<span class="sd">        &gt;&gt;&gt; system.dilute(0.5)</span>
+<span class="sd">        &gt;&gt;&gt; system.dilute(2)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">factor</span><span class="p">)</span> <span class="ow">or</span> <span class="n">factor</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Dilution factor must be finite and greater than zero.&quot;</span><span class="p">)</span>
+
         <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">:</span>
             <span class="n">population</span><span class="o">.</span><span class="n">dilute</span><span class="p">(</span><span class="n">factor</span><span class="p">)</span></div>
 </div>

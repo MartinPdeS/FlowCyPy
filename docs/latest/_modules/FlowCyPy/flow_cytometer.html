@@ -496,6 +496,7 @@
   <h1>Source code for FlowCyPy.flow_cytometer</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Power</span><span class="p">,</span> <span class="n">Time</span><span class="p">,</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">validate_units</span>
@@ -509,6 +510,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.sub_frames.acquisition</span><span class="w"> </span><span class="kn">import</span> <span class="n">AcquisitionDataFrame</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.sub_frames.peaks</span><span class="w"> </span><span class="kn">import</span> <span class="n">PeakDataFrame</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.sub_frames.triggered</span><span class="w"> </span><span class="kn">import</span> <span class="n">TriggerDataFrame</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="FlowCytometer">
@@ -799,7 +803,7 @@
             <span class="k">return</span> <span class="n">run_record</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">triggered_analog_dict</span><span class="p">[</span><span class="s2">&quot;segment_id&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                 <span class="s2">&quot;No triggers detected. Returning analog signal without digital processing.&quot;</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">run_record</span>
