@@ -185,6 +185,12 @@ PYBIND11_MODULE(populations, module) {
                 )pdoc"
                         )
         .def(
+            "seed",
+            &BasePopulation::seed,
+            py::arg("value"),
+            "Seed all random distributions used by the population."
+        )
+        .def(
             "__repr__",
             [ureg](const BasePopulation &population) {
                 py::object concentration =

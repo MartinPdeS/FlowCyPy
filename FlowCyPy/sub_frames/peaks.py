@@ -12,9 +12,10 @@ from MPSPlots.styles import mps
 import numpy as np
 import pint_pandas
 from TypedUnit import Quantity
+from .peak_metrics import PeakMetricsMixin
 
 
-class PeakDataFrame(pd.DataFrame):
+class PeakDataFrame(PeakMetricsMixin, pd.DataFrame):
     """
     DataFrame subclass storing detector peak metrics indexed by detector and segment.
 
@@ -215,106 +216,6 @@ class PeakDataFrame(pd.DataFrame):
             return figure
 
         return self.plot_hist(**kwargs)
-
-    def standard_deviation(
-        self, detector_name: str, metrics: str | slice = slice(None)
-    ):
-        """
-        Calculate the standard deviation of selected peak metrics.
-
-        Parameters
-        ----------
-        detector_name : str
-            Detector name used to select the peak rows.
-        metrics : str or slice, optional
-            Metric name or slice selecting the metric columns to aggregate.
-
-        Returns
-        -------
-        Any
-            Standard deviation for the selected metrics.
-        """
-        sub_frame = self.loc[detector_name, metrics]
-
-        return sub_frame.std()
-
-    def robust_standard_deviation(
-        self, detector_name: str, metrics: str | slice = slice(None)
-    ):
-        """
-        Estimate the robust standard deviation of selected peak metrics.
-
-        Parameters
-        ----------
-        detector_name : str
-            Detector name used to select the peak rows.
-        metrics : str or slice, optional
-            Metric name or slice selecting the metric columns to aggregate.
-
-        Returns
-        -------
-        Any
-            Median absolute deviation scaled to a normal-equivalent standard
-            deviation for the selected metrics.
-        """
-        sub_frame = self.loc[detector_name, metrics]
-
-        return numpy.abs(sub_frame - sub_frame.median()).median() * 1.4826
-
-    def mean(self, detector_name: str, metrics: str | slice = slice(None)):
-        """
-        Calculate the mean of selected peak metrics.
-
-        Parameters
-        ----------
-        detector_name : str
-            Detector name used to select the peak rows.
-        metrics : str or slice, optional
-            Metric name or slice selecting the metric columns to aggregate.
-
-        Returns
-        -------
-        Any
-            Mean value for the selected metrics.
-        """
-        sub_frame = self.loc[detector_name, metrics]
-        return sub_frame.mean(axis=0)
-
-    def get_sub_dataframe(
-        self, columns: List[str], rows: List[str]
-    ) -> Tuple[pd.DataFrame, List[Any]]:
-        """
-        Extract a detector subset and convert each column to a compact display unit.
-
-        Parameters
-        ----------
-        columns : list
-            Metric columns to keep.
-        rows : list
-            Detector index entries to keep.
-
-        Returns
-        -------
-        tuple
-            Tuple containing the converted dataframe and the chosen units for
-            each selected column.
-        """
-        df = self.loc[rows, columns].copy()
-        unit_list = []
-
-        for col_name, col_data in df.items():
-            if not hasattr(col_data, "pint"):
-                df[col_name] = col_data
-                unit_list.append("None")
-            else:
-                unit = col_data.max().to_compact().units
-                if unit.dimensionality == ureg.bit_bins.dimensionality:
-                    unit = ureg.bit_bins
-                # df.loc[:, col_name] = col_data.pint.to(unit)
-                df[col_name] = col_data.pint.to(unit)
-                unit_list.append(unit)
-
-        return df, unit_list
 
     def _get_axis_label(
         self,

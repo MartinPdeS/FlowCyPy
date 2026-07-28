@@ -8,9 +8,16 @@ import FlowCyPy.units as _
 import FlowCyPy.opto_electronics.circuits as _
 import FlowCyPy.digital_processing.classifier as _
 from .flow_cytometer import FlowCytometer
-from .fluidics import Fluidics
-from .opto_electronics import OptoElectronics
-from .digital_processing import DigitalProcessing
+from .units import ureg
+from .fluidics import Fluidics, distributions, populations
+from .opto_electronics import OptoElectronics, circuits, source
+from .digital_processing import (
+    DigitalProcessing,
+    classifier,
+    discriminator,
+    peak_locator,
+)
+from .workflow import Workflow
 
 
 debug_mode = False
@@ -18,8 +25,17 @@ debug_mode = False
 __all__ = [
     "__version__",
     "FlowCytometer",
+    "Workflow",
     "Fluidics",
+    "distributions",
+    "populations",
     "OptoElectronics",
+    "circuits",
+    "source",
     "DigitalProcessing",
+    "classifier",
+    "discriminator",
+    "peak_locator",
+    "ureg",
     "debug_mode",
 ]

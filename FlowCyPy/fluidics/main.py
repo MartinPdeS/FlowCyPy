@@ -27,10 +27,22 @@ class Fluidics:
         self.scatterer_collection = scatterer_collection
         self.flow_cell = flow_cell
 
+    def seed(self, value: int) -> None:
+        """Seed all stochastic fluidics components for reproducible runs."""
+        if not isinstance(value, (int, np.integer)) or isinstance(value, bool):
+            raise TypeError("seed must be a non-negative integer.")
+        if value < 0:
+            raise ValueError("seed must be a non-negative integer.")
+
+        self.flow_cell.seed(int(value))
+        for index, population in enumerate(self.scatterer_collection.populations):
+            population.seed(int(value) + index * 1009)
+
     def generate_event_collection(
         self,
         run_time: Time,
         sampling_rate: Frequency,
+        random_state: int | np.random.Generator | None = None,
     ) -> EventCollection:
         """
         Generate the event collection for all configured populations.
@@ -47,6 +59,13 @@ class Fluidics:
         EventCollection
             Population resolved event blocks.
         """
+        if random_state is not None:
+            if isinstance(random_state, np.random.Generator):
+                seed = int(random_state.integers(0, np.iinfo(np.uint32).max))
+            else:
+                seed = random_state
+            self.seed(seed)
+
         event_collection = EventCollection()
 
         for population in self.scatterer_collection.populations:

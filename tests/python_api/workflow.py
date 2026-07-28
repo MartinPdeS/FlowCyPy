@@ -205,14 +205,12 @@ def make_dynamic_window_discriminator() -> discriminator.DynamicWindow:
 
 def make_workflow(detector_0, scatterer_collection, **overrides) -> Workflow:
     configuration = {
-        "wavelength": 1550 * ureg.nanometer,
         "source": source.Gaussian(
             waist_z=10 * ureg.micrometer,
             waist_y=60 * ureg.micrometer,
             wavelength=1550 * ureg.nanometer,
             optical_power=100e-3 * ureg.watt,
         ),
-        "optical_power": 100e-3 * ureg.watt,
         "sample_volume_flow": 1 * ureg.microliter / ureg.second,
         "sheath_volume_flow": 6 * ureg.microliter / ureg.second,
         "width": 10 * ureg.micrometer,
@@ -262,6 +260,57 @@ def test_workflow_initialize_requires_a_detector(detector_0, scatterer_collectio
         workflow.initialize()
 
 
+def test_workflow_rejects_duplicate_detector_names(detector_0, scatterer_collection):
+    workflow = make_workflow(
+        detector_0,
+        scatterer_collection,
+        detectors=[detector_0, detector_0],
+    )
+
+    with pytest.raises(ValueError, match="Detector names must be unique"):
+        workflow.initialize()
+
+
+@pytest.mark.parametrize(
+    "field, value, message",
+    [
+        ("dilution_factor", 0, "dilution_factor"),
+        ("bit_depth", -1, "bit_depth"),
+        ("sampling_rate", 0 * ureg.hertz, "sampling_rate"),
+        ("bandwidth", 3 * ureg.megahertz, "Nyquist"),
+    ],
+)
+def test_workflow_rejects_nonphysical_configuration(
+    detector_0,
+    scatterer_collection,
+    field,
+    value,
+    message,
+):
+    workflow = make_workflow(
+        detector_0,
+        scatterer_collection,
+        **{field: value},
+    )
+
+    with pytest.raises((ValueError, TypeError), match=message):
+        workflow.initialize()
+
+
+@pytest.mark.parametrize(
+    "run_time, exception",
+    [(0 * ureg.second, ValueError), (-1 * ureg.second, ValueError), (1, TypeError)],
+)
+def test_flow_cytometer_rejects_invalid_run_time(
+    flow_cytometer,
+    opto_electronics,
+    run_time,
+    exception,
+):
+    with pytest.raises(exception, match="run_time"):
+        flow_cytometer.acquire(run_time=run_time, opto_electronics=opto_electronics)
+
+
 def test_flow_cytometer_acquisition(flow_cytometer, opto_electronics):
     run_record = make_short_run_record(
         flow_cytometer=flow_cytometer,
@@ -283,6 +332,50 @@ def test_flow_cytometer_multiple_detectors(flow_cytometer, opto_electronics):
 
     assert not np.all(detector_0_signal == 0 * ureg.volt)
     assert not np.all(detector_1_signal == 0 * ureg.volt)
+
+
+def test_workflow_gamma_and_explicit_models_complete_acquisition(
+    detector_0,
+    scatterer_collection,
+):
+    explicit_workflow = make_workflow(
+        detector_0,
+        scatterer_collection,
+    )
+    explicit_workflow.initialize()
+    explicit_record = explicit_workflow.run(
+        0.05 * ureg.millisecond,
+        random_state=123,
+    )
+
+    gamma_population = populations.SpherePopulation(
+        name="Gamma population",
+        concentration=5e9 * ureg.particle / ureg.milliliter,
+        diameter=distributions.Delta(1 * ureg.micrometer),
+        refractive_index=distributions.Delta(1.5 * ureg.RIU),
+        medium_refractive_index=1.33 * ureg.RIU,
+        sampling_method=populations.GammaModel(number_of_samples=250),
+    )
+    gamma_workflow = make_workflow(
+        detector_0,
+        scatterer_collection,
+        population_list=[gamma_population],
+    )
+    gamma_workflow.initialize()
+    gamma_record = gamma_workflow.run(
+        0.05 * ureg.millisecond,
+        random_state=123,
+    )
+
+    for record in (explicit_record, gamma_record):
+        signal = record.signal.analog["default"].to("volt").magnitude
+        assert signal.size > 0
+        assert np.all(np.isfinite(signal))
+        assert np.std(signal) > 0
+
+    gamma_events = gamma_record.event_collection[0]
+    assert gamma_events.metadata["ExpectedNumberOfParticles"] > 0
+    assert "ParticleTrace" in gamma_events.metadata
 
 
 @patch("matplotlib.pyplot.show")

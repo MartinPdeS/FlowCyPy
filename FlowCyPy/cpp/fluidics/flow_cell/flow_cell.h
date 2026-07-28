@@ -7,6 +7,7 @@
 #include <tuple>
 #include <algorithm>
 #include <string>
+#include <cstdint>
 
 class FluidRegion {
 public:
@@ -55,6 +56,7 @@ public:
     std::string event_scheme = "uniform-random";
     std::string transverse_sampling_scheme = "velocity-weighted";
     bool perfectly_aligned = false;
+    mutable std::mt19937 generator;
 
     double Q_total;
     double dpdx;
@@ -96,6 +98,9 @@ public:
         const std::string& transverse_sampling_scheme,
         bool perfectly_aligned
     );
+
+    /** Seed all stochastic flow-cell sampling operations. */
+    void seed(const std::uint64_t value) const;
 
     /**
      * @brief Sample the transverse velocity profile of the focused sample region.

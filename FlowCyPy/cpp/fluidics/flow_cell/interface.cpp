@@ -360,6 +360,12 @@ PYBIND11_MODULE(flow_cell, module) {
         )pbdoc"
     )
     .def(
+        "seed",
+        &FlowCell::seed,
+        py::arg("value"),
+        "Seed all stochastic flow-cell sampling operations."
+    )
+    .def(
         "_cpp_get_velocity",
         &FlowCell::get_velocity,
         py::arg("y"),

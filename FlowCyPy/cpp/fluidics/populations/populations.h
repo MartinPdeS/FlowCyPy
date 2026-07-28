@@ -5,6 +5,7 @@
 #include <string>
 #include <unordered_map>
 #include <memory>
+#include <cstdint>
 
 #include <fluidics/distributions/distributions.h>
 #include "./sampling_methods.h"
@@ -37,6 +38,8 @@ public:
         return concentration;
     }
 
+    virtual void seed(const std::uint64_t value) = 0;
+
     virtual std::unordered_map<std::string, std::vector<double>> sample() const = 0;
 
 };
@@ -63,6 +66,12 @@ public:
 
 
     double get_effective_concentration() const override;
+
+    void seed(const std::uint64_t value) override {
+        medium_refractive_index->seed(value + 1);
+        refractive_index->seed(value + 2);
+        diameter->seed(value + 3);
+    }
 
     std::unordered_map<std::string, std::vector<double>> sample() const override {
         std::unordered_map<std::string, std::vector<double>> samples;
@@ -103,6 +112,14 @@ public:
 
 
     double get_effective_concentration() const override;
+
+    void seed(const std::uint64_t value) override {
+        medium_refractive_index->seed(value + 1);
+        core_refractive_index->seed(value + 2);
+        shell_refractive_index->seed(value + 3);
+        core_diameter->seed(value + 4);
+        shell_thickness->seed(value + 5);
+    }
 
     std::unordered_map<std::string, std::vector<double>> sample() const override {
         std::unordered_map<std::string, std::vector<double>> samples;

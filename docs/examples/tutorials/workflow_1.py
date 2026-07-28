@@ -105,9 +105,7 @@ source = FlatTop(
 
 
 workflow = Workflow(
-    wavelength=405 * ureg.nanometer,
     source=source,
-    optical_power=200 * ureg.milliwatt,
     sample_volume_flow=80 * ureg.microliter / ureg.minute,
     sheath_volume_flow=1 * ureg.milliliter / ureg.minute,
     width=200 * ureg.micrometer,

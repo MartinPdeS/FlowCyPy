@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import logging
+import math
 from typing import Optional
 import numpy as np
 from TypedUnit import Power, Time, ureg, validate_units
@@ -225,6 +226,7 @@ class FlowCytometer:
         dict
             Analog voltage signal dictionary.
         """
+        self._validate_run_time(run_time)
         power_signal_dict = opto_electronics.initialize_optical_signal_dict(
             run_time=run_time,
             background_power=self.background_power,
@@ -377,6 +379,7 @@ class FlowCytometer:
         self,
         run_time: Time,
         opto_electronics: OptoElectronics,
+        random_state: int | np.random.Generator | None = None,
     ) -> RunRecord:
         """
         Run the acquisition pipeline up to the analog stage.
@@ -395,9 +398,12 @@ class FlowCytometer:
             waveforms, and the opto electronic configuration used to produce
             them.
         """
+        self._validate_run_time(run_time)
+        self._validate_opto_electronics(opto_electronics)
         event_collection = self.fluidics.generate_event_collection(
             run_time=run_time,
             sampling_rate=opto_electronics.digitizer.sampling_rate,
+            random_state=random_state,
         )
 
         opto_electronics.add_coupling_to_dataframe(
@@ -423,11 +429,36 @@ class FlowCytometer:
 
         return run_record
 
+    @staticmethod
+    def _validate_run_time(run_time: Time) -> None:
+        """Reject empty, negative, non-finite, or unitless run durations."""
+        try:
+            seconds = float(run_time.to("second").magnitude)
+        except (AttributeError, TypeError, ValueError) as error:
+            raise TypeError("run_time must be a time quantity.") from error
+
+        if not math.isfinite(seconds) or seconds <= 0:
+            raise ValueError("run_time must be finite and strictly positive.")
+
+    @staticmethod
+    def _validate_opto_electronics(opto_electronics: OptoElectronics) -> None:
+        """Validate detector channels before starting an acquisition."""
+        detectors = getattr(opto_electronics, "detectors", None)
+        if not detectors:
+            raise ValueError("opto_electronics must contain at least one detector.")
+
+        names = [getattr(detector, "name", None) for detector in detectors]
+        if any(not isinstance(name, str) or not name.strip() for name in names):
+            raise ValueError("Each detector must have a non-empty name.")
+        if len(names) != len(set(names)):
+            raise ValueError("Detector names must be unique.")
+
     def run(
         self,
         run_time: Time,
         opto_electronics: OptoElectronics,
         digital_processing: Optional[DigitalProcessing] = None,
+        random_state: int | np.random.Generator | None = None,
     ) -> RunRecord:
         """
         Run the full simulation pipeline from event generation to peak extraction.
@@ -452,6 +483,7 @@ class FlowCytometer:
         acquired_run_record = self.acquire(
             run_time=run_time,
             opto_electronics=opto_electronics,
+            random_state=random_state,
         )
 
         return self.process_run(

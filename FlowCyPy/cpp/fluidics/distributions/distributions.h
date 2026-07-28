@@ -3,6 +3,7 @@
 #include <vector>
 #include <random>
 #include <limits>
+#include <cstdint>
 
 class BaseDistribution {
     public:
@@ -11,6 +12,7 @@ class BaseDistribution {
         virtual ~BaseDistribution(){};
         virtual std::vector<double> sample(const size_t n_samples) const = 0;
         virtual double proportion_within_cutoffs() const = 0;
+        virtual void seed(const std::uint64_t value) = 0;
 
 };
 
@@ -33,6 +35,7 @@ public:
 
     std::vector<double> sample(const size_t n_samples) const override;
     double proportion_within_cutoffs() const override;
+    void seed(const std::uint64_t value) override { generator.seed(value); }
 
 };
 
@@ -49,6 +52,7 @@ class Uniform : public BaseDistribution {
 
         std::vector<double> sample(const size_t n_samples) const override;
         double proportion_within_cutoffs() const override;
+        void seed(const std::uint64_t value) override { generator.seed(value); }
 
     };
 
@@ -74,6 +78,7 @@ class RosinRammler : public BaseDistribution {
 
         std::vector<double> sample(const size_t n_samples) const override;
         double proportion_within_cutoffs() const override;
+        void seed(const std::uint64_t value) override { generator.seed(value); }
 };
 
 class LogNormal : public BaseDistribution {
@@ -98,6 +103,7 @@ class LogNormal : public BaseDistribution {
 
         std::vector<double> sample(const size_t n_samples) const override;
         double proportion_within_cutoffs() const override;
+        void seed(const std::uint64_t value) override { generator.seed(value); }
 
 };
 
@@ -113,5 +119,6 @@ class Delta : public BaseDistribution {
 
         std::vector<double> sample(const size_t n_samples) const override;
         double proportion_within_cutoffs() const override;
+        void seed(const std::uint64_t value) override { generator.seed(value); }
 
 };

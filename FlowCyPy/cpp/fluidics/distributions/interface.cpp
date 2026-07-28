@@ -27,6 +27,12 @@ PYBIND11_MODULE(distributions, module) {
             &BaseDistribution::proportion_within_cutoffs
         )
         .def(
+            "seed",
+            &BaseDistribution::seed,
+            py::arg("value"),
+            "Seed the distribution's random number generator."
+        )
+        .def(
             "__repr__",
             [](const BaseDistribution& self) {
                 return "BaseDistribution(units='" + self.units + "')";

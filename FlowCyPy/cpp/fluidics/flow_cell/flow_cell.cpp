@@ -22,7 +22,8 @@ FlowCell::FlowCell(
       n_int(n_int),
       event_scheme(event_scheme),
       transverse_sampling_scheme(transverse_sampling_scheme),
-      perfectly_aligned(perfectly_aligned)
+      perfectly_aligned(perfectly_aligned),
+      generator(std::random_device{}())
 {
     this->validate_physical_parameters();
     this->validate_event_scheme();
@@ -44,9 +45,6 @@ FlowCell::sample_transverse_profile(int n_samples) const {
     z_samples.reserve(static_cast<std::size_t>(n_samples));
     velocity_samples.reserve(static_cast<std::size_t>(n_samples));
 
-    std::random_device random_device;
-    std::mt19937 generator(random_device());
-
     std::uniform_real_distribution<double> y_distribution(-sample.width / 2.0, sample.width / 2.0);
     std::uniform_real_distribution<double> z_distribution(-sample.height / 2.0, sample.height / 2.0);
     std::uniform_real_distribution<double> acceptance_distribution(0.0, 1.0);
@@ -60,8 +58,8 @@ FlowCell::sample_transverse_profile(int n_samples) const {
             bool accepted_sample = false;
 
             while (!accepted_sample) {
-                y = y_distribution(generator);
-                z = z_distribution(generator);
+                y = y_distribution(this->generator);
+                z = z_distribution(this->generator);
                 velocity = this->get_velocity(y, z, dpdx);
 
                 if (transverse_sampling_scheme == "uniform-random") {
@@ -71,7 +69,7 @@ FlowCell::sample_transverse_profile(int n_samples) const {
 
                     if (
                         acceptance_probability >= 1.0 ||
-                        acceptance_distribution(generator) <= acceptance_probability
+                        acceptance_distribution(this->generator) <= acceptance_probability
                     ) {
                         accepted_sample = true;
                     }
@@ -320,16 +318,13 @@ FlowCell::sample_arrival_times_uniform_random(
     const double run_time
 ) const
 {
-    std::random_device random_device;
-    std::mt19937 generator(random_device());
-
     std::vector<double> arrival_times;
     arrival_times.reserve(n_events);
 
     std::uniform_real_distribution<double> uniform_distribution(0.0, run_time);
 
     for (std::size_t event_index = 0; event_index < n_events; ++event_index) {
-        arrival_times.push_back(uniform_distribution(generator));
+        arrival_times.push_back(uniform_distribution(this->generator));
     }
 
     std::sort(arrival_times.begin(), arrival_times.end());
@@ -377,14 +372,12 @@ FlowCell::sample_arrival_times_poisson(
     std::vector<double> arrival_times;
     arrival_times.reserve(static_cast<std::size_t>(run_time * particle_flux));
 
-    std::random_device random_device;
-    std::mt19937 generator(random_device());
     std::exponential_distribution<double> exponential_distribution(particle_flux);
 
     double current_time = 0.0;
 
     while (current_time <= run_time) {
-        const double dt = exponential_distribution(generator);
+        const double dt = exponential_distribution(this->generator);
         current_time += dt;
 
         if (current_time > run_time) {
@@ -424,4 +417,8 @@ FlowCell::sample_arrival_times(
         "Unsupported event_scheme '" + event_scheme +
         "'. Expected one of: 'uniform-random', 'linear', 'poisson'."
     );
+}
+
+void FlowCell::seed(const std::uint64_t value) const {
+    this->generator.seed(value);
 }
