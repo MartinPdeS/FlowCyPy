@@ -34,7 +34,7 @@ Steps Covered:
 6. Apply triggering and peak detection
 7. Classify particle events based on peak features
 
-.. GENERATED FROM PYTHON SOURCE LINES 18-135
+.. GENERATED FROM PYTHON SOURCE LINES 18-133
 
 .. code-block:: Python
 
@@ -128,9 +128,7 @@ Steps Covered:
 
 
     workflow = Workflow(
-        wavelength=405 * ureg.nanometer,
         source=source,
-        optical_power=200 * ureg.milliwatt,
         sample_volume_flow=80 * ureg.microliter / ureg.minute,
         sheath_volume_flow=1 * ureg.milliliter / ureg.minute,
         width=200 * ureg.micrometer,
@@ -167,12 +165,12 @@ Steps Covered:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 136-138
+.. GENERATED FROM PYTHON SOURCE LINES 134-136
 
 Step 5: Plot Events and Raw Analog Signals
 ------------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 138-141
+.. GENERATED FROM PYTHON SOURCE LINES 136-139
 
 .. code-block:: Python
 
@@ -191,12 +189,12 @@ Step 5: Plot Events and Raw Analog Signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 142-144
+.. GENERATED FROM PYTHON SOURCE LINES 140-142
 
 Plot raw analog signals
 -----------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 144-147
+.. GENERATED FROM PYTHON SOURCE LINES 142-145
 
 .. code-block:: Python
 
@@ -215,12 +213,12 @@ Plot raw analog signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 148-150
+.. GENERATED FROM PYTHON SOURCE LINES 146-148
 
 Step 6: Plot Triggered Analog Segments
 --------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 150-153
+.. GENERATED FROM PYTHON SOURCE LINES 148-151
 
 .. code-block:: Python
 
@@ -239,12 +237,12 @@ Step 6: Plot Triggered Analog Segments
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 154-156
+.. GENERATED FROM PYTHON SOURCE LINES 152-154
 
 Step 7: Plot Peak Features
 --------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 156-159
+.. GENERATED FROM PYTHON SOURCE LINES 154-157
 
 .. code-block:: Python
 
@@ -263,12 +261,12 @@ Step 7: Plot Peak Features
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 160-162
+.. GENERATED FROM PYTHON SOURCE LINES 158-160
 
 Step 8: Classify Events from Peak Features
 ------------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 162-171
+.. GENERATED FROM PYTHON SOURCE LINES 160-169
 
 .. code-block:: Python
 
@@ -296,7 +294,7 @@ Step 8: Classify Events from Peak Features
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.223 seconds)
+   **Total running time of the script:** (0 minutes 4.485 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow_1.py:

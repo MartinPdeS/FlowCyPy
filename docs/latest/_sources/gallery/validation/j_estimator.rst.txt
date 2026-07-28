@@ -206,7 +206,7 @@ Helper functions
 
         figure, axes = plt.subplots(figsize=(6, 4))
 
-        axes.scatter(x, y, label="Measured robust CV", zorder=3)
+        axes.scatter(x, y, label="Robust CV", zorder=3, color='black')
         axes.plot(
             x_fit,
             y_fit,
@@ -471,8 +471,8 @@ Estimate J
 
 
     J estimation results
-    Estimated J: 0.11682262228214163 dimensionless
-    Linear intercept: 5.304730e-05
+    Estimated J: 0.1172178455711837 dimensionless
+    Linear intercept: 5.072378e-05
 
 
 
@@ -482,15 +482,19 @@ Estimate J
 Plot estimation and diagnostics
 -------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 361-369
+.. GENERATED FROM PYTHON SOURCE LINES 361-373
 
 .. code-block:: Python
 
 
-    figure_j, _, _ = plot_j_estimation(
-        medians=medians,
-        robust_cvs=robust_cvs,
-    )
+
+    from MPSPlots.styles import scientific
+
+    with plt.style.context(scientific):
+        figure_j, _, _ = plot_j_estimation(
+            medians=medians,
+            robust_cvs=robust_cvs,
+        )
 
 
     plt.show()
@@ -509,7 +513,7 @@ Plot estimation and diagnostics
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 14.700 seconds)
+   **Total running time of the script:** (1 minutes 27.398 seconds)
 
 
 .. _sphx_glr_download_gallery_validation_j_estimator.py:

@@ -545,13 +545,14 @@ active for a given computation.</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.flow_cytometer.FlowCytometer.acquire">
-<span class="sig-name descname"><span class="pre">acquire</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opto_electronics</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/flow_cytometer.html#FlowCytometer.acquire"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.flow_cytometer.FlowCytometer.acquire" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">acquire</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opto_electronics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/flow_cytometer.html#FlowCytometer.acquire"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.flow_cytometer.FlowCytometer.acquire" title="Link to this definition">#</a></dt>
 <dd><p>Run the acquisition pipeline up to the analog stage.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>run_time</strong> (<em>Time</em>) – Acquisition duration.</p></li>
 <li><p><strong>opto_electronics</strong> (<a class="reference internal" href="opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics" title="FlowCyPy.opto_electronics.OptoElectronics"><em>OptoElectronics</em></a>) – Opto electronic configuration.</p></li>
+<li><p><strong>random_state</strong> (<em>int</em><em> | </em><a class="reference external" href="https://numpy.org/devdocs/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v2.6.dev0)"><em>Generator</em></a><em> | </em><em>None</em>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -645,7 +646,7 @@ opto electronic configuration used to produce it.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.flow_cytometer.FlowCytometer.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opto_electronics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">digital_processing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/flow_cytometer.html#FlowCytometer.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.flow_cytometer.FlowCytometer.run" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opto_electronics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">digital_processing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/flow_cytometer.html#FlowCytometer.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.flow_cytometer.FlowCytometer.run" title="Link to this definition">#</a></dt>
 <dd><p>Run the full simulation pipeline from event generation to peak extraction.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -653,6 +654,7 @@ opto electronic configuration used to produce it.</p></li>
 <li><p><strong>run_time</strong> (<em>Time</em>) – Acquisition duration.</p></li>
 <li><p><strong>opto_electronics</strong> (<a class="reference internal" href="opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics" title="FlowCyPy.opto_electronics.OptoElectronics"><em>OptoElectronics</em></a>) – Opto electronic configuration.</p></li>
 <li><p><strong>digital_processing</strong> (<a class="reference internal" href="digital_processing.html#FlowCyPy.digital_processing.DigitalProcessing" title="FlowCyPy.digital_processing.DigitalProcessing"><em>DigitalProcessing</em></a><em>, </em><em>optional</em>) – Signal processing configuration. If None, no digital processing is applied.</p></li>
+<li><p><strong>random_state</strong> (<em>int</em><em> | </em><a class="reference external" href="https://numpy.org/devdocs/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v2.6.dev0)"><em>Generator</em></a><em> | </em><em>None</em>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
