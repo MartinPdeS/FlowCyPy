@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import annotations
+
 """Utilities for managing and visualizing collections of simulated events.
 
 This module defines :class:`EventCollection`, the high-level container used to
@@ -28,7 +30,10 @@ import MPSPlots
 
 from FlowCyPy.sub_frames.events import EventDataFrame
 from .populations import ExplicitModel, GammaModel
-from ._population_events import PopulationEvents
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .population_events import PopulationEvents
 
 
 @dataclass
@@ -368,7 +373,11 @@ class EventCollection:
             ``particle / milliliter``.
         """
         return {
-            events.name: events.metadata["ParticleCount"]
+            events.name: (
+                events.metadata["Concentration"]
+                if "Concentration" in events.metadata
+                else events.metadata["ParticleCount"]
+            )
             .to("particle / milliliter")
             .magnitude
             for events in self._get_selected_events(filter_population=filter_population)

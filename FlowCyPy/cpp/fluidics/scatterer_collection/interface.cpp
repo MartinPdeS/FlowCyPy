@@ -5,7 +5,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(_scatterer_collection, module) {
+PYBIND11_MODULE(scatterer_collection, module) {
     module.doc() = R"pdoc(
         C++-accelerated containers for scatterer populations.
 

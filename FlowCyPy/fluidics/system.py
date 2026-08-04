@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 from TypedUnit import Time, Frequency, Concentration
 import numpy as np
 
 from .event_collection import EventCollection
-from ._population_events import PopulationEvents
 from .flow_cell import FlowCell
 from .populations import BasePopulation, ExplicitModel, GammaModel
 from FlowCyPy.sub_frames.events import EventDataFrame
@@ -239,6 +240,8 @@ class Fluidics:
         """
         Create an empty structured event container for one population.
         """
+        from .population_events import PopulationEvents
+
         dataframe = EventDataFrame(index=range(max(number_of_events, 0)))
 
         return PopulationEvents(
@@ -250,6 +253,9 @@ class Fluidics:
             metadata={
                 "Name": population.name,
                 "PopulationType": population.__class__.__name__,
+                "Concentration": population.concentration,
+                # Retain the old key for consumers of previously serialized
+                # event collections. New code should use ``Concentration``.
                 "ParticleCount": population.concentration,
                 "SamplingMethod": population.sampling_method.__class__.__name__,
             },

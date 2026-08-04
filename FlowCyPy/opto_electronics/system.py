@@ -2,13 +2,22 @@ from typing import List
 
 from TypedUnit import Time, Power
 import numpy as np
+from pydantic import ConfigDict
+from pydantic.dataclasses import dataclass
 
 from . import source, circuits
 from .amplifier import Amplifier
 from .detector import Detector
 from .digitizer import Digitizer
-from FlowCyPy.utils import dataclass, config_dict
 from FlowCyPy.fluidics.event_collection import EventCollection
+
+
+config_dict = ConfigDict(
+    arbitrary_types_allowed=True,
+    kw_only=True,
+    slots=True,
+    extra="forbid",
+)
 
 
 @dataclass(config=config_dict)
@@ -149,8 +158,9 @@ class OptoElectronics:
         Parameters
         ----------
         event_collection : EventCollection
-            Collection of dataframe containing scatterer properties. It must include a column named 'type' with values
-            'Sphere' or 'CoreShell', and additional columns required for each scatterer type.
+            Collection of population event blocks containing scatterer properties.
+            Sphere populations use ``SpherePopulation`` fields and core-shell
+            populations use ``CoreShellPopulation`` fields.
         compute_cross_section : bool, optional
             If True, the scattering cross section (Csca) is computed and added to the DataFrame under the
             column 'Csca'. Default is False.
@@ -158,7 +168,7 @@ class OptoElectronics:
         if len(event_collection) == 0:
             return
 
-        from ._coupling_model import ScatteringModel
+        from .coupling_model import ScatteringModel
 
         for detector in self.detectors:
 
@@ -255,8 +265,8 @@ class OptoElectronics:
         ----------
         analog_dict : dict
             Analog voltage signals.
-        signal_processing : SignalProcessing
-            Processing configuration.
+            digital_processing : DigitalProcessing
+                Processing configuration applied after digitization.
 
         Returns
         -------

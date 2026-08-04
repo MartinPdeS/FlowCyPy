@@ -14,7 +14,7 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Type of build")
 
 # --------------------- Set the output directory for libraries --------------------
 set(LOCAL_CXX_DIR "${PROJECT_NAME}/cpp")
-set(LOCAL_BIN_DIR "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/binary")
+set(LOCAL_EXTENSION_DIR "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}")
 include_directories(${LOCAL_CXX_DIR})
 # --------------------- Set the output directory for libraries --------------------
 
@@ -112,7 +112,7 @@ message(STATUS "  FlowCyPy include dir : ${LOCAL_CXX_DIR}")
 
 message(STATUS "")
 message(STATUS "Install destination")
-message(STATUS "  Binary output path   : ${LOCAL_BIN_DIR}")
+message(STATUS "  Extension output path: ${LOCAL_EXTENSION_DIR}")
 
 message(STATUS "==============================================================")
 message(STATUS "")

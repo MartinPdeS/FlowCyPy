@@ -5,7 +5,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(interface_utils, module) {
+PYBIND11_MODULE(_utils, module) {
     module.doc() = "Signal processing utility functions for filtering, noise, and pulse generation.";
 
     // ----------------------------

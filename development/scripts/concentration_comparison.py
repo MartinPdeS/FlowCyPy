@@ -39,7 +39,7 @@ SimulationSettings.population_cutoff_bypass = False
 # from FlowCyPy.fluidics import Fluidics, ScattererCollection, populations
 
 
-from FlowCyPy.binary import distributions, populations
+from FlowCyPy.fluidics import distributions, populations
 
 
 medium_refractive_index = distributions.Delta(1.33 * ureg.RIU)

@@ -1,4 +1,4 @@
-from FlowCyPy.binary.distributions import Normal, RosinRammler, LogNormal
+from FlowCyPy.fluidics.distributions import Normal, RosinRammler, LogNormal
 from FlowCyPy.units import ureg
 import matplotlib.pyplot as plt
 

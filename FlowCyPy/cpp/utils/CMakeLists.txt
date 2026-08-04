@@ -7,13 +7,13 @@ target_link_libraries("${LIB_NAME}" PUBLIC OpenMP::OpenMP_CXX)
 target_include_directories("${LIB_NAME}" PUBLIC ${FFTW_INCLUDE_DIRS})
 
 pybind11_add_module("${NAME}" MODULE interface.cpp)
-set_target_properties("${NAME}" PROPERTIES OUTPUT_NAME "${NAME}")
+set_target_properties("${NAME}" PROPERTIES OUTPUT_NAME "_${NAME}")
 target_link_libraries("${NAME}" PUBLIC pybind11::module "${LIB_NAME}")
 
 
 install(
     TARGETS "${LIB_NAME}" "${NAME}"
-    LIBRARY DESTINATION "FlowCyPy/binary"
-    RUNTIME DESTINATION "FlowCyPy/binary"
-    ARCHIVE DESTINATION "FlowCyPy/binary"
+    LIBRARY DESTINATION "FlowCyPy"
+    RUNTIME DESTINATION "FlowCyPy"
+    ARCHIVE DESTINATION "FlowCyPy"
 )

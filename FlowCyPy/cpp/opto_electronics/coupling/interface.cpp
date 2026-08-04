@@ -4,7 +4,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(_coupling_model, module) {
+PYBIND11_MODULE(coupling_model, module) {
     module.doc() = R"pdoc(
         Native event-frame orchestration for PyMieSim scattering calculations.
 

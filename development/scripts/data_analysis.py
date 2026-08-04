@@ -1,4 +1,4 @@
-from FlowCyPy.binary.distributions import Normal
+from FlowCyPy.fluidics.distributions import Normal
 from TypedUnit import ureg
 
 mean = 50 * ureg.meter

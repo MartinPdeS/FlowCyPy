@@ -4,7 +4,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(_population_events, module) {
+PYBIND11_MODULE(population_events, module) {
     module.doc() = R"pdoc(
         Native population-level event containers.
 

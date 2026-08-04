@@ -38,10 +38,10 @@ def real_population():
     """
     return populations.SpherePopulation(
         name="Population",
-        particle_count=10 * ureg.particle,
-        diameter=distributions.Delta(position=150 * ureg.nanometer),
+        concentration=10 * ureg.particle / ureg.milliliter,
+        diameter=distributions.Delta(value=150 * ureg.nanometer),
         medium_refractive_index=1.33 * ureg.RIU,
-        refractive_index=distributions.Delta(position=1.39 * ureg.RIU),
+        refractive_index=distributions.Delta(value=1.39 * ureg.RIU),
     )
 
 

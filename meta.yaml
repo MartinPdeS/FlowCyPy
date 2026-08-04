@@ -63,7 +63,7 @@ about:
 
 files:
   include:
-    - "FlowCyPy/binary/*.so"
+    - "FlowCyPy/*.so"
 
 test:
   imports:

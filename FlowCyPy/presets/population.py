@@ -21,13 +21,16 @@ class CallablePopulation(metaclass=CallablePopulationMeta):
         self._diameter_distribution = diameter_dist
         self._ri_distribution = ri_dist
 
-    def __call__(self, particle_count: ureg.Quantity = 1 * ureg.particle):
+    def __call__(
+        self,
+        concentration: ureg.Quantity = 1 * ureg.particle / ureg.milliliter,
+    ):
         """Instantiate the preset as a :class:`SpherePopulation`.
 
         Parameters
         ----------
-        particle_count : ureg.Quantity, optional
-            Number of particles assigned to the created population.
+        concentration : ureg.Quantity, optional
+            Particle concentration assigned to the created population.
 
         Returns
         -------
@@ -35,7 +38,7 @@ class CallablePopulation(metaclass=CallablePopulationMeta):
             Population instance configured with the preset distributions.
         """
         return SpherePopulation(
-            particle_count=particle_count,
+            concentration=concentration,
             name=self._name,
             diameter=self._diameter_distribution,
             refractive_index=self._ri_distribution,
@@ -70,7 +73,10 @@ for name, diameter, diameter_spread, ri, ri_spread in _populations:
 
 # Helper function for microbeads
 def get_microbeads(
-    diameter: ureg.Quantity, refractive_index: ureg.Quantity, name: str
+    diameter: ureg.Quantity,
+    refractive_index: ureg.Quantity,
+    name: str,
+    concentration: ureg.Quantity = 1 * ureg.particle / ureg.milliliter,
 ) -> SpherePopulation:
     """Create a monodisperse microbead population.
 
@@ -82,17 +88,23 @@ def get_microbeads(
         Bead refractive index used for a delta distribution.
     name : str
         Population name.
+    concentration : ureg.Quantity, optional
+        Particle concentration, by default 1 particle / milliliter.
 
     Returns
     -------
     SpherePopulation
         Population with fixed diameter and refractive index.
     """
-    diameter_distribution = distributions.Delta(position=diameter)
-    ri_distribution = distributions.Delta(position=refractive_index)
+    diameter_distribution = distributions.Delta(value=diameter)
+    ri_distribution = distributions.Delta(value=refractive_index)
 
     microbeads = SpherePopulation(
-        name=name, diameter=diameter_distribution, refractive_index=ri_distribution
+        name=name,
+        concentration=concentration,
+        medium_refractive_index=distributions.Delta(value=1.33),
+        diameter=diameter_distribution,
+        refractive_index=ri_distribution,
     )
 
     return microbeads

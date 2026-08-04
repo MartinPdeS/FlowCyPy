@@ -29,6 +29,16 @@ It converts the specified sample and sheath flow rates into a focused sample reg
    :members:
    :show-inheritance:
 
+Fluidics system
+---------------
+
+The fluidics system combines a flow cell and a scatterer collection, then
+generates population-resolved event blocks for an acquisition.
+
+.. autoclass:: FlowCyPy.fluidics.system.Fluidics
+   :members:
+   :show-inheritance:
+
 Scatterer collection
 --------------------
 
@@ -62,6 +72,16 @@ Core-shell population
 Use this class for layered particles composed of a core and a shell with distinct optical properties.
 
 .. autoclass:: FlowCyPy.fluidics.populations.CoreShellPopulation
+   :members:
+   :show-inheritance:
+
+Population events
+++++++++++++++++
+
+Native population event blocks preserve the sampled dataframe, population
+metadata, and sampling method used to generate each group of events.
+
+.. autoclass:: FlowCyPy.fluidics.population_events.PopulationEvents
    :members:
    :show-inheritance:
 
