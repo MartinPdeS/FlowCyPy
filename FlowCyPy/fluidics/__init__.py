@@ -29,13 +29,24 @@ class SampleFlowRate(Enum):
 
 
 def _load_native_module(name: str):
-    """Load a sibling native module without source-module fallback during bootstrap."""
+    """Load a sibling native module from the checkout or installed package."""
     package_directory = Path(__file__).parent
-    module_path = next(
+    package_parts = Path(*__name__.split("."))
+    candidates = [
         package_directory / f"{name}{suffix}"
         for suffix in importlib.machinery.EXTENSION_SUFFIXES
-        if (package_directory / f"{name}{suffix}").exists()
+    ]
+    candidates.extend(
+        Path(search_path) / package_parts / f"{name}{suffix}"
+        for search_path in sys.path
+        for suffix in importlib.machinery.EXTENSION_SUFFIXES
     )
+    module_path = next((path for path in candidates if path.is_file()), None)
+    if module_path is None:
+        raise ImportError(
+            f"Native extension {__name__}.{name!s} is not installed. "
+            "Build FlowCyPy before importing its compiled components."
+        )
     qualified_name = f"{__name__}.{name}"
     spec = importlib.util.spec_from_file_location(qualified_name, module_path)
     if spec is None or spec.loader is None:
