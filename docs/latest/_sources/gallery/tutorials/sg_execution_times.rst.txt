@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:12.257** total execution time for 3 files **from gallery/tutorials**:
+**00:12.462** total execution time for 3 files **from gallery/tutorials**:
 
 .. container::
 
@@ -33,11 +33,11 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_gallery_tutorials_workflow.py` (``workflow.py``)
-     - 00:05.507
+     - 00:05.524
      - 0.0
    * - :ref:`sphx_glr_gallery_tutorials_workflow_1.py` (``workflow_1.py``)
-     - 00:04.331
+     - 00:04.522
      - 0.0
    * - :ref:`sphx_glr_gallery_tutorials_facs_canto.py` (``facs_canto.py``)
-     - 00:02.418
+     - 00:02.415
      - 0.0
