@@ -1,23 +1,21 @@
-**Core Components**
-===================
+Core components
+===============
 
-**FlowCyPy** provides a modular framework to simulate key elements of a flow cytometry system. Below are its core components, their attributes, and functionalities. For more details, refer to the `API Reference <https://martinpdes.github.io/FlowCyPy/docs/latest/code.html>`_.
+FlowCyPy models a simulation as four cooperating layers:
 
-Scatterer
----------
-The **Scatterer** represents particle distributions and their interactions with light.
+* ``fluidics`` defines the flow cell, particle populations, concentrations,
+  and population-resolved event blocks.
+* ``opto_electronics`` converts those events into detector signals through the
+  configured source, detectors, amplifier, and digitizer.
+* ``digital_processing`` detects and characterizes events in the sampled
+  traces.
+* ``FlowCytometer`` and ``Workflow`` connect the layers into a complete run.
 
-- **Attributes**:
-
-  - `populations`: List of particle populations, each with size and refractive index distributions.
-  - `medium_refractive_index`: Refractive index of the surrounding medium (e.g., water).
-  - `dataframe`: Contains particle data, including size, refractive index, and time of arrival.
-
-- **Key Features**:
-
-  - Add populations with `add_population(name, size, refractive_index, concentration)`.
-  - Initialize the scatterer using `initialize(flow_cell)`.
-  - Visualize particle distributions with `plot()`.
+Particle populations are stored in a
+``ScattererCollection``. Add a population with
+``collection.add_population(population)`` and adjust all concentrations with
+``collection.dilute(factor)``. Population constructors use the explicit
+``concentration`` keyword and distribution objects for physical properties.
 
 Source
 ------
@@ -58,38 +56,31 @@ The **FlowCytometer** integrates all components to simulate a complete flow cyto
 
 - **Attributes**:
 
-  - `scatterer`: The scatterer object defining particle distributions.
+  - `fluidics`: The fluidics object defining particle distributions and flow.
   - `source`: The laser source illuminating particles.
   - `detectors`: List of detectors for signal acquisition.
   - `background_power`: Ambient light contribution.
 
 - **Key Features**:
 
-  - Combines the scatterer, source, and detectors for realistic simulations.
+  - Combines the fluidics, source, and detectors for realistic simulations.
   - Computes Forward Scatter (FSC) and Side Scatter (SSC) signals.
   - Uses **PyMieSim** for accurate scattering computations.
 
-EventCorrelator
----------------
-The **EventCorrelator** (previously called Analyzer) provides tools for signal analysis and particle event detection.
+Digital processing
+------------------
+The **DigitalProcessing** layer provides tools for signal analysis and
+particle event detection.
 
 - **Attributes**:
 
-  - `cytometer`: The associated FlowCytometer object.
-  - `coincidence_dataframe`: Stores data for coinciding signals across detectors.
-  - `algorithm`: Peak detection algorithm for identifying particle events.
+  - `discriminator`: Peak/event trigger algorithm.
+  - `peak_algorithm`: Algorithm used to characterize detected peaks.
 
 - **Key Features**:
 
   - Detect peaks in signals using customizable algorithms (e.g., MovingAverage).
-  - Correlate events between detectors to identify coincidences.
-  - Generate 2D density plots of Forward Scatter (FSC) and Side Scatter (SSC) signals.
+  - Correlate detector channels through the event collection helpers.
+  - Generate population distributions and signal visualizations.
 
-Example Use Cases
------------------
-
-- Simulate a scatterer with two distinct populations to analyze overlapping signals.
-- Configure detectors with high noise to study the effect on signal clarity.
-- Use EventCorrelator to investigate coincidence events in a multi-detector setup.
-
-For further details on classes and methods, visit the `API Reference <https://martinpdes.github.io/FlowCyPy/docs/latest/code.html>`_.
+For class-level details, see the :doc:`../code` API reference.

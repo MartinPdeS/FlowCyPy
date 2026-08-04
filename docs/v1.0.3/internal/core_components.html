@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Core Components &#8212; FlowCyPy  documentation</title>
+    <title>Core components &#8212; FlowCyPy  documentation</title>
   
   
   
@@ -464,7 +464,7 @@
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html"><strong>Getting Started with FlowCyPy</strong></a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#"><strong>Core Components</strong></a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Core components</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="tasks.html"><strong>Internship Tasks</strong></a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="objectives/pre.html">Pre-Tasks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="objectives/main.html">Main Objectives</a></li>
@@ -515,7 +515,7 @@
     
     <li class="breadcrumb-item"><a href="../internal.html" class="nav-link">Internal</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><strong>Core Components</strong></span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Core components</span></li>
   </ul>
 </nav>
 </div>
@@ -533,28 +533,22 @@
                 <article class="bd-article">
                   
   <section id="core-components">
-<h1><strong>Core Components</strong><a class="headerlink" href="#core-components" title="Link to this heading">#</a></h1>
-<p><strong>FlowCyPy</strong> provides a modular framework to simulate key elements of a flow cytometry system. Below are its core components, their attributes, and functionalities. For more details, refer to the <a class="reference external" href="https://martinpdes.github.io/FlowCyPy/docs/latest/code.html">API Reference</a>.</p>
-<section id="scatterer">
-<h2>Scatterer<a class="headerlink" href="#scatterer" title="Link to this heading">#</a></h2>
-<p>The <strong>Scatterer</strong> represents particle distributions and their interactions with light.</p>
+<h1>Core components<a class="headerlink" href="#core-components" title="Link to this heading">#</a></h1>
+<p>FlowCyPy models a simulation as four cooperating layers:</p>
 <ul class="simple">
-<li><p><strong>Attributes</strong>:</p>
-<ul>
-<li><p><cite>populations</cite>: List of particle populations, each with size and refractive index distributions.</p></li>
-<li><p><cite>medium_refractive_index</cite>: Refractive index of the surrounding medium (e.g., water).</p></li>
-<li><p><cite>dataframe</cite>: Contains particle data, including size, refractive index, and time of arrival.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fluidics</span></code> defines the flow cell, particle populations, concentrations,
+and population-resolved event blocks.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">opto_electronics</span></code> converts those events into detector signals through the
+configured source, detectors, amplifier, and digitizer.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">digital_processing</span></code> detects and characterizes events in the sampled
+traces.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FlowCytometer</span></code> and <code class="docutils literal notranslate"><span class="pre">Workflow</span></code> connect the layers into a complete run.</p></li>
 </ul>
-</li>
-<li><p><strong>Key Features</strong>:</p>
-<ul>
-<li><p>Add populations with <cite>add_population(name, size, refractive_index, concentration)</cite>.</p></li>
-<li><p>Initialize the scatterer using <cite>initialize(flow_cell)</cite>.</p></li>
-<li><p>Visualize particle distributions with <cite>plot()</cite>.</p></li>
-</ul>
-</li>
-</ul>
-</section>
+<p>Particle populations are stored in a
+<code class="docutils literal notranslate"><span class="pre">ScattererCollection</span></code>. Add a population with
+<code class="docutils literal notranslate"><span class="pre">collection.add_population(population)</span></code> and adjust all concentrations with
+<code class="docutils literal notranslate"><span class="pre">collection.dilute(factor)</span></code>. Population constructors use the explicit
+<code class="docutils literal notranslate"><span class="pre">concentration</span></code> keyword and distribution objects for physical properties.</p>
 <section id="source">
 <h2>Source<a class="headerlink" href="#source" title="Link to this heading">#</a></h2>
 <p>The <strong>Source</strong> models the laser used for illumination in flow cytometry.</p>
@@ -602,7 +596,7 @@
 <ul class="simple">
 <li><p><strong>Attributes</strong>:</p>
 <ul>
-<li><p><cite>scatterer</cite>: The scatterer object defining particle distributions.</p></li>
+<li><p><cite>fluidics</cite>: The fluidics object defining particle distributions and flow.</p></li>
 <li><p><cite>source</cite>: The laser source illuminating particles.</p></li>
 <li><p><cite>detectors</cite>: List of detectors for signal acquisition.</p></li>
 <li><p><cite>background_power</cite>: Ambient light contribution.</p></li>
@@ -610,41 +604,33 @@
 </li>
 <li><p><strong>Key Features</strong>:</p>
 <ul>
-<li><p>Combines the scatterer, source, and detectors for realistic simulations.</p></li>
+<li><p>Combines the fluidics, source, and detectors for realistic simulations.</p></li>
 <li><p>Computes Forward Scatter (FSC) and Side Scatter (SSC) signals.</p></li>
 <li><p>Uses <strong>PyMieSim</strong> for accurate scattering computations.</p></li>
 </ul>
 </li>
 </ul>
 </section>
-<section id="eventcorrelator">
-<h2>EventCorrelator<a class="headerlink" href="#eventcorrelator" title="Link to this heading">#</a></h2>
-<p>The <strong>EventCorrelator</strong> (previously called Analyzer) provides tools for signal analysis and particle event detection.</p>
+<section id="digital-processing">
+<h2>Digital processing<a class="headerlink" href="#digital-processing" title="Link to this heading">#</a></h2>
+<p>The <strong>DigitalProcessing</strong> layer provides tools for signal analysis and
+particle event detection.</p>
 <ul class="simple">
 <li><p><strong>Attributes</strong>:</p>
 <ul>
-<li><p><cite>cytometer</cite>: The associated FlowCytometer object.</p></li>
-<li><p><cite>coincidence_dataframe</cite>: Stores data for coinciding signals across detectors.</p></li>
-<li><p><cite>algorithm</cite>: Peak detection algorithm for identifying particle events.</p></li>
+<li><p><cite>discriminator</cite>: Peak/event trigger algorithm.</p></li>
+<li><p><cite>peak_algorithm</cite>: Algorithm used to characterize detected peaks.</p></li>
 </ul>
 </li>
 <li><p><strong>Key Features</strong>:</p>
 <ul>
 <li><p>Detect peaks in signals using customizable algorithms (e.g., MovingAverage).</p></li>
-<li><p>Correlate events between detectors to identify coincidences.</p></li>
-<li><p>Generate 2D density plots of Forward Scatter (FSC) and Side Scatter (SSC) signals.</p></li>
+<li><p>Correlate detector channels through the event collection helpers.</p></li>
+<li><p>Generate population distributions and signal visualizations.</p></li>
 </ul>
 </li>
 </ul>
-</section>
-<section id="example-use-cases">
-<h2>Example Use Cases<a class="headerlink" href="#example-use-cases" title="Link to this heading">#</a></h2>
-<ul class="simple">
-<li><p>Simulate a scatterer with two distinct populations to analyze overlapping signals.</p></li>
-<li><p>Configure detectors with high noise to study the effect on signal clarity.</p></li>
-<li><p>Use EventCorrelator to investigate coincidence events in a multi-detector setup.</p></li>
-</ul>
-<p>For further details on classes and methods, visit the <a class="reference external" href="https://martinpdes.github.io/FlowCyPy/docs/latest/code.html">API Reference</a>.</p>
+<p>For class-level details, see the <a class="reference internal" href="../code.html"><span class="doc">API reference</span></a> API reference.</p>
 </section>
 </section>
 
@@ -671,12 +657,10 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scatterer">Scatterer</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#source">Source</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#detector">Detector</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#flowcytometer">FlowCytometer</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#eventcorrelator">EventCorrelator</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-use-cases">Example Use Cases</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#digital-processing">Digital processing</a></li>
 </ul>
   </nav></div>
 

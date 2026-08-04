@@ -704,6 +704,57 @@ maximum flow speed, and average flow speed.</p>
 </dd></dl>
 
 </section>
+<section id="fluidics-system">
+<h2>Fluidics system<a class="headerlink" href="#fluidics-system" title="Link to this heading">#</a></h2>
+<p>The fluidics system combines a flow cell and a scatterer collection, then
+generates population-resolved event blocks for an acquisition.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.system.Fluidics">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">Fluidics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scatterer_collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_cell</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/fluidics/system.html#Fluidics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.fluidics.system.Fluidics" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>flow_cell</strong> (<a class="reference internal" href="#FlowCyPy.fluidics.flow_cell.FlowCell" title="FlowCyPy.fluidics.flow_cell.FlowCell"><em>FlowCell</em></a>)</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.system.Fluidics.generate_event_collection">
+<span class="sig-name descname"><span class="pre">generate_event_collection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/fluidics/system.html#Fluidics.generate_event_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.fluidics.system.Fluidics.generate_event_collection" title="Link to this definition">#</a></dt>
+<dd><p>Generate the event collection for all configured populations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>run_time</strong> (<em>Time</em>) – Acquisition duration.</p></li>
+<li><p><strong>sampling_rate</strong> (<em>Frequency</em>) – Sampling rate used for gamma model occupancy calculations.</p></li>
+<li><p><strong>random_state</strong> (<em>int</em><em> | </em><a class="reference external" href="https://numpy.org/devdocs/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v2.6.dev0)"><em>Generator</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Population resolved event blocks.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>EventCollection</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.system.Fluidics.seed">
+<span class="sig-name descname"><span class="pre">seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/fluidics/system.html#Fluidics.seed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.fluidics.system.Fluidics.seed" title="Link to this definition">#</a></dt>
+<dd><p>Seed all stochastic fluidics components for reproducible runs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>int</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 <section id="scatterer-collection">
 <h2>Scatterer collection<a class="headerlink" href="#scatterer-collection" title="Link to this heading">#</a></h2>
 <p>The scatterer collection is the container that stores all particle populations present in the simulated sample.</p>
@@ -728,7 +779,7 @@ while the C++ implementation stores their magnitudes in SI units.</p>
 each population object passed to the constructor.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.scatterer_collection.ScattererCollection.add_population">
-<span class="sig-name descname"><span class="pre">add_population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FlowCyPy.fluidics._scatterer_collection.ScattererCollection</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FlowCyPy.fluidics._scatterer_collection.ScattererCollection</span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.add_population" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="FlowCyPy.fluidics.scatterer_collection.ScattererCollection"><span class="pre">FlowCyPy.fluidics.scatterer_collection.ScattererCollection</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="FlowCyPy.fluidics.scatterer_collection.ScattererCollection"><span class="pre">FlowCyPy.fluidics.scatterer_collection.ScattererCollection</span></a></span></span><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.add_population" title="Link to this definition">#</a></dt>
 <dd><p>Append one or more populations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -759,7 +810,7 @@ each population object passed to the constructor.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.scatterer_collection.ScattererCollection.dilute">
-<span class="sig-name descname"><span class="pre">dilute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FlowCyPy.fluidics._scatterer_collection.ScattererCollection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.dilute" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">dilute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="FlowCyPy.fluidics.scatterer_collection.ScattererCollection"><span class="pre">FlowCyPy.fluidics.scatterer_collection.ScattererCollection</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.dilute" title="Link to this definition">#</a></dt>
 <dd><p>Divide every population concentration by <code class="docutils literal notranslate"><span class="pre">factor</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -773,7 +824,7 @@ each population object passed to the constructor.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.scatterer_collection.ScattererCollection.get_population_ratios">
-<span class="sig-name descname"><span class="pre">get_population_ratios</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FlowCyPy.fluidics._scatterer_collection.ScattererCollection</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.get_population_ratios" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_population_ratios</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="FlowCyPy.fluidics.scatterer_collection.ScattererCollection"><span class="pre">FlowCyPy.fluidics.scatterer_collection.ScattererCollection</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.get_population_ratios" title="Link to this definition">#</a></dt>
 <dd><p>Return each population’s fraction of the total concentration.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -799,7 +850,7 @@ continue to be shared with Python.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.scatterer_collection.ScattererCollection.set_concentrations">
-<span class="sig-name descname"><span class="pre">set_concentrations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FlowCyPy.fluidics._scatterer_collection.ScattererCollection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.set_concentrations" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">set_concentrations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="FlowCyPy.fluidics.scatterer_collection.ScattererCollection"><span class="pre">FlowCyPy.fluidics.scatterer_collection.ScattererCollection</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.set_concentrations" title="Link to this definition">#</a></dt>
 <dd><p>Set population concentrations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -894,6 +945,110 @@ distribution or a custom population class that enforces the constraint.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict[str, pint.Quantity]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="population-events">
+<h3>Population events<a class="headerlink" href="#population-events" title="Link to this heading">#</a></h3>
+<p>Native population event blocks preserve the sampled dataframe, population
+metadata, and sampling method used to generate each group of events.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.population_events.PopulationEvents">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">PopulationEvents</span></span><a class="headerlink" href="#FlowCyPy.fluidics.population_events.PopulationEvents" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
+<p>Structured event data for one simulated population.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataframe</strong> (<em>EventDataFrame</em>) – Unit-aware table containing one row per event.</p></li>
+<li><p><strong>population</strong> (<em>object</em>) – Population object that generated the events.</p></li>
+<li><p><strong>sampling_method</strong> (<em>object</em>) – Sampling strategy used to generate the event block.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Population name.</p></li>
+<li><p><strong>scatterer_type</strong> (<em>str</em>) – Scatterer type label, such as <code class="docutils literal notranslate"><span class="pre">SpherePopulation</span></code>.</p></li>
+<li><p><strong>metadata</strong> (<em>dict</em><em>, </em><em>optional</em>) – Population-level diagnostic and simulation metadata.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Construction synchronizes <code class="docutils literal notranslate"><span class="pre">dataframe.scatterer_type</span></code> and ensures
+that <code class="docutils literal notranslate"><span class="pre">dataframe.attrs[&quot;units&quot;]</span></code> exists, including for empty blocks.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.population_events.PopulationEvents.columns">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">columns</span></span><a class="headerlink" href="#FlowCyPy.fluidics.population_events.PopulationEvents.columns" title="Link to this definition">#</a></dt>
+<dd><p>Return the dataframe columns.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.population_events.PopulationEvents.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.fluidics.population_events.PopulationEvents" title="FlowCyPy.fluidics.population_events.PopulationEvents"><span class="pre">FlowCyPy.fluidics.population_events.PopulationEvents</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#FlowCyPy.fluidics.population_events.PopulationEvents" title="FlowCyPy.fluidics.population_events.PopulationEvents"><span class="pre">FlowCyPy.fluidics.population_events.PopulationEvents</span></a></span></span><a class="headerlink" href="#FlowCyPy.fluidics.population_events.PopulationEvents.copy" title="Link to this definition">#</a></dt>
+<dd><p>Return a detached copy with copied dataframe and metadata mappings.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.population_events.PopulationEvents.dataframe">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">dataframe</span></span><a class="headerlink" href="#FlowCyPy.fluidics.population_events.PopulationEvents.dataframe" title="Link to this definition">#</a></dt>
+<dd><p>Underlying unit-aware event dataframe.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.population_events.PopulationEvents.empty">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">empty</span></span><a class="headerlink" href="#FlowCyPy.fluidics.population_events.PopulationEvents.empty" title="Link to this definition">#</a></dt>
+<dd><p>Whether the event dataframe contains no rows.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.population_events.PopulationEvents.get_quantity">
+<span class="sig-name descname"><span class="pre">get_quantity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.fluidics.population_events.PopulationEvents" title="FlowCyPy.fluidics.population_events.PopulationEvents"><span class="pre">FlowCyPy.fluidics.population_events.PopulationEvents</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.population_events.PopulationEvents.get_quantity" title="Link to this definition">#</a></dt>
+<dd><p>Return a column as a unit-aware quantity when a unit is registered.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.population_events.PopulationEvents.metadata">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">metadata</span></span><a class="headerlink" href="#FlowCyPy.fluidics.population_events.PopulationEvents.metadata" title="Link to this definition">#</a></dt>
+<dd><p>Population-level metadata dictionary.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.population_events.PopulationEvents.name">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#FlowCyPy.fluidics.population_events.PopulationEvents.name" title="Link to this definition">#</a></dt>
+<dd><p>Human-readable population name.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.population_events.PopulationEvents.population">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">population</span></span><a class="headerlink" href="#FlowCyPy.fluidics.population_events.PopulationEvents.population" title="Link to this definition">#</a></dt>
+<dd><p>Population object that generated the events.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.population_events.PopulationEvents.sampling_method">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">sampling_method</span></span><a class="headerlink" href="#FlowCyPy.fluidics.population_events.PopulationEvents.sampling_method" title="Link to this definition">#</a></dt>
+<dd><p>Sampling strategy used to generate the events.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.population_events.PopulationEvents.scatterer_type">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">scatterer_type</span></span><a class="headerlink" href="#FlowCyPy.fluidics.population_events.PopulationEvents.scatterer_type" title="Link to this definition">#</a></dt>
+<dd><p>Scatterer type label associated with the population.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.population_events.PopulationEvents.set_quantity_column">
+<span class="sig-name descname"><span class="pre">set_quantity_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.fluidics.population_events.PopulationEvents" title="FlowCyPy.fluidics.population_events.PopulationEvents"><span class="pre">FlowCyPy.fluidics.population_events.PopulationEvents</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.population_events.PopulationEvents.set_quantity_column" title="Link to this definition">#</a></dt>
+<dd><p>Store a quantity column in the underlying dataframe.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.population_events.PopulationEvents.to_dataframe">
+<span class="sig-name descname"><span class="pre">to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.fluidics.population_events.PopulationEvents" title="FlowCyPy.fluidics.population_events.PopulationEvents"><span class="pre">FlowCyPy.fluidics.population_events.PopulationEvents</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_metadata_in_attrs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.population_events.PopulationEvents.to_dataframe" title="Link to this definition">#</a></dt>
+<dd><p>Export a detached dataframe copy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>include_metadata_in_attrs</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Include population metadata in the exported dataframe attrs.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1090,6 +1245,14 @@ distribution or a custom population class that enforces the constraint.</p>
 </li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fluidics-system">Fluidics system</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.system.Fluidics"><code class="docutils literal notranslate"><span class="pre">Fluidics</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.system.Fluidics.generate_event_collection"><code class="docutils literal notranslate"><span class="pre">Fluidics.generate_event_collection()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.system.Fluidics.seed"><code class="docutils literal notranslate"><span class="pre">Fluidics.seed()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scatterer-collection">Scatterer collection</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection"><code class="docutils literal notranslate"><span class="pre">ScattererCollection</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.add_population"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.add_population()</span></code></a></li>
@@ -1113,6 +1276,24 @@ distribution or a custom population class that enforces the constraint.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core-shell-population">Core-shell population</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.populations.CoreShellPopulation"><code class="docutils literal notranslate"><span class="pre">CoreShellPopulation</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.populations.CoreShellPopulation.sample"><code class="docutils literal notranslate"><span class="pre">CoreShellPopulation.sample()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#population-events">Population events</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.population_events.PopulationEvents"><code class="docutils literal notranslate"><span class="pre">PopulationEvents</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.population_events.PopulationEvents.columns"><code class="docutils literal notranslate"><span class="pre">PopulationEvents.columns</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.population_events.PopulationEvents.copy"><code class="docutils literal notranslate"><span class="pre">PopulationEvents.copy()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.population_events.PopulationEvents.dataframe"><code class="docutils literal notranslate"><span class="pre">PopulationEvents.dataframe</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.population_events.PopulationEvents.empty"><code class="docutils literal notranslate"><span class="pre">PopulationEvents.empty</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.population_events.PopulationEvents.get_quantity"><code class="docutils literal notranslate"><span class="pre">PopulationEvents.get_quantity()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.population_events.PopulationEvents.metadata"><code class="docutils literal notranslate"><span class="pre">PopulationEvents.metadata</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.population_events.PopulationEvents.name"><code class="docutils literal notranslate"><span class="pre">PopulationEvents.name</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.population_events.PopulationEvents.population"><code class="docutils literal notranslate"><span class="pre">PopulationEvents.population</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.population_events.PopulationEvents.sampling_method"><code class="docutils literal notranslate"><span class="pre">PopulationEvents.sampling_method</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.population_events.PopulationEvents.scatterer_type"><code class="docutils literal notranslate"><span class="pre">PopulationEvents.scatterer_type</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.population_events.PopulationEvents.set_quantity_column"><code class="docutils literal notranslate"><span class="pre">PopulationEvents.set_quantity_column()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.population_events.PopulationEvents.to_dataframe"><code class="docutils literal notranslate"><span class="pre">PopulationEvents.to_dataframe()</span></code></a></li>
 </ul>
 </li>
 </ul>

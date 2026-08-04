@@ -540,7 +540,7 @@
 <p>The <a class="reference internal" href="#FlowCyPy.opto_electronics.OptoElectronics" title="FlowCyPy.opto_electronics.OptoElectronics"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlowCyPy.opto_electronics.OptoElectronics</span></code></a> class groups the source, detectors, amplifier, digitizer, and optional analog processing stages into a single configuration object.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">OptoElectronics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">digitizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analog_processing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/main.html#OptoElectronics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">OptoElectronics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">digitizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analog_processing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/system.html#OptoElectronics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Base class for optoelectronic components in flow cytometry simulations.</p>
 <p>This class serves as a base for various optoelectronic components, such as detectors and
@@ -558,15 +558,16 @@ signal generators, providing common functionality and attributes.</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.add_coupling_to_dataframe">
-<span class="sig-name descname"><span class="pre">add_coupling_to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_cross_section</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/main.html#OptoElectronics.add_coupling_to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.add_coupling_to_dataframe" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_coupling_to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_cross_section</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/system.html#OptoElectronics.add_coupling_to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.add_coupling_to_dataframe" title="Link to this definition">#</a></dt>
 <dd><p>Computes the detected signal for each scatterer in the provided DataFrame and updates it in place.
 This method iterates over the list of detectors and computes the detected signal for each scatterer
 using the <cite>compute_detected_signal</cite> function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>event_collection</strong> (<em>EventCollection</em>) – Collection of dataframe containing scatterer properties. It must include a column named ‘type’ with values
-‘Sphere’ or ‘CoreShell’, and additional columns required for each scatterer type.</p></li>
+<li><p><strong>event_collection</strong> (<em>EventCollection</em>) – Collection of population event blocks containing scatterer properties.
+Sphere populations use <code class="docutils literal notranslate"><span class="pre">SpherePopulation</span></code> fields and core-shell
+populations use <code class="docutils literal notranslate"><span class="pre">CoreShellPopulation</span></code> fields.</p></li>
 <li><p><strong>compute_cross_section</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the scattering cross section (Csca) is computed and added to the DataFrame under the
 column ‘Csca’. Default is False.</p></li>
 </ul>
@@ -586,14 +587,16 @@ column ‘Csca’. Default is False.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.apply_analog_processing">
-<span class="sig-name descname"><span class="pre">apply_analog_processing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">analog_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/main.html#OptoElectronics.apply_analog_processing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.apply_analog_processing" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">apply_analog_processing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">analog_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/system.html#OptoElectronics.apply_analog_processing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.apply_analog_processing" title="Link to this definition">#</a></dt>
 <dd><p>Apply analog post processing circuits to an analog signal dictionary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>analog_dict</strong> (<em>dict</em>) – Analog voltage signals.</p></li>
-<li><p><strong>signal_processing</strong> (<em>SignalProcessing</em>) – Processing configuration.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>analog_dict</strong> (<em>dict</em>) – <p>Analog voltage signals.
+digital_processing : DigitalProcessing</p>
+<blockquote>
+<div><p>Processing configuration applied after digitization.</p>
+</div></blockquote>
+</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Processed analog signal dictionary.</p>
@@ -606,7 +609,7 @@ column ‘Csca’. Default is False.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.apply_detector_current_noise">
-<span class="sig-name descname"><span class="pre">apply_detector_current_noise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">photocurrent_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/main.html#OptoElectronics.apply_detector_current_noise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.apply_detector_current_noise" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">apply_detector_current_noise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">photocurrent_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/system.html#OptoElectronics.apply_detector_current_noise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.apply_detector_current_noise" title="Link to this definition">#</a></dt>
 <dd><p>Apply detector current noise to photocurrent traces.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -626,7 +629,7 @@ column ‘Csca’. Default is False.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.apply_source_noise_to_optical_signals">
-<span class="sig-name descname"><span class="pre">apply_source_noise_to_optical_signals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power_signal_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/main.html#OptoElectronics.apply_source_noise_to_optical_signals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.apply_source_noise_to_optical_signals" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">apply_source_noise_to_optical_signals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power_signal_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/system.html#OptoElectronics.apply_source_noise_to_optical_signals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.apply_source_noise_to_optical_signals" title="Link to this definition">#</a></dt>
 <dd><p>Apply source level optical noise processes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -643,7 +646,7 @@ column ‘Csca’. Default is False.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.convert_optical_power_to_photocurrent">
-<span class="sig-name descname"><span class="pre">convert_optical_power_to_photocurrent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power_signal_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/main.html#OptoElectronics.convert_optical_power_to_photocurrent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.convert_optical_power_to_photocurrent" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">convert_optical_power_to_photocurrent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power_signal_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/system.html#OptoElectronics.convert_optical_power_to_photocurrent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.convert_optical_power_to_photocurrent" title="Link to this definition">#</a></dt>
 <dd><p>Convert detector optical power traces to photocurrent traces.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -660,7 +663,7 @@ column ‘Csca’. Default is False.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.convert_optical_power_to_voltage">
-<span class="sig-name descname"><span class="pre">convert_optical_power_to_voltage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power_signal_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/main.html#OptoElectronics.convert_optical_power_to_voltage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.convert_optical_power_to_voltage" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">convert_optical_power_to_voltage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power_signal_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/system.html#OptoElectronics.convert_optical_power_to_voltage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.convert_optical_power_to_voltage" title="Link to this definition">#</a></dt>
 <dd><p>Convert optical power traces to analog voltage traces by applying the full optoelectronic chain.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -677,7 +680,7 @@ column ‘Csca’. Default is False.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.convert_photocurrent_to_voltage">
-<span class="sig-name descname"><span class="pre">convert_photocurrent_to_voltage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">photocurrent_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/main.html#OptoElectronics.convert_photocurrent_to_voltage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.convert_photocurrent_to_voltage" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">convert_photocurrent_to_voltage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">photocurrent_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/system.html#OptoElectronics.convert_photocurrent_to_voltage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.convert_photocurrent_to_voltage" title="Link to this definition">#</a></dt>
 <dd><p>Convert photocurrent traces to analog voltage traces.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -694,7 +697,7 @@ column ‘Csca’. Default is False.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.copy_dict">
-<span class="sig-name descname"><span class="pre">copy_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dictionnary</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/main.html#OptoElectronics.copy_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.copy_dict" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">copy_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dictionnary</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/system.html#OptoElectronics.copy_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.copy_dict" title="Link to this definition">#</a></dt>
 <dd><p>Create a safe working copy of a signal dictionary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -721,7 +724,7 @@ column ‘Csca’. Default is False.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.initialize_optical_signal_dict">
-<span class="sig-name descname"><span class="pre">initialize_optical_signal_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_power</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/main.html#OptoElectronics.initialize_optical_signal_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.initialize_optical_signal_dict" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">initialize_optical_signal_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_power</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/system.html#OptoElectronics.initialize_optical_signal_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.initialize_optical_signal_dict" title="Link to this definition">#</a></dt>
 <dd><p>Initialize detector optical power traces.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -743,6 +746,48 @@ column ‘Csca’. Default is False.</p></li>
 <dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.source">
 <span class="sig-name descname"><span class="pre">source</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BaseSource</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.source" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="scattering-model">
+<h2>Scattering model<a class="headerlink" href="#scattering-model" title="Link to this heading">#</a></h2>
+<p>The native scattering model connects a configured source and detector to the
+population event data and computes the detected optical response.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.coupling_model.ScatteringModel">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ScatteringModel</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.coupling_model.ScatteringModel" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
+<p>Compute PyMieSim scattering signals for FlowCyPy event frames.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> (<em>BaseSource</em>) – Source model used to evaluate illumination amplitudes.</p></li>
+<li><p><strong>detector</strong> (<a class="reference internal" href="#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.detector.Detector"><em>Detector</em></a>) – Detector model used to construct the PyMieSim photodiode set.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p><code class="docutils literal notranslate"><span class="pre">run</span></code> updates each non-empty event frame in place. Empty frames are
+skipped. PyMieSim remains responsible for the scattering physics and
+its sequential setup validation.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.coupling_model.ScatteringModel.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.coupling_model.ScatteringModel" title="FlowCyPy.opto_electronics.coupling_model.ScatteringModel"><span class="pre">FlowCyPy.opto_electronics.coupling_model.ScatteringModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_cross_section</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.coupling_model.ScatteringModel.run" title="Link to this definition">#</a></dt>
+<dd><p>Compute scattering for each event frame in place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event_frames</strong> (<em>iterable</em><em> of </em><em>EventDataFrame</em>) – Event frames containing spatial coordinates and scatterer
+properties.</p></li>
+<li><p><strong>compute_cross_section</strong> (<em>bool</em><em>, </em><em>optional</em>) – If true, also writes the <code class="docutils literal notranslate"><span class="pre">Csca</span></code> column in square meters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If an event frame has an unsupported scatterer type.</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -2052,6 +2097,13 @@ A value of <code class="docutils literal notranslate"><span class="pre">-1</span
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.OptoElectronics.digitizer"><code class="docutils literal notranslate"><span class="pre">OptoElectronics.digitizer</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.OptoElectronics.initialize_optical_signal_dict"><code class="docutils literal notranslate"><span class="pre">OptoElectronics.initialize_optical_signal_dict()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.OptoElectronics.source"><code class="docutils literal notranslate"><span class="pre">OptoElectronics.source</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scattering-model">Scattering model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.coupling_model.ScatteringModel"><code class="docutils literal notranslate"><span class="pre">ScatteringModel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.coupling_model.ScatteringModel.run"><code class="docutils literal notranslate"><span class="pre">ScatteringModel.run()</span></code></a></li>
 </ul>
 </li>
 </ul>

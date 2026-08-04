@@ -20,7 +20,9 @@ This configuration is then passed to the cytometer processing pipeline to transf
 Digital processing configuration
 --------------------------------
 
-The :class:`FlowCyPy.digital_processing.DigitalProcessing` class groups the discriminator and peak extraction algorithm into a single processing configuration.
+The :class:`FlowCyPy.digital_processing.DigitalProcessing` class groups the
+discriminator and peak extraction algorithm into a single processing
+configuration. Its implementation lives in ``pipeline.py``.
 
 .. autoclass:: FlowCyPy.digital_processing.DigitalProcessing
    :members:

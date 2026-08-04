@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FlowCyPy.opto_electronics.main &#8212; FlowCyPy  documentation</title>
+    <title>FlowCyPy.opto_electronics.system &#8212; FlowCyPy  documentation</title>
   
   
   
@@ -47,7 +47,7 @@
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/FlowCyPy/opto_electronics/main';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/FlowCyPy/opto_electronics/system';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
@@ -476,7 +476,7 @@
     
     <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">FlowCyPy.opto_electronics.main</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">FlowCyPy.opto_electronics.system</span></li>
   </ul>
 </nav>
 </div>
@@ -493,18 +493,27 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <h1>Source code for FlowCyPy.opto_electronics.main</h1><div class="highlight"><pre>
+  <h1>Source code for FlowCyPy.opto_electronics.system</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Time</span><span class="p">,</span> <span class="n">Power</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">source</span><span class="p">,</span> <span class="n">circuits</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.amplifier</span><span class="w"> </span><span class="kn">import</span> <span class="n">Amplifier</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.detector</span><span class="w"> </span><span class="kn">import</span> <span class="n">Detector</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.digitizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Digitizer</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">config_dict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluidics.event_collection</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventCollection</span>
+
+
+<span class="n">config_dict</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span>
+    <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <div class="viewcode-block" id="OptoElectronics">
@@ -661,8 +670,9 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        event_collection : EventCollection</span>
-<span class="sd">            Collection of dataframe containing scatterer properties. It must include a column named &#39;type&#39; with values</span>
-<span class="sd">            &#39;Sphere&#39; or &#39;CoreShell&#39;, and additional columns required for each scatterer type.</span>
+<span class="sd">            Collection of population event blocks containing scatterer properties.</span>
+<span class="sd">            Sphere populations use ``SpherePopulation`` fields and core-shell</span>
+<span class="sd">            populations use ``CoreShellPopulation`` fields.</span>
 <span class="sd">        compute_cross_section : bool, optional</span>
 <span class="sd">            If True, the scattering cross section (Csca) is computed and added to the DataFrame under the</span>
 <span class="sd">            column &#39;Csca&#39;. Default is False.</span>
@@ -670,7 +680,7 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">event_collection</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span>
 
-        <span class="kn">from</span><span class="w"> </span><span class="nn">._coupling_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScatteringModel</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">.coupling_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScatteringModel</span>
 
         <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>
 
@@ -779,8 +789,8 @@
 <span class="sd">        ----------</span>
 <span class="sd">        analog_dict : dict</span>
 <span class="sd">            Analog voltage signals.</span>
-<span class="sd">        signal_processing : SignalProcessing</span>
-<span class="sd">            Processing configuration.</span>
+<span class="sd">            digital_processing : DigitalProcessing</span>
+<span class="sd">                Processing configuration applied after digitization.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>

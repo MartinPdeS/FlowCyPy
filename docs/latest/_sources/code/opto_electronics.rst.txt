@@ -28,6 +28,16 @@ The :class:`FlowCyPy.opto_electronics.OptoElectronics` class groups the source, 
    :members:
    :show-inheritance:
 
+Scattering model
+-----------------
+
+The native scattering model connects a configured source and detector to the
+population event data and computes the detected optical response.
+
+.. autoclass:: FlowCyPy.opto_electronics.coupling_model.ScatteringModel
+   :members:
+   :show-inheritance:
+
 Light sources
 -------------
 
