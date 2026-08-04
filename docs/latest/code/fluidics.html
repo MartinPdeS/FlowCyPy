@@ -709,26 +709,32 @@ maximum flow speed, and average flow speed.</p>
 <p>It provides a convenient interface for combining multiple populations, applying dilution, and passing the resulting sample definition to the fluidics engine.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.scatterer_collection.ScattererCollection">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ScattererCollection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">populations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/fluidics/scatterer_collection.html#ScattererCollection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Defines and manages the diameter and refractive index distributions of scatterers (particles)
-passing through a flow cytometer. This class generates random scatterer diameters and refractive
-indices based on a list of provided distributions (e.g., Normal, LogNormal, Uniform, etc.).</p>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ScattererCollection</span></span><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
+<p>Collection of particle populations used by a flow-cytometry simulation.</p>
+<p>The collection is deliberately lightweight: it stores population
+objects and applies operations that affect the sample as a whole.
+Concentrations are exposed as Pint quantities in particle / liter,
+while the C++ implementation stores their magnitudes in SI units.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>populations</strong> (<em>List</em><em>[</em><em>BasePopulation</em><em>]</em>)</p>
+<dd class="field-odd"><p><strong>populations</strong> (<em>sequence</em><em> of </em><em>BasePopulation</em><em>, </em><em>optional</em>) – Initial populations. The default is an empty collection.</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Population objects are held by shared reference. Consequently,
+<code class="docutils literal notranslate"><span class="pre">collection.dilute(2)</span></code> also updates the concentration observed on
+each population object passed to the constructor.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.scatterer_collection.ScattererCollection.add_population">
-<span class="sig-name descname"><span class="pre">add_population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">population</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/fluidics/scatterer_collection.html#ScattererCollection.add_population"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.add_population" title="Link to this definition">#</a></dt>
-<dd><p>Add one or more populations to the collection.</p>
+<span class="sig-name descname"><span class="pre">add_population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FlowCyPy.fluidics._scatterer_collection.ScattererCollection</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FlowCyPy.fluidics._scatterer_collection.ScattererCollection</span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.add_population" title="Link to this definition">#</a></dt>
+<dd><p>Append one or more populations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>*population</strong> (<em>BasePopulation</em>) – Population objects to append.</p>
+<dd class="field-odd"><p><strong>*population</strong> (<em>BasePopulation</em>) – One or more population objects to append.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The ScattererCollection instance (to support chaining).</p>
+<dd class="field-even"><p>This collection, allowing calls to be chained.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="FlowCyPy.fluidics.scatterer_collection.ScattererCollection">ScattererCollection</a></p>
@@ -738,77 +744,71 @@ indices based on a list of provided distributions (e.g., Normal, LogNormal, Unif
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.scatterer_collection.ScattererCollection.concentrations">
-<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">concentrations</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Concentration</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.concentrations" title="Link to this definition">#</a></dt>
-<dd><p>Gets the concentration of each population in the ScattererCollection instance.</p>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">concentrations</span></span><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.concentrations" title="Link to this definition">#</a></dt>
+<dd><p>Concentration of each population.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A list of concentrations for each population.</p>
+<dd class="field-odd"><p>Concentrations in particle / liter, in collection order.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>List[Concentration]</p>
+<dd class="field-even"><p>list of pint.Quantity</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.scatterer_collection.ScattererCollection.dilute">
-<span class="sig-name descname"><span class="pre">dilute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/fluidics/scatterer_collection.html#ScattererCollection.dilute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.dilute" title="Link to this definition">#</a></dt>
-<dd><p>Dilutes the populations in the flow cytometry system by a given factor.</p>
+<span class="sig-name descname"><span class="pre">dilute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FlowCyPy.fluidics._scatterer_collection.ScattererCollection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.dilute" title="Link to this definition">#</a></dt>
+<dd><p>Divide every population concentration by <code class="docutils literal notranslate"><span class="pre">factor</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>factor</strong> (<em>float</em>) – Positive divisor applied to each population concentration. For example,
-a factor of 2 reduces the population density by half.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The method modifies the populations in place.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
+<dd class="field-odd"><p><strong>factor</strong> (<em>float</em>) – Finite, strictly positive dilution factor.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">factor</span></code> is not finite and positive.</p>
+<dd class="field-even"><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">factor</span></code> is not finite and greater than zero.</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<ul class="simple">
-<li><p>This method iterates over all populations in the system and applies the <cite>dilute</cite> method of each population.</p></li>
-<li><p>The specific implementation of how a population is diluted depends on the <cite>dilute</cite> method defined in the <cite>population</cite> object.</p></li>
-</ul>
-<p class="rubric">Examples</p>
-<p>Dilute all populations by 50%:
-&gt;&gt;&gt; system.dilute(2)</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.scatterer_collection.ScattererCollection.get_population_ratios">
-<span class="sig-name descname"><span class="pre">get_population_ratios</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/fluidics/scatterer_collection.html#ScattererCollection.get_population_ratios"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.get_population_ratios" title="Link to this definition">#</a></dt>
-<dd><p>Get the ratios of each population’s concentration to the total concentration.</p>
+<span class="sig-name descname"><span class="pre">get_population_ratios</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FlowCyPy.fluidics._scatterer_collection.ScattererCollection</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.get_population_ratios" title="Link to this definition">#</a></dt>
+<dd><p>Return each population’s fraction of the total concentration.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A list of concentration ratios for each population.</p>
+<dd class="field-odd"><p>One dimensionless ratio per population, in collection order.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>list[float]</p>
+<dd class="field-even"><p>list of float</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ValueError</strong> – If the total particle count is zero.</p>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the total concentration is zero.</p>
 </dd>
 </dl>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.scatterer_collection.ScattererCollection.populations">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">populations</span></span><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.populations" title="Link to this definition">#</a></dt>
+<dd><p>Populations stored in the collection.</p>
+<p>Getting this property returns a Python list. Assigning a list
+replaces the collection contents; population objects themselves
+continue to be shared with Python.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.scatterer_collection.ScattererCollection.set_concentrations">
-<span class="sig-name descname"><span class="pre">set_concentrations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/fluidics/scatterer_collection.html#ScattererCollection.set_concentrations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.set_concentrations" title="Link to this definition">#</a></dt>
-<dd><p>Sets the concentration of each population in the ScattererCollection instance.</p>
+<span class="sig-name descname"><span class="pre">set_concentrations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FlowCyPy.fluidics._scatterer_collection.ScattererCollection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.set_concentrations" title="Link to this definition">#</a></dt>
+<dd><p>Set population concentrations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>values</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>Concentration</em><em>]</em><em>, </em><em>Concentration</em><em>]</em>) – A list of concentrations to set for each population, or a single concentration value to set for all populations.</p>
+<dd class="field-odd"><p><strong>values</strong> (<em>pint.Quantity</em><em> or </em><em>sequence</em><em> of </em><em>pint.Quantity</em>) – A single concentration applied to every population, or one
+concentration per population. Values must be convertible to
+particle / liter.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – If the length of the values list does not match the number of populations or if any concentration has an incorrect dimensionality.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
+<dd class="field-even"><p><strong>ValueError</strong> – If a sequence has the wrong length or a value has incompatible
+    units.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1095,6 +1095,7 @@ distribution or a custom population class that enforces the constraint.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.concentrations"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.concentrations</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.dilute"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.dilute()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.get_population_ratios"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.get_population_ratios()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.populations"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.populations</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.set_concentrations"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.set_concentrations()</span></code></a></li>
 </ul>
 </li>
