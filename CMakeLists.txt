@@ -124,11 +124,14 @@ add_subdirectory(FlowCyPy/cpp/pint)                                   # pint
 
 add_subdirectory(FlowCyPy/cpp/fluidics/distributions)                 # distributions
 add_subdirectory(FlowCyPy/cpp/fluidics/populations)                   # populations
+add_subdirectory(FlowCyPy/cpp/fluidics/scatterer_collection)         # scatterer_collection
 add_subdirectory(FlowCyPy/cpp/fluidics/flow_cell)                     # flow_cell
+add_subdirectory(FlowCyPy/cpp/fluidics/population_events)             # population_events
 
 add_subdirectory(FlowCyPy/cpp/opto_electronics/source)                # source
 add_subdirectory(FlowCyPy/cpp/opto_electronics/detector)              # detector
 add_subdirectory(FlowCyPy/cpp/opto_electronics/amplifier)             # amplifier
+add_subdirectory(FlowCyPy/cpp/opto_electronics/coupling)             # coupling_model
 add_subdirectory(FlowCyPy/cpp/opto_electronics/digitizer)             # digitizer
 add_subdirectory(FlowCyPy/cpp/opto_electronics/circuits)              # circuits
 

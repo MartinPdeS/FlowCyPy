@@ -5,7 +5,6 @@ import numpy as np
 
 from . import source, circuits
 from .amplifier import Amplifier
-from .coupling_model import ScatteringModel
 from .detector import Detector
 from .digitizer import Digitizer
 from FlowCyPy.utils import dataclass, config_dict
@@ -158,6 +157,8 @@ class OptoElectronics:
         """
         if len(event_collection) == 0:
             return
+
+        from ._coupling_model import ScatteringModel
 
         for detector in self.detectors:
 

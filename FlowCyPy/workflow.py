@@ -16,7 +16,6 @@ from FlowCyPy.units import ureg
 from FlowCyPy.fluidics import (
     FlowCell,
     Fluidics,
-    ScattererCollection,
     distributions,
     populations,
 )  # noqa: F401
@@ -179,6 +178,8 @@ class Workflow:
         -------
         Fluidics
         """
+        from FlowCyPy.fluidics import ScattererCollection
+
         scatterer_collection = ScattererCollection(
             populations=self.population_list,
         )

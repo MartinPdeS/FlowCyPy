@@ -1,8 +1,8 @@
 from TypedUnit import Time, Frequency, Concentration
 import numpy as np
 
-from .scatterer_collection import ScattererCollection
-from .event_collection import EventCollection, PopulationEvents
+from .event_collection import EventCollection
+from ._population_events import PopulationEvents
 from .flow_cell import FlowCell
 from .populations import BasePopulation, ExplicitModel, GammaModel
 from FlowCyPy.sub_frames.events import EventDataFrame
@@ -11,7 +11,7 @@ from FlowCyPy.sub_frames.events import EventDataFrame
 class Fluidics:
     def __init__(
         self,
-        scatterer_collection: ScattererCollection,
+        scatterer_collection,
         flow_cell: FlowCell,
     ):
         """

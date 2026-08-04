@@ -28,7 +28,7 @@ import MPSPlots
 
 from FlowCyPy.sub_frames.events import EventDataFrame
 from .populations import ExplicitModel, GammaModel
-from .population_events import PopulationEvents
+from ._population_events import PopulationEvents
 
 
 @dataclass

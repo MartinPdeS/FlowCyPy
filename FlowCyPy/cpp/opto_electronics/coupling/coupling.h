@@ -1,68 +1,34 @@
 #pragma once
 
-#include <vector>
-#include "scatterer/sphere/sphere.h"
-#include "sets/scatterer.h"
-#include "sets/source.h"
-#include "sets/detector.h"
+#include <pybind11/pybind11.h>
 
-class ScatteringSimulator {
-    public:
+namespace py = pybind11;
 
-        std::vector<double> process_scattering(const GaussianSourceSet& source_set, const SphereSet& scatterer_set, const DetectorSet& detector_set) {
-            // Implementation of the coupling processing logic goes here
+/**
+ * @brief Compute sequential PyMieSim scattering for event frames.
+ *
+ * The class owns references to the Python source and detector models. PyMieSim
+ * remains the numerical scattering backend; this native layer performs the
+ * event-frame iteration and setup construction without duplicating its physics.
+ */
+class ScatteringModel {
+public:
+    ScatteringModel(py::object source, py::object detector);
 
-            std::vector<size_t> array_shape = {source_set.wavelength.size()};
-            size_t full_size = source_set.wavelength.size();
-            scatterer_set.validate_sequential_data(full_size);
-            source_set.validate_sequential_data(full_size);
-            detector_set.validate_sequential_data(full_size);
+    /** Compute detector coupling for every non-empty event frame in place. */
+    void run(const py::object& event_frames, bool compute_cross_section = false);
 
-            std::vector<double> output_array(full_size);
+private:
+    py::object source_;
+    py::object detector_;
 
-            #pragma omp parallel for
-            for (size_t idx = 0; idx < full_size; ++idx) {
-
-                BaseSource source = source_set.get_source_by_index_sequential(idx);
-
-                std::unique_ptr<BaseScatterer> scatterer_ptr = scatterer_set.get_scatterer_ptr_by_index_sequential(idx, source);
-
-                Detector detector = detector_set.get_detector_by_index_sequential(idx);
-
-                detector.medium_refractive_index = scatterer_ptr->medium_refractive_index;
-
-                output_array[idx] = detector.get_coupling(*scatterer_ptr);
-            }
-
-            return output_array;
-        }
-
-        std::vector<double> process_fluorescence(const GaussianSourceSet& source_set, const SphereSet& scatterer_set, const DetectorSet& detector_set) {
-            // Implementation of the coupling processing logic goes here
-
-            std::vector<size_t> array_shape = {source_set.wavelength.size()};
-            size_t full_size = source_set.wavelength.size();
-            scatterer_set.validate_sequential_data(full_size);
-            source_set.validate_sequential_data(full_size);
-            detector_set.validate_sequential_data(full_size);
-
-            std::vector<double> output_array(full_size);
-
-            #pragma omp parallel for
-            for (size_t idx = 0; idx < full_size; ++idx) {
-
-                BaseSource source = source_set.get_source_by_index_sequential(idx);
-
-                std::unique_ptr<BaseScatterer> scatterer_ptr = scatterer_set.get_scatterer_ptr_by_index_sequential(idx, source);
-
-                Detector detector = detector_set.get_detector_by_index_sequential(idx);
-
-                detector.medium_refractive_index = scatterer_ptr->medium_refractive_index;
-
-                output_array[idx] = 1.0;
-            }
-
-            return output_array;
-
-        }
+    py::object build_experiment(const py::object& event_dataframe);
+    py::object build_source_set(const py::object& event_dataframe, std::size_t count);
+    py::object build_detector_set(std::size_t count);
+    py::object build_scatterer_set(const py::object& event_dataframe, std::size_t count);
+    void write_results(
+        const py::object& event_dataframe,
+        const py::object& experiment,
+        bool compute_cross_section
+    );
 };

@@ -5,11 +5,11 @@ except ImportError:
     __version__ = "0.0.0"
 
 import FlowCyPy.units as _
+from .fluidics import Fluidics, distributions, populations
 import FlowCyPy.opto_electronics.circuits as _
 import FlowCyPy.digital_processing.classifier as _
 from .flow_cytometer import FlowCytometer
 from .units import ureg
-from .fluidics import Fluidics, distributions, populations
 from .opto_electronics import OptoElectronics, circuits, source
 from .digital_processing import (
     DigitalProcessing,
