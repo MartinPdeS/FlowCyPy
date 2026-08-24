@@ -21,6 +21,7 @@ def test_top_level_public_api_is_explicit():
         "peak_locator",
         "ureg",
         "debug_mode",
+        "DetectionAnalyzer",
     ]
 
 
