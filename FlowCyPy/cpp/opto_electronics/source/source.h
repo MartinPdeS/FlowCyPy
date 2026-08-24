@@ -30,6 +30,8 @@
  * particle transit width, pulse synthesis model, and temporal kernel used to represent
  * source induced smoothing in time.
  */
+namespace FlowCyPy {
+
 class BaseSource {
 public:
     double wavelength;          // [meter]
@@ -802,3 +804,5 @@ protected:
         const double z = 0.0
     ) const override;
 };
+
+}  // namespace FlowCyPy

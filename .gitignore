@@ -21,6 +21,8 @@
 !.coveragerc
 !external
 !makefile
+!CITATION.cff
+!.zenodo.json
 
 # But ignore docs/build inside docs and code
 docs/build/

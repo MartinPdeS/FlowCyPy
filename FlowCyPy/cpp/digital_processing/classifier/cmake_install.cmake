@@ -1,8 +1,8 @@
-# Install script for directory: /Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/FlowCyPy/FlowCyPy/cpp/classifier
+# Install script for directory: /Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/FlowCyPy/FlowCyPy/cpp/digital_processing/classifier
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/var/folders/nx/6l9ysx0j7yb5szphhl8jskyh0000gn/T/tmpnkzl4zj9/wheel/platlib")
+  set(CMAKE_INSTALL_PREFIX "/var/folders/nx/6l9ysx0j7yb5szphhl8jskyh0000gn/T/tmp8sxm31zp/wheel/platlib")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -38,19 +38,19 @@ if(NOT DEFINED CMAKE_OBJDUMP)
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/FlowCyPy" TYPE STATIC_LIBRARY FILES "/Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/FlowCyPy/FlowCyPy/cpp/classifier/libclassifier_lib.a")
-  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/libclassifier_lib.a" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/libclassifier_lib.a")
-    execute_process(COMMAND "/Library/Developer/CommandLineTools/usr/bin/ranlib" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/libclassifier_lib.a")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/FlowCyPy/digital_processing" TYPE STATIC_LIBRARY FILES "/Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/FlowCyPy/FlowCyPy/cpp/digital_processing/classifier/libclassifier_lib.a")
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/digital_processing/libclassifier_lib.a" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/digital_processing/libclassifier_lib.a")
+    execute_process(COMMAND "/Library/Developer/CommandLineTools/usr/bin/ranlib" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/digital_processing/libclassifier_lib.a")
   endif()
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/FlowCyPy" TYPE MODULE FILES "/Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/FlowCyPy/FlowCyPy/cpp/classifier/classifier.cpython-313-darwin.so")
-  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/classifier.cpython-313-darwin.so" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/classifier.cpython-313-darwin.so")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/FlowCyPy/digital_processing" TYPE MODULE FILES "/Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/FlowCyPy/FlowCyPy/cpp/digital_processing/classifier/classifier.cpython-313-darwin.so")
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/digital_processing/classifier.cpython-313-darwin.so" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/digital_processing/classifier.cpython-313-darwin.so")
     if(CMAKE_INSTALL_DO_STRIP)
-      execute_process(COMMAND "/Library/Developer/CommandLineTools/usr/bin/strip" -x "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/classifier.cpython-313-darwin.so")
+      execute_process(COMMAND "/Library/Developer/CommandLineTools/usr/bin/strip" -x "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/digital_processing/classifier.cpython-313-darwin.so")
     endif()
   endif()
 endif()
@@ -58,6 +58,6 @@ endif()
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 if(CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/FlowCyPy/FlowCyPy/cpp/classifier/install_local_manifest.txt"
+  file(WRITE "/Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/FlowCyPy/FlowCyPy/cpp/digital_processing/classifier/install_local_manifest.txt"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

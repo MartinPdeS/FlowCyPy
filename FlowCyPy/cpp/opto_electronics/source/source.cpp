@@ -1,5 +1,6 @@
 #include <opto_electronics/source/source.h>
 
+namespace FlowCyPy {
 
 BaseSource::BaseSource(
     const double wavelength,
@@ -901,3 +902,5 @@ double FlatTop::get_normalized_profile_value(
 
     return 0.0;
 }
+
+}  // namespace FlowCyPy

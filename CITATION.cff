@@ -1,0 +1,42 @@
+cff-version: 1.2.0
+message: "If you use FlowCyPy in your research, please cite the software and the associated publication."
+
+title: "FlowCyPy"
+type: software
+
+authors:
+  - family-names: "Poinsinet de Sivry-Houle"
+    given-names: "Martin"
+    affiliation: "Amsterdam UMC"
+
+  - family-names: "Engelaer"
+    given-names: "Mendel"
+    affiliation: "Amsterdam UMC"
+
+  - family-names: "van Leeuwen"
+    given-names: "Ton G."
+    affiliation: "Amsterdam UMC"
+
+  - family-names: "van der Pol"
+    given-names: "Edwin"
+    affiliation: "Amsterdam UMC"
+
+abstract: >
+  FlowCyPy is an open-source physics-based simulation framework for flow
+  cytometry. It models the measurement chain from particle populations and
+  hydrodynamic focusing through light scattering, photodetection, analog
+  signal conditioning, digitization, and discriminator-based event detection.
+
+license: "MIT"
+
+repository-code: "https://github.com/your-user/FlowCyPy"
+
+keywords:
+  - flow cytometry
+  - extracellular vesicles
+  - digital twin
+  - light scattering
+  - Mie scattering
+  - simulation
+  - flow cytometry calibration
+  - extracellular vesicle analysis

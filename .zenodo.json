@@ -1,0 +1,42 @@
+{
+  "title": "FlowCyPy: Flow Cytometry Simulation Framework",
+  "description": "FlowCyPy is an open-source physics-based simulation framework for flow cytometry. It models the measurement chain from particle populations and hydrodynamic focusing through Mie theory-based light scattering, photodetection, noise, analog signal conditioning, digitization, and discriminator-based event detection. The framework is designed particularly for quantitative simulation and analysis of extracellular-vesicle-scale flow cytometry measurements.",
+
+  "upload_type": "software",
+
+  "creators": [
+    {
+      "name": "Poinsinet de Sivry-Houle, Martin",
+      "affiliation": "Amsterdam UMC"
+    },
+    {
+      "name": "Engelaer, Mendel",
+      "affiliation": "Amsterdam UMC"
+    },
+    {
+      "name": "van Leeuwen, Ton G.",
+      "affiliation": "Amsterdam UMC"
+    },
+    {
+      "name": "van der Pol, Edwin",
+      "affiliation": "Amsterdam UMC"
+    }
+  ],
+
+  "keywords": [
+    "flow cytometry",
+    "extracellular vesicles",
+    "digital twin",
+    "Mie scattering",
+    "light scattering",
+    "flow cytometry simulation",
+    "flow cytometry calibration",
+    "small-particle flow cytometry"
+  ],
+
+  "license": "MIT",
+
+  "access_right": "open",
+
+  "language": "eng"
+}

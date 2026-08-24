@@ -1,8 +1,8 @@
-# Install script for directory: /Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/FlowCyPy/FlowCyPy/cpp/distributions
+# Install script for directory: /Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/FlowCyPy/FlowCyPy/cpp/fluidics/distributions
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/var/folders/nx/6l9ysx0j7yb5szphhl8jskyh0000gn/T/tmpnkzl4zj9/wheel/platlib")
+  set(CMAKE_INSTALL_PREFIX "/var/folders/nx/6l9ysx0j7yb5szphhl8jskyh0000gn/T/tmp8sxm31zp/wheel/platlib")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -37,9 +37,27 @@ if(NOT DEFINED CMAKE_OBJDUMP)
   set(CMAKE_OBJDUMP "/Library/Developer/CommandLineTools/usr/bin/objdump")
 endif()
 
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/FlowCyPy/fluidics" TYPE STATIC_LIBRARY FILES "/Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/FlowCyPy/FlowCyPy/cpp/fluidics/distributions/libdistributions_lib.a")
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/fluidics/libdistributions_lib.a" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/fluidics/libdistributions_lib.a")
+    execute_process(COMMAND "/Library/Developer/CommandLineTools/usr/bin/ranlib" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/fluidics/libdistributions_lib.a")
+  endif()
+endif()
+
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/FlowCyPy/fluidics" TYPE MODULE FILES "/Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/FlowCyPy/FlowCyPy/cpp/fluidics/distributions/distributions.cpython-313-darwin.so")
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/fluidics/distributions.cpython-313-darwin.so" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/fluidics/distributions.cpython-313-darwin.so")
+    if(CMAKE_INSTALL_DO_STRIP)
+      execute_process(COMMAND "/Library/Developer/CommandLineTools/usr/bin/strip" -x "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/fluidics/distributions.cpython-313-darwin.so")
+    endif()
+  endif()
+endif()
+
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 if(CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/FlowCyPy/FlowCyPy/cpp/distributions/install_local_manifest.txt"
+  file(WRITE "/Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/FlowCyPy/FlowCyPy/cpp/fluidics/distributions/install_local_manifest.txt"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

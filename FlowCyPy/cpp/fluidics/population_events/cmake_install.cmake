@@ -1,4 +1,4 @@
-# Install script for directory: /Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/FlowCyPy/FlowCyPy/cpp/fluidics/populations
+# Install script for directory: /Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/FlowCyPy/FlowCyPy/cpp/fluidics/population_events
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -38,19 +38,19 @@ if(NOT DEFINED CMAKE_OBJDUMP)
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/FlowCyPy/fluidics" TYPE STATIC_LIBRARY FILES "/Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/FlowCyPy/FlowCyPy/cpp/fluidics/populations/libpopulations_lib.a")
-  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/fluidics/libpopulations_lib.a" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/fluidics/libpopulations_lib.a")
-    execute_process(COMMAND "/Library/Developer/CommandLineTools/usr/bin/ranlib" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/fluidics/libpopulations_lib.a")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/FlowCyPy/fluidics" TYPE STATIC_LIBRARY FILES "/Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/FlowCyPy/FlowCyPy/cpp/fluidics/population_events/libpopulation_events_lib.a")
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/fluidics/libpopulation_events_lib.a" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/fluidics/libpopulation_events_lib.a")
+    execute_process(COMMAND "/Library/Developer/CommandLineTools/usr/bin/ranlib" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/fluidics/libpopulation_events_lib.a")
   endif()
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/FlowCyPy/fluidics" TYPE MODULE FILES "/Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/FlowCyPy/FlowCyPy/cpp/fluidics/populations/populations.cpython-313-darwin.so")
-  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/fluidics/populations.cpython-313-darwin.so" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/fluidics/populations.cpython-313-darwin.so")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/FlowCyPy/fluidics" TYPE MODULE FILES "/Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/FlowCyPy/FlowCyPy/cpp/fluidics/population_events/population_events.cpython-313-darwin.so")
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/fluidics/population_events.cpython-313-darwin.so" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/fluidics/population_events.cpython-313-darwin.so")
     if(CMAKE_INSTALL_DO_STRIP)
-      execute_process(COMMAND "/Library/Developer/CommandLineTools/usr/bin/strip" -x "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/fluidics/populations.cpython-313-darwin.so")
+      execute_process(COMMAND "/Library/Developer/CommandLineTools/usr/bin/strip" -x "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/FlowCyPy/fluidics/population_events.cpython-313-darwin.so")
     endif()
   endif()
 endif()
@@ -58,6 +58,6 @@ endif()
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 if(CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/FlowCyPy/FlowCyPy/cpp/fluidics/populations/install_local_manifest.txt"
+  file(WRITE "/Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/FlowCyPy/FlowCyPy/cpp/fluidics/population_events/install_local_manifest.txt"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

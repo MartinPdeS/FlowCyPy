@@ -21,6 +21,7 @@ _LAZY_EXPORTS = {
     "discriminator": (".digital_processing", "discriminator"),
     "peak_locator": (".digital_processing", "peak_locator"),
     "ureg": (".units", "ureg"),
+    "DetectionAnalyzer": (".analysis", "DetectionAnalyzer"),
 }
 
 
@@ -57,4 +58,5 @@ __all__ = [
     "peak_locator",
     "ureg",
     "debug_mode",
+    "DetectionAnalyzer",
 ]

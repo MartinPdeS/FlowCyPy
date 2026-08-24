@@ -130,6 +130,110 @@ class RunRecord:
 
         return self.number_of_triggers / self.number_of_scatterers
 
+    def annotate_detected_events(self):
+        """Return simulated events annotated with trigger detection status.
+
+        Detection is determined by matching each event arrival time to a
+        digital trigger segment. The method preserves all simulated events,
+        including events that were not detected. This is trigger capture, not
+        peak-localization success.
+        """
+        from .analysis import DetectionAnalyzer
+
+        return DetectionAnalyzer().annotate(self)
+
+    def detection_statistics(self, population_name: str) -> dict[str, Any]:
+        """Compute trigger-detection statistics for one population.
+
+        Parameters
+        ----------
+        population_name : str
+            Population label to analyze, for example ``"EVs"``.
+
+        Returns
+        -------
+        dict[str, Any]
+            Population name, simulated event count, detected event count, and
+            detection efficiency. The result also reports how many detected
+            events participated in a multi-event trigger segment and which
+            other populations were present. The efficiency is relative to
+            events that survived the simulated SEC cutoff.
+
+        Notes
+        -----
+        The computation is ``DetectedEvents / SimulatedEvents``. An event is
+        detected when its arrival time lies inclusively between the first and
+        last sample of a digital trigger segment.
+        """
+        events = self.annotate_detected_events()
+        if "Population" not in events:
+            raise KeyError("Event data do not contain a 'Population' column.")
+
+        population_events = events[events["Population"] == population_name]
+        simulated_events = len(population_events)
+        detected_events = int(population_events["Detected"].sum())
+
+        detected = events[
+            events["Detected"] & events["TriggerID"].notna()
+        ]
+        segment_sizes = detected.groupby("TriggerID").size()
+        coincident_segments = set(segment_sizes[segment_sizes >= 2].index)
+        population_trigger_ids = set(
+            population_events.loc[
+                population_events["Detected"], "TriggerID"
+            ].dropna()
+        )
+        coincident_events = len(
+            population_events[
+                population_events["TriggerID"].isin(coincident_segments)
+            ]
+        )
+        partners = {}
+        for trigger_id in population_trigger_ids & coincident_segments:
+            segment = detected[detected["TriggerID"] == trigger_id]
+            for partner in segment["Population"]:
+                if partner != population_name:
+                    partners[partner] = partners.get(partner, 0) + 1
+
+        return {
+            "Population": population_name,
+            "SimulatedEvents": simulated_events,
+            "DetectedEvents": detected_events,
+            "DetectionEfficiencyStandardError": (
+                np.sqrt(
+                    (detected_events / simulated_events)
+                    * (1 - detected_events / simulated_events)
+                    / simulated_events
+                )
+                if simulated_events
+                else np.nan
+            ),
+            "DetectionEfficiency": (
+                detected_events / simulated_events
+                if simulated_events
+                else np.nan
+            ),
+            "CoincidentDetectedEvents": coincident_events,
+            "CoincidenceParticipationRate": (
+                coincident_events / detected_events
+                if detected_events
+                else np.nan
+            ),
+            "CoincidencePartners": partners,
+        }
+
+    def coincidence_statistics(self) -> dict[str, Any]:
+        """Compute statistics for multiple events in one trigger segment.
+
+        A multi-coincidence is a digital trigger segment containing at least
+        two simulated events. Population labels are retained in the returned
+        combination counts, so EV--EV and EV--LP coincidences can be
+        distinguished.
+        """
+        from .analysis import DetectionAnalyzer
+
+        return DetectionAnalyzer().coincidence_statistics(self)
+
     @property
     def scatterer_rate(self):
         """

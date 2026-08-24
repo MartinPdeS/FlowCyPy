@@ -9,6 +9,7 @@
 
 
 namespace py = pybind11;
+using namespace FlowCyPy;
 
 
 PYBIND11_MODULE(source, module) {
