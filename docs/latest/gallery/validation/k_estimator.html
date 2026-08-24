@@ -31,7 +31,7 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
+    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
@@ -593,11 +593,11 @@ and vary bead diameter across multiple runs.</p>
 <section id="helper-functions">
 <h2>Helper functions<a class="headerlink" href="#helper-functions" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">compute_signal_statistics</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class"><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Compute robust and standard statistics from an event signal array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Signal array is empty.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Signal array is empty."</span><span class="p">)</span>
 
     <span class="n">median</span> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.median.html#numpy.median" title="numpy.median" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">median</span></a><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="n">percentile_84</span> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.percentile.html#numpy.percentile" title="numpy.percentile" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">percentile</span></a><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mf">84.13</span><span class="p">)</span>
@@ -610,12 +610,12 @@ and vary bead diameter across multiple runs.</p>
     <span class="n">robust_coefficient_of_variation</span> <span class="o">=</span> <span class="n">robust_std</span> <span class="o">/</span> <span class="n">median</span> <span class="k">if</span> <span class="n">median</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <a href="https://numpy.org/devdocs/reference/constants.html#numpy.nan" title="numpy.nan" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-data"><span class="n">np</span><span class="o">.</span><span class="n">nan</span></a>
 
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;mean&quot;</span><span class="p">:</span> <span class="n">mean</span><span class="p">,</span>
-        <span class="s2">&quot;median&quot;</span><span class="p">:</span> <span class="n">median</span><span class="p">,</span>
-        <span class="s2">&quot;std&quot;</span><span class="p">:</span> <span class="n">std</span><span class="p">,</span>
-        <span class="s2">&quot;cv&quot;</span><span class="p">:</span> <span class="n">coefficient_of_variation</span><span class="p">,</span>
-        <span class="s2">&quot;robust_std&quot;</span><span class="p">:</span> <span class="n">robust_std</span><span class="p">,</span>
-        <span class="s2">&quot;robust_cv&quot;</span><span class="p">:</span> <span class="n">robust_coefficient_of_variation</span><span class="p">,</span>
+        <span class="s2">"mean"</span><span class="p">:</span> <span class="n">mean</span><span class="p">,</span>
+        <span class="s2">"median"</span><span class="p">:</span> <span class="n">median</span><span class="p">,</span>
+        <span class="s2">"std"</span><span class="p">:</span> <span class="n">std</span><span class="p">,</span>
+        <span class="s2">"cv"</span><span class="p">:</span> <span class="n">coefficient_of_variation</span><span class="p">,</span>
+        <span class="s2">"robust_std"</span><span class="p">:</span> <span class="n">robust_std</span><span class="p">,</span>
+        <span class="s2">"robust_cv"</span><span class="p">:</span> <span class="n">robust_coefficient_of_variation</span><span class="p">,</span>
     <span class="p">}</span>
 
 
@@ -626,9 +626,9 @@ and vary bead diameter across multiple runs.</p>
     <span class="n">run_time</span><span class="o">=</span><span class="mf">5.0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">millisecond</span><span class="p">,</span>
     <span class="n">debug_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Run the flow cytometer and return the detected peaks.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">results</span> <span class="o">=</span> <span class="n">flow_cytometer</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
         <span class="n">opto_electronics</span><span class="o">=</span><span class="n">opto_electronics</span><span class="p">,</span>
         <span class="n">digital_processing</span><span class="o">=</span><span class="n">digital_processing</span><span class="p">,</span>
@@ -654,11 +654,11 @@ and vary bead diameter across multiple runs.</p>
     <span class="n">run_time</span><span class="p">,</span>
     <span class="n">debug_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Configure the population and source power, then run one experiment.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">population</span> <span class="o">=</span> <span class="n">SpherePopulation</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;population&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"population"</span><span class="p">,</span>
         <span class="n">concentration</span><span class="o">=</span><span class="n">concentration</span><span class="p">,</span>
         <span class="n">diameter</span><span class="o">=</span><span class="n">bead_diameter</span><span class="p">,</span>
         <span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span><span class="p">,</span>
@@ -678,11 +678,11 @@ and vary bead diameter across multiple runs.</p>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">estimate_k</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">medians</span></a><span class="p">:</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class"><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">robust_stds</span></a><span class="p">:</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class"><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span></a><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Estimate K from a linear fit of robust_std versus sqrt(median).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">medians</span></a><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;At least two measurements are required to estimate K.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"At least two measurements are required to estimate K."</span><span class="p">)</span>
 
     <span class="n">x</span> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">medians</span></a><span class="p">)</span>
     <span class="n">y</span> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">robust_stds</span></a>
@@ -693,11 +693,11 @@ and vary bead diameter across multiple runs.</p>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_k_estimation</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">medians</span></a><span class="p">:</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class"><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">robust_stds</span></a><span class="p">:</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class"><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span></a><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Plot robust STD versus sqrt(median) and its linear fit.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">medians</span></a><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;At least two measurements are required to plot K estimation.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"At least two measurements are required to plot K estimation."</span><span class="p">)</span>
 
     <span class="n">x</span> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">medians</span></a><span class="p">)</span>
     <span class="n">y</span> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">robust_stds</span></a>
@@ -708,18 +708,18 @@ and vary bead diameter across multiple runs.</p>
 
     <span class="n">figure</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
 
-    <span class="n">axes</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Measured robust STD&quot;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">axes</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Measured robust STD"</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
     <span class="n">axes</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
         <span class="n">x_fit</span><span class="p">,</span>
         <span class="n">y_fit</span><span class="p">,</span>
-        <span class="s2">&quot;--&quot;</span><span class="p">,</span>
-        <span class="n">label</span><span class="o">=</span><span class="sa">rf</span><span class="s2">&quot;$STD = </span><span class="si">{</span><span class="n">slope</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2"> \cdot \sqrt</span><span class="se">{{</span><span class="s2">M</span><span class="se">}}</span><span class="s2"> + </span><span class="si">{</span><span class="n">intercept</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">$&quot;</span><span class="p">,</span>
+        <span class="s2">"--"</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="sa">rf</span><span class="s2">"$STD = </span><span class="si">{</span><span class="n">slope</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2"> \cdot \sqrt</span><span class="se">{{</span><span class="s2">M</span><span class="se">}}</span><span class="s2"> + </span><span class="si">{</span><span class="n">intercept</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">$"</span><span class="p">,</span>
         <span class="n">zorder</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">axes</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
-        <span class="n">xlabel</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\sqrt{\mathrm{Median\ Signal}}$&quot;</span><span class="p">,</span>
-        <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Robust STD&quot;</span><span class="p">,</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;K Parameter Estimation&quot;</span><span class="p">,</span>
+        <span class="n">xlabel</span><span class="o">=</span><span class="sa">r</span><span class="s2">"$\sqrt{\mathrm{Median\ Signal}}$"</span><span class="p">,</span>
+        <span class="n">ylabel</span><span class="o">=</span><span class="s2">"Robust STD"</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"K Parameter Estimation"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">axes</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 
@@ -734,7 +734,7 @@ and vary bead diameter across multiple runs.</p>
     <span class="n">sheath_volume_flow</span><span class="o">=</span><span class="n">SheathFlowRate</span><span class="o">.</span><span class="n">MEDIUM</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
     <span class="n">width</span><span class="o">=</span><span class="mi">177</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>
     <span class="n">height</span><span class="o">=</span><span class="mi">433</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>
-    <span class="n">event_scheme</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span>
+    <span class="n">event_scheme</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">,</span>
     <span class="n">perfectly_aligned</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -769,7 +769,7 @@ and vary bead diameter across multiple runs.</p>
 <span class="p">)</span>
 
 <span class="n">detector_0</span> <span class="o">=</span> <span class="n">Detector</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"default"</span><span class="p">,</span>
     <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
     <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
     <span class="n">cache_numerical_aperture</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
@@ -792,7 +792,7 @@ and vary bead diameter across multiple runs.</p>
 <span class="n">peak_algorithm</span> <span class="o">=</span> <span class="n">peak_locator</span><span class="o">.</span><span class="n">GlobalPeakLocator</span><span class="p">()</span>
 
 <span class="n">dynamic_window_discriminator</span> <span class="o">=</span> <span class="n">discriminator</span><span class="o">.</span><span class="n">DynamicWindow</span><span class="p">(</span>
-    <span class="n">trigger_channel</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
+    <span class="n">trigger_channel</span><span class="o">=</span><span class="s2">"default"</span><span class="p">,</span>
     <span class="n">threshold</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">microvolt</span><span class="p">,</span>
     <span class="n">pre_buffer</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
     <span class="n">post_buffer</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
@@ -825,8 +825,8 @@ and vary bead diameter across multiple runs.</p>
 
 <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">bead_diameter</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bead_diameters</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;[INFO] Running simulation </span><span class="si">{</span><span class="n">index</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">bead_diameters</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;at bead diameter </span><span class="si">{</span><span class="n">bead_diameter</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="sa">f</span><span class="s2">"[INFO] Running simulation </span><span class="si">{</span><span class="n">index</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">bead_diameters</span><span class="p">)</span><span class="si">}</span><span class="s2"> "</span>
+        <span class="sa">f</span><span class="s2">"at bead diameter </span><span class="si">{</span><span class="n">bead_diameter</span><span class="si">}</span><span class="s2">"</span>
     <span class="p">)</span>
 
     <span class="n">peaks</span> <span class="o">=</span> <span class="n">run_experiment</span><span class="p">(</span>
@@ -840,36 +840,36 @@ and vary bead diameter across multiple runs.</p>
         <span class="n">debug_mode</span><span class="o">=</span><span class="n">debug_mode</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="k">if</span> <span class="s2">&quot;Height&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">peaks</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;The peaks dataframe does not contain a &#39;Height&#39; column.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">"Height"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">peaks</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">"The peaks dataframe does not contain a 'Height' column."</span><span class="p">)</span>
 
-    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_array</span></a> <span class="o">=</span> <span class="n">peaks</span><span class="p">[</span><span class="s2">&quot;Height&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_array</span></a> <span class="o">=</span> <span class="n">peaks</span><span class="p">[</span><span class="s2">"Height"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
 
     <span class="k">if</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_array</span></a><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;[WARNING] Skipping </span><span class="si">{</span><span class="n">bead_diameter</span><span class="si">}</span><span class="s2"> because only &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_array</span></a><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> peak(s) were detected.&quot;</span>
+            <span class="sa">f</span><span class="s2">"[WARNING] Skipping </span><span class="si">{</span><span class="n">bead_diameter</span><span class="si">}</span><span class="s2"> because only "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_array</span></a><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> peak(s) were detected."</span>
         <span class="p">)</span>
         <span class="k">continue</span>
 
     <span class="n">statistics</span> <span class="o">=</span> <span class="n">compute_signal_statistics</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signal_array</span></a><span class="p">)</span>
 
-    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">medians</span><span class="o">.</span><span class="n">append</span></a><span class="p">(</span><span class="n">statistics</span><span class="p">[</span><span class="s2">&quot;median&quot;</span><span class="p">])</span>
-    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">robust_stds</span><span class="o">.</span><span class="n">append</span></a><span class="p">(</span><span class="n">statistics</span><span class="p">[</span><span class="s2">&quot;robust_std&quot;</span><span class="p">])</span>
-    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">robust_cvs</span><span class="o">.</span><span class="n">append</span></a><span class="p">(</span><span class="n">statistics</span><span class="p">[</span><span class="s2">&quot;robust_cv&quot;</span><span class="p">])</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">medians</span><span class="o">.</span><span class="n">append</span></a><span class="p">(</span><span class="n">statistics</span><span class="p">[</span><span class="s2">"median"</span><span class="p">])</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">robust_stds</span><span class="o">.</span><span class="n">append</span></a><span class="p">(</span><span class="n">statistics</span><span class="p">[</span><span class="s2">"robust_std"</span><span class="p">])</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">robust_cvs</span><span class="o">.</span><span class="n">append</span></a><span class="p">(</span><span class="n">statistics</span><span class="p">[</span><span class="s2">"robust_cv"</span><span class="p">])</span>
     <span class="n">valid_bead_diameters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bead_diameter</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">debug_mode</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[DEBUG] Median: </span><span class="si">{</span><span class="n">statistics</span><span class="p">[</span><span class="s1">&#39;median&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[DEBUG] Robust STD: </span><span class="si">{</span><span class="n">statistics</span><span class="p">[</span><span class="s1">&#39;robust_std&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[DEBUG] Robust CV: </span><span class="si">{</span><span class="n">statistics</span><span class="p">[</span><span class="s1">&#39;robust_cv&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"[DEBUG] Median: </span><span class="si">{</span><span class="n">statistics</span><span class="p">[</span><span class="s1">'median'</span><span class="p">]</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"[DEBUG] Robust STD: </span><span class="si">{</span><span class="n">statistics</span><span class="p">[</span><span class="s1">'robust_std'</span><span class="p">]</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"[DEBUG] Robust CV: </span><span class="si">{</span><span class="n">statistics</span><span class="p">[</span><span class="s1">'robust_cv'</span><span class="p">]</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
 <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">medians</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.asarray.html#numpy.asarray" title="numpy.asarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">asarray</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">medians</span></a><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
 <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">robust_stds</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.asarray.html#numpy.asarray" title="numpy.asarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">asarray</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">robust_stds</span></a><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
 <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">robust_cvs</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.asarray.html#numpy.asarray" title="numpy.asarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">asarray</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">robust_cvs</span></a><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
 
 <span class="k">if</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">medians</span></a><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not enough valid measurements were collected to estimate K.&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Not enough valid measurements were collected to estimate K."</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[INFO] Running simulation 1/25 at bead diameter 300.0 nanometer
@@ -909,15 +909,15 @@ and vary bead diameter across multiple runs.</p>
 
 <span class="n">k_estimate</span> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">k_slope</span></a> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">AU</span><span class="o">**</span><span class="mf">0.5</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;K estimation results&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Estimated K: </span><span class="si">{</span><span class="n">k_estimate</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Linear intercept: </span><span class="si">{</span><a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">k_intercept</span></a><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"K estimation results"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Estimated K: </span><span class="si">{</span><span class="n">k_estimate</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Linear intercept: </span><span class="si">{</span><a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">k_intercept</span></a><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>K estimation results
-Estimated K: 0.23710943925333328 dimensionless
-Linear intercept: -2.184528e+01
+Estimated K: 0.23192395000513624 dimensionless
+Linear intercept: -1.970827e+01
 </pre></div>
 </div>
 </section>
@@ -931,7 +931,7 @@ Linear intercept: -2.184528e+01
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_k_estimator_001.png" srcset="../../_images/sphx_glr_k_estimator_001.png" alt="K Parameter Estimation" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 26.462 seconds)</p>
+<img src="../../_images/sphx_glr_k_estimator_001.png" srcset="../../_images/sphx_glr_k_estimator_001.png" alt="K Parameter Estimation" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 35.951 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-validation-k-estimator-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/f0de7a381f0317db9890cbd87489980f/k_estimator.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">k_estimator.ipynb</span></code></a></p>

@@ -31,7 +31,7 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
+    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
@@ -567,7 +567,7 @@ It includes defining a particle population, configuring the flow cytometer, runn
 <span class="n">refractive_index</span> <span class="o">=</span> <span class="n">distributions</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="mf">1.44</span><span class="p">,</span> <span class="n">standard_deviation</span><span class="o">=</span><span class="mf">0.002</span><span class="p">)</span>
 
 <span class="n">population_0</span> <span class="o">=</span> <span class="n">populations</span><span class="o">.</span><span class="n">SpherePopulation</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Pop 0&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"Pop 0"</span><span class="p">,</span>
     <span class="n">concentration</span><span class="o">=</span><span class="mf">5e9</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span><span class="p">,</span>
     <span class="n">diameter</span><span class="o">=</span><span class="n">diameter</span><span class="p">,</span>
     <span class="n">medium_refractive_index</span><span class="o">=</span><span class="n">medium_refractive_index</span><span class="p">,</span>
@@ -578,7 +578,7 @@ It includes defining a particle population, configuring the flow cytometer, runn
     <span class="n">sample_volume_flow</span><span class="o">=</span><span class="n">SampleFlowRate</span><span class="o">.</span><span class="n">MEDIUM</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
     <span class="n">sheath_volume_flow</span><span class="o">=</span><span class="n">SheathFlowRate</span><span class="o">.</span><span class="n">DEFAULT</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
     <span class="n">optical_power</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliwatt</span><span class="p">,</span>
-    <span class="n">threshold</span><span class="o">=</span><span class="s2">&quot;3sigma&quot;</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="o">=</span><span class="s2">"3sigma"</span><span class="p">,</span>
     <span class="n">include_shot_noise</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">include_rin_noise</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">background_power</span><span class="o">=</span><span class="mf">0.01</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanowatt</span><span class="p">,</span>
@@ -593,16 +593,16 @@ It includes defining a particle population, configuring the flow cytometer, runn
 <span class="n">run_record</span><span class="o">.</span><span class="n">plot_analog</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_facs_canto_001.png" srcset="../../_images/sphx_glr_facs_canto_001.png" alt="facs canto" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>findfont: Font family [&#39;cursive&#39;] not found. Falling back to DejaVu Sans.
-findfont: Generic family &#39;cursive&#39; not found because none of the following families were found: Apple Chancery, Textile, Zapf Chancery, Sand, Script MT, Felipa, Comic Neue, Comic Sans MS, cursive
-findfont: Font family [&#39;Arial&#39;] not found. Falling back to DejaVu Sans.
-findfont: Font family [&#39;Arial&#39;] not found. Falling back to DejaVu Sans.
-findfont: Font family [&#39;Arial&#39;] not found. Falling back to DejaVu Sans.
+<img src="../../_images/sphx_glr_facs_canto_001.png" srcset="../../_images/sphx_glr_facs_canto_001.png" alt="facs canto" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>findfont: Font family ['cursive'] not found. Falling back to DejaVu Sans.
+findfont: Generic family 'cursive' not found because none of the following families were found: Apple Chancery, Textile, Zapf Chancery, Sand, Script MT, Felipa, Comic Neue, Comic Sans MS, cursive
+findfont: Font family ['Arial'] not found. Falling back to DejaVu Sans.
+findfont: Font family ['Arial'] not found. Falling back to DejaVu Sans.
+findfont: Font family ['Arial'] not found. Falling back to DejaVu Sans.
 
 &lt;Figure size 640x480 with 3 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.137 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.973 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-facs-canto-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/c39dc6b82484770275ce3664df13fe37/facs_canto.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">facs_canto.ipynb</span></code></a></p>

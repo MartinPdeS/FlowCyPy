@@ -31,7 +31,7 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
+    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
@@ -588,7 +588,7 @@ for weak signals close to baseline noise.</p>
 <span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">()</span>
 
 <span class="n">population</span> <span class="o">=</span> <span class="n">populations</span><span class="o">.</span><span class="n">SpherePopulation</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Near-threshold population&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"Near-threshold population"</span><span class="p">,</span>
     <span class="n">medium_refractive_index</span><span class="o">=</span><span class="n">distributions</span><span class="o">.</span><span class="n">Delta</span><span class="p">(</span><span class="mf">1.33</span><span class="p">),</span>
     <span class="n">concentration</span><span class="o">=</span><span class="mf">1e10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span><span class="p">,</span>
     <span class="n">diameter</span><span class="o">=</span><span class="n">distributions</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span>
@@ -628,7 +628,7 @@ for weak signals close to baseline noise.</p>
 
 <span class="n">detectors</span> <span class="o">=</span> <span class="p">[</span>
     <span class="n">Detector</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;side&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"side"</span><span class="p">,</span>
         <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
         <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span>
         <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span>
@@ -646,7 +646,7 @@ for weak signals close to baseline noise.</p>
     <span class="n">sampling_rate</span><span class="o">=</span><span class="mi">60</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span>
     <span class="n">bit_depth</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span>
     <span class="n">use_auto_range</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">channel_range_mode</span><span class="o">=</span><span class="s2">&quot;shared&quot;</span><span class="p">,</span>
+    <span class="n">channel_range_mode</span><span class="o">=</span><span class="s2">"shared"</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">opto_electronics</span> <span class="o">=</span> <span class="n">OptoElectronics</span><span class="p">(</span>
@@ -666,13 +666,13 @@ for weak signals close to baseline noise.</p>
 </section>
 <section id="step-2-sweep-discriminator-threshold">
 <h2>Step 2: Sweep discriminator threshold<a class="headerlink" href="#step-2-sweep-discriminator-threshold" title="Link to this heading">#</a></h2>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">threshold_values</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;2sigma&quot;</span><span class="p">,</span> <span class="s2">&quot;3sigma&quot;</span><span class="p">,</span> <span class="s2">&quot;4sigma&quot;</span><span class="p">,</span> <span class="s2">&quot;5sigma&quot;</span><span class="p">]</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">threshold_values</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"2sigma"</span><span class="p">,</span> <span class="s2">"3sigma"</span><span class="p">,</span> <span class="s2">"4sigma"</span><span class="p">,</span> <span class="s2">"5sigma"</span><span class="p">]</span>
 <span class="n">run_records</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="k">for</span> <span class="n">threshold_value</span> <span class="ow">in</span> <span class="n">threshold_values</span><span class="p">:</span>
     <span class="n">digital_processing</span> <span class="o">=</span> <span class="n">DigitalProcessing</span><span class="p">(</span>
         <span class="n">discriminator</span><span class="o">=</span><span class="n">discriminator</span><span class="o">.</span><span class="n">DynamicWindow</span><span class="p">(</span>
-            <span class="n">trigger_channel</span><span class="o">=</span><span class="s2">&quot;side&quot;</span><span class="p">,</span>
+            <span class="n">trigger_channel</span><span class="o">=</span><span class="s2">"side"</span><span class="p">,</span>
             <span class="n">threshold</span><span class="o">=</span><span class="n">threshold_value</span><span class="p">,</span>
             <span class="n">pre_buffer</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span>
             <span class="n">post_buffer</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span>
@@ -694,10 +694,10 @@ for weak signals close to baseline noise.</p>
 <section id="step-3-compare-recovered-events">
 <h2>Step 3: Compare recovered events<a class="headerlink" href="#step-3-compare-recovered-events" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">threshold_value</span><span class="p">,</span> <span class="n">run_record</span> <span class="ow">in</span> <span class="n">run_records</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Threshold: </span><span class="si">{</span><span class="n">threshold_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Threshold: </span><span class="si">{</span><span class="n">threshold_value</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="n">_</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">plot_analog</span><span class="p">(</span><span class="n">figure_size</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
     <span class="n">_</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">plot_digital</span><span class="p">(</span><span class="n">figure_size</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">millisecond</span><span class="p">))</span>
-    <span class="n">_</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">plot_peaks</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;side&quot;</span><span class="p">,</span> <span class="s2">&quot;Height&quot;</span><span class="p">))</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">plot_peaks</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">"side"</span><span class="p">,</span> <span class="s2">"Height"</span><span class="p">))</span>
 </pre></div>
 </div>
 <ul class="sphx-glr-horizontal">
@@ -720,7 +720,7 @@ Threshold: 4sigma
 Threshold: 5sigma
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.075 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.914 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-studies-threshold-sensitivity-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/3aa2e6853cfe0f8eaf11069b88b104e8/threshold_sensitivity.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">threshold_sensitivity.ipynb</span></code></a></p>

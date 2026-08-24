@@ -31,7 +31,7 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
+    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
@@ -609,7 +609,7 @@ resulting analog traces, trigger counts, and peak distributions.</p>
 
 <span class="n">detectors</span> <span class="o">=</span> <span class="p">[</span>
     <span class="n">Detector</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;side&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"side"</span><span class="p">,</span>
         <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
         <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span>
         <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span>
@@ -627,7 +627,7 @@ resulting analog traces, trigger counts, and peak distributions.</p>
     <span class="n">sampling_rate</span><span class="o">=</span><span class="mi">60</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span>
     <span class="n">bit_depth</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span>
     <span class="n">use_auto_range</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">channel_range_mode</span><span class="o">=</span><span class="s2">&quot;shared&quot;</span><span class="p">,</span>
+    <span class="n">channel_range_mode</span><span class="o">=</span><span class="s2">"shared"</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -646,8 +646,8 @@ resulting analog traces, trigger counts, and peak distributions.</p>
 
 <span class="n">digital_processing</span> <span class="o">=</span> <span class="n">DigitalProcessing</span><span class="p">(</span>
     <span class="n">discriminator</span><span class="o">=</span><span class="n">discriminator</span><span class="o">.</span><span class="n">DynamicWindow</span><span class="p">(</span>
-        <span class="n">trigger_channel</span><span class="o">=</span><span class="s2">&quot;side&quot;</span><span class="p">,</span>
-        <span class="n">threshold</span><span class="o">=</span><span class="s2">&quot;4sigma&quot;</span><span class="p">,</span>
+        <span class="n">trigger_channel</span><span class="o">=</span><span class="s2">"side"</span><span class="p">,</span>
+        <span class="n">threshold</span><span class="o">=</span><span class="s2">"4sigma"</span><span class="p">,</span>
         <span class="n">pre_buffer</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
         <span class="n">post_buffer</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
         <span class="n">max_triggers</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
@@ -683,7 +683,7 @@ resulting analog traces, trigger counts, and peak distributions.</p>
     <span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">()</span>
 
     <span class="n">population</span> <span class="o">=</span> <span class="n">populations</span><span class="o">.</span><span class="n">SpherePopulation</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">concentration_value</span><span class="si">:</span><span class="s2">.0e</span><span class="si">}</span><span class="s2"> particles_per_mL&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">concentration_value</span><span class="si">:</span><span class="s2">.0e</span><span class="si">}</span><span class="s2"> particles_per_mL"</span><span class="p">,</span>
         <span class="n">medium_refractive_index</span><span class="o">=</span><span class="n">medium_refractive_index</span><span class="p">,</span>
         <span class="n">concentration</span><span class="o">=</span><span class="n">concentration_value</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span><span class="p">,</span>
         <span class="n">diameter</span><span class="o">=</span><span class="n">diameter_distribution</span><span class="p">,</span>
@@ -717,7 +717,7 @@ resulting analog traces, trigger counts, and peak distributions.</p>
 <h2>Step 3: Compare analog traces and extracted events<a class="headerlink" href="#step-3-compare-analog-traces-and-extracted-events" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">run_record</span> <span class="ow">in</span> <span class="n">run_records</span><span class="p">:</span>
     <span class="n">_</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">plot_analog</span><span class="p">(</span><span class="n">figure_size</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
-    <span class="n">_</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">plot_peaks</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;side&quot;</span><span class="p">,</span> <span class="s2">&quot;Height&quot;</span><span class="p">))</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">plot_peaks</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">"side"</span><span class="p">,</span> <span class="s2">"Height"</span><span class="p">))</span>
 </pre></div>
 </div>
 <ul class="sphx-glr-horizontal">
@@ -730,7 +730,7 @@ resulting analog traces, trigger counts, and peak distributions.</p>
 <li><img src="../../_images/sphx_glr_concentration_sweep_007.png" srcset="../../_images/sphx_glr_concentration_sweep_007.png" alt="concentration sweep" class = "sphx-glr-multi-img"/></li>
 <li><img src="../../_images/sphx_glr_concentration_sweep_008.png" srcset="../../_images/sphx_glr_concentration_sweep_008.png" alt="Distribution of side | Height" class = "sphx-glr-multi-img"/></li>
 </ul>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 13.489 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 14.175 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-studies-concentration-sweep-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/6c2f44bdbe64e8b2fe58c75e0b2234f5/concentration_sweep.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">concentration_sweep.ipynb</span></code></a></p>

@@ -31,7 +31,7 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
+    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
@@ -642,7 +642,7 @@ to download the full example code.</p>
     <span class="n">lp_kept_joint</span> <span class="o">=</span> <span class="n">lp_diameter_distribution</span><span class="o">.</span><span class="n">proportion_within_cutoffs</span><span class="p">()</span> <span class="o">*</span> <span class="n">lp_refractive_index_distribution</span><span class="o">.</span><span class="n">proportion_within_cutoffs</span><span class="p">()</span>
     <span class="c1"># Create the LP population with its properties and sampling method.</span>
     <span class="n">lp_population</span> <span class="o">=</span> <span class="n">fluidics</span><span class="o">.</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">populations</span></a><span class="o">.</span><span class="n">SpherePopulation</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;LPs&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"LPs"</span><span class="p">,</span>
         <span class="n">medium_refractive_index</span><span class="o">=</span><span class="n">medium_refractive_index</span><span class="p">,</span>
         <span class="n">concentration</span><span class="o">=</span><span class="n">lp_concentration</span> <span class="o">*</span> <span class="n">lp_kept_joint</span><span class="p">,</span>
         <span class="n">diameter</span><span class="o">=</span><span class="n">lp_diameter_distribution</span><span class="p">,</span>
@@ -669,7 +669,7 @@ to download the full example code.</p>
     <span class="n">ev_kept_joint</span> <span class="o">=</span> <span class="n">ev_diameter_distribution</span><span class="o">.</span><span class="n">proportion_within_cutoffs</span><span class="p">()</span> <span class="o">*</span> <span class="n">ev_refractive_index_distribution</span><span class="o">.</span><span class="n">proportion_within_cutoffs</span><span class="p">()</span>
     <span class="c1"># Create the EV population with its properties and sampling method.</span>
     <span class="n">ev_population</span> <span class="o">=</span> <span class="n">fluidics</span><span class="o">.</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">populations</span></a><span class="o">.</span><span class="n">SpherePopulation</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;EVs&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"EVs"</span><span class="p">,</span>
         <span class="n">medium_refractive_index</span><span class="o">=</span><span class="n">medium_refractive_index</span><span class="p">,</span>
         <span class="n">concentration</span><span class="o">=</span><span class="n">ev_concentration</span> <span class="o">*</span> <span class="n">ev_kept_joint</span><span class="p">,</span>
         <span class="n">diameter</span><span class="o">=</span><span class="n">ev_diameter_distribution</span><span class="p">,</span>
@@ -703,7 +703,7 @@ to download the full example code.</p>
 
     <span class="c1"># Configure the side scatter detector.</span>
     <span class="n">detector_side</span> <span class="o">=</span> <span class="n">opto_electronics</span><span class="o">.</span><span class="n">Detector</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;side&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"side"</span><span class="p">,</span>
         <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
         <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.9</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span>
         <span class="n">responsivity</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span>
@@ -712,7 +712,7 @@ to download the full example code.</p>
 
     <span class="c1"># Configure the forward scatter detector.</span>
     <span class="n">detector_forward</span> <span class="o">=</span> <span class="n">opto_electronics</span><span class="o">.</span><span class="n">Detector</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"forward"</span><span class="p">,</span>
         <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
         <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span>
         <span class="n">cache_numerical_aperture</span><span class="o">=</span><span class="mf">0.08</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span>
@@ -802,12 +802,12 @@ to download the full example code.</p>
 <span class="n">run_records</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="c1"># Loop through the defined SEC scenarios to run the simulation for each.</span>
-<span class="c1"># &#39;sec&#39; represents the minimum diameter after SEC, &#39;lp_concentration&#39; and &#39;ev_concentration&#39;</span>
+<span class="c1"># 'sec' represents the minimum diameter after SEC, 'lp_concentration' and 'ev_concentration'</span>
 <span class="c1"># are adjusted for each specific scenario.</span>
 <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="p">(</span><span class="n">sec</span><span class="p">,</span> <span class="n">lp_concentration</span><span class="p">,</span> <span class="n">ev_concentration</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">sec_values</span><span class="p">,</span> <span class="n">lp_concentrations</span><span class="p">,</span> <span class="n">ev_concentrations</span><span class="p">)):</span>
 
     <span class="c1"># Print current progress to track the simulation runs.</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">sec_values</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">sec_values</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="c1"># Initialize current_lp_min_ri for potential future refractive index cutoffs.</span>
     <span class="n">current_lp_min_ri</span> <span class="o">=</span> <span class="kc">None</span>
@@ -815,7 +815,7 @@ to download the full example code.</p>
     <span class="c1"># Run the flow cytometer simulation with specific parameters for the current scenario.</span>
     <span class="n">run_record</span> <span class="o">=</span> <span class="n">run_sec_swarm_demo</span><span class="p">(</span>
         <span class="n">wavelength</span><span class="o">=</span><span class="mi">488</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span> <span class="c1"># Laser wavelength</span>
-        <span class="n">trigger_channel</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span> <span class="c1"># Detector channel used for triggering events</span>
+        <span class="n">trigger_channel</span><span class="o">=</span><span class="s1">'side'</span><span class="p">,</span> <span class="c1"># Detector channel used for triggering events</span>
         <span class="n">minimum_diameter_after_sec</span><span class="o">=</span><span class="n">sec</span><span class="p">,</span> <span class="c1"># SEC cutoff diameter for particles</span>
         <span class="n">ev_maximum_diameter</span><span class="o">=</span><span class="mi">1000</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span> <span class="c1"># Maximum EV diameter for sampling</span>
         <span class="n">lp_maximum_diameter</span><span class="o">=</span><span class="mi">1000</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span> <span class="c1"># Maximum LP diameter for sampling</span>
@@ -826,7 +826,7 @@ to download the full example code.</p>
         <span class="n">lp_concentration</span><span class="o">=</span><span class="n">lp_concentration</span><span class="p">,</span> <span class="c1"># Lipoprotein concentration for current run</span>
         <span class="n">ev_concentration</span><span class="o">=</span><span class="n">ev_concentration</span><span class="p">,</span> <span class="c1"># Extracellular Vesicle concentration for current run</span>
         <span class="n">dilution_factor</span><span class="o">=</span><span class="mi">30_000_000</span><span class="p">,</span> <span class="c1"># Dilution factor applied to the sample</span>
-        <span class="n">threshold</span><span class="o">=</span><span class="s1">&#39;5sigma&#39;</span><span class="p">,</span> <span class="c1"># Trigger threshold based on noise standard deviation</span>
+        <span class="n">threshold</span><span class="o">=</span><span class="s1">'5sigma'</span><span class="p">,</span> <span class="c1"># Trigger threshold based on noise standard deviation</span>
         <span class="n">gamma_monte_carlo_samples</span><span class="o">=</span><span class="mi">5_000</span><span class="p">,</span> <span class="c1"># Number of Monte Carlo samples for gamma model</span>
         <span class="n">lp_refractive_index_mean</span><span class="o">=</span><span class="mf">1.47</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span><span class="p">,</span> <span class="c1"># Mean refractive index for LPs</span>
         <span class="n">lp_refractive_index_standard_deviation</span><span class="o">=</span><span class="mf">0.01</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span><span class="p">,</span> <span class="c1"># Std dev of refractive index for LPs</span>
@@ -842,12 +842,12 @@ to download the full example code.</p>
 
 
 <span class="c1"># Define common variables</span>
-<span class="n">x_detector</span> <span class="o">=</span> <span class="s2">&quot;forward&quot;</span>
-<span class="n">y_detector</span> <span class="o">=</span> <span class="s2">&quot;side&quot;</span>
-<span class="n">titles_map</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;EV Only&#39;</span><span class="p">,</span> <span class="s1">&#39;EV + LP&#39;</span><span class="p">,</span> <span class="s1">&#39;SEC @35nm&#39;</span><span class="p">,</span> <span class="s1">&#39;SEC @70nm&#39;</span><span class="p">]</span>
+<span class="n">x_detector</span> <span class="o">=</span> <span class="s2">"forward"</span>
+<span class="n">y_detector</span> <span class="o">=</span> <span class="s2">"side"</span>
+<span class="n">titles_map</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'EV Only'</span><span class="p">,</span> <span class="s1">'EV + LP'</span><span class="p">,</span> <span class="s1">'SEC @35nm'</span><span class="p">,</span> <span class="s1">'SEC @70nm'</span><span class="p">]</span>
 
-<span class="n">x_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x_detector</span><span class="si">}</span><span class="s2"> Height&quot;</span>
-<span class="n">y_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">y_detector</span><span class="si">}</span><span class="s2"> Height&quot;</span>
+<span class="n">x_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">x_detector</span><span class="si">}</span><span class="s2"> Height"</span>
+<span class="n">y_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">y_detector</span><span class="si">}</span><span class="s2"> Height"</span>
 
 <span class="n">all_peaks_data</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -862,15 +862,15 @@ to download the full example code.</p>
         <span class="p">):</span>
 
             <span class="n">df_for_plot</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-                <span class="n">x_col</span><span class="p">:</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.asarray.html#numpy.asarray" title="numpy.asarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">asarray</span></a><span class="p">(</span><span class="n">peaks_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">x_detector</span><span class="p">,</span> <span class="s2">&quot;Height&quot;</span><span class="p">],</span> <span class="nb">float</span><span class="p">),</span>
-                <span class="n">y_col</span><span class="p">:</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.asarray.html#numpy.asarray" title="numpy.asarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">asarray</span></a><span class="p">(</span><span class="n">peaks_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">y_detector</span><span class="p">,</span> <span class="s2">&quot;Height&quot;</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span>
+                <span class="n">x_col</span><span class="p">:</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.asarray.html#numpy.asarray" title="numpy.asarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">asarray</span></a><span class="p">(</span><span class="n">peaks_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">x_detector</span><span class="p">,</span> <span class="s2">"Height"</span><span class="p">],</span> <span class="nb">float</span><span class="p">),</span>
+                <span class="n">y_col</span><span class="p">:</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.asarray.html#numpy.asarray" title="numpy.asarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">asarray</span></a><span class="p">(</span><span class="n">peaks_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">y_detector</span><span class="p">,</span> <span class="s2">"Height"</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span>
             <span class="p">})</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
 
             <span class="n">df_for_plot</span> <span class="o">=</span> <span class="n">df_for_plot</span><span class="p">[(</span><span class="n">df_for_plot</span><span class="p">[</span><span class="n">x_col</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df_for_plot</span><span class="p">[</span><span class="n">y_col</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)]</span>
 
             <span class="n">sampled_df</span> <span class="o">=</span> <span class="n">df_for_plot</span>
 
-            <span class="n">sampled_df</span><span class="p">[</span><span class="s1">&#39;Run_Title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">title</span>
+            <span class="n">sampled_df</span><span class="p">[</span><span class="s1">'Run_Title'</span><span class="p">]</span> <span class="o">=</span> <span class="n">title</span>
             <span class="n">all_peaks_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sampled_df</span><span class="p">)</span>
 
     <span class="k">else</span><span class="p">:</span>
@@ -891,14 +891,14 @@ to download the full example code.</p>
             <span class="n">ax_scatter</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs_main</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="c1"># Main scatter plot</span>
 
             <span class="c1"># Filter data for the current Run_Title</span>
-            <span class="n">df_facet</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">[</span><span class="n">combined_df</span><span class="p">[</span><span class="s1">&#39;Run_Title&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">title</span><span class="p">]</span>
+            <span class="n">df_facet</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">[</span><span class="n">combined_df</span><span class="p">[</span><span class="s1">'Run_Title'</span><span class="p">]</span> <span class="o">==</span> <span class="n">title</span><span class="p">]</span>
 
             <span class="c1"># Scatter plot</span>
             <span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span>
                 <span class="n">x</span><span class="o">=</span><span class="n">x_col</span><span class="p">,</span>
                 <span class="n">y</span><span class="o">=</span><span class="n">y_col</span><span class="p">,</span>
                 <span class="n">data</span><span class="o">=</span><span class="n">df_facet</span><span class="p">,</span>
-                <span class="n">s</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.35</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">rasterized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">s</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.35</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span> <span class="n">rasterized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">ax</span><span class="o">=</span><span class="n">ax_scatter</span>
             <span class="p">)</span>
 
@@ -912,53 +912,53 @@ to download the full example code.</p>
             <span class="n">ax_scatter</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">20000</span><span class="p">)</span>
 
             <span class="c1"># Set log scale for scatter plot</span>
-            <span class="n">ax_scatter</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
-            <span class="n">ax_scatter</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+            <span class="n">ax_scatter</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">"log"</span><span class="p">)</span>
+            <span class="n">ax_scatter</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">"log"</span><span class="p">)</span>
 
             <span class="c1"># Apply common axis formatting for scatter plot</span>
             <span class="n">ax_scatter</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span>
-                <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span>
-                <span class="n">which</span><span class="o">=</span><span class="s2">&quot;major&quot;</span><span class="p">,</span>
+                <span class="n">axis</span><span class="o">=</span><span class="s2">"both"</span><span class="p">,</span>
+                <span class="n">which</span><span class="o">=</span><span class="s2">"major"</span><span class="p">,</span>
                 <span class="n">bottom</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                 <span class="n">labelbottom</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">labelleft</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">labelsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">4</span>
             <span class="p">)</span>
             <span class="n">ax_scatter</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span>
-                <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span>
-                <span class="n">which</span><span class="o">=</span><span class="s2">&quot;minor&quot;</span><span class="p">,</span>
+                <span class="n">axis</span><span class="o">=</span><span class="s2">"both"</span><span class="p">,</span>
+                <span class="n">which</span><span class="o">=</span><span class="s2">"minor"</span><span class="p">,</span>
                 <span class="n">bottom</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                 <span class="n">length</span><span class="o">=</span><span class="mi">2</span>
             <span class="p">)</span>
-            <span class="n">ax_scatter</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;major&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+            <span class="n">ax_scatter</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">"major"</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
 
             <span class="c1"># Ensure x-axis labels only for the bottom plots, y-axis for the left-most plots</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># All plots except the first one</span>
-                <span class="n">ax_scatter</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-                <span class="n">ax_scatter</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">labelleft</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">ax_scatter</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
+                <span class="n">ax_scatter</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"y"</span><span class="p">,</span> <span class="n">labelleft</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="c1"># Removed plt.tight_layout() to avoid UserWarning as gridspec handles spacing</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
-            <span class="s1">&#39;measurements_scatter.png&#39;</span><span class="p">,</span> <span class="c1"># New filename without marginals</span>
+            <span class="s1">'measurements_scatter.png'</span><span class="p">,</span> <span class="c1"># New filename without marginals</span>
             <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
             <span class="n">transparent</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span>
+            <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">"tight"</span><span class="p">,</span>
             <span class="n">facecolor</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No data to plot for measurements_scatter.png. &#39;peaks_data&#39; was None for all runs, or no suitable event data was found.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"No data to plot for measurements_scatter.png. 'peaks_data' was None for all runs, or no suitable event data was found."</span><span class="p">)</span>
 
 <span class="c1"># --------------------------------</span>
 <span class="c1"># plotting</span>
 <span class="c1"># --------------------------------</span>
 
-<span class="n">titles_map</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;EV Only&#39;</span><span class="p">,</span> <span class="s1">&#39;EV + LP&#39;</span><span class="p">,</span> <span class="s1">&#39;SEC @35nm&#39;</span><span class="p">,</span> <span class="s1">&#39;SEC @70nm&#39;</span><span class="p">]</span>
+<span class="n">titles_map</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'EV Only'</span><span class="p">,</span> <span class="s1">'EV + LP'</span><span class="p">,</span> <span class="s1">'SEC @35nm'</span><span class="p">,</span> <span class="s1">'SEC @70nm'</span><span class="p">]</span>
 
 <span class="n">all_event_data</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">record</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">run_records</span><span class="p">):</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">event_collection</span><span class="o">.</span><span class="n">get_concatenated_dataframe</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;RefractiveIndex&#39;</span><span class="p">:</span> <span class="s1">&#39;Refractive Index&#39;</span><span class="p">})</span>
-    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Run_Title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">titles_map</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">event_collection</span><span class="o">.</span><span class="n">get_concatenated_dataframe</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">'RefractiveIndex'</span><span class="p">:</span> <span class="s1">'Refractive Index'</span><span class="p">})</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">'Run_Title'</span><span class="p">]</span> <span class="o">=</span> <span class="n">titles_map</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
     <span class="n">all_event_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 
 <span class="n">combined_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">all_event_data</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -966,11 +966,11 @@ to download the full example code.</p>
 <span class="n">min_expected_diameter_nm</span> <span class="o">=</span> <span class="mf">1.0</span>
 <span class="n">max_expected_diameter_nm</span> <span class="o">=</span> <span class="mf">1000.0</span>
 
-<span class="n">combined_df</span><span class="p">[</span><span class="s1">&#39;Diameter_nm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">[</span><span class="s1">&#39;Diameter&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;nanometer&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
+<span class="n">combined_df</span><span class="p">[</span><span class="s1">'Diameter_nm'</span><span class="p">]</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">[</span><span class="s1">'Diameter'</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">'nanometer'</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
 
 <span class="n">combined_df</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">[</span>
-    <span class="p">(</span><span class="n">combined_df</span><span class="p">[</span><span class="s1">&#39;Diameter_nm&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">min_expected_diameter_nm</span><span class="p">)</span> <span class="o">&amp;</span>
-    <span class="p">(</span><span class="n">combined_df</span><span class="p">[</span><span class="s1">&#39;Diameter_nm&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">max_expected_diameter_nm</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">combined_df</span><span class="p">[</span><span class="s1">'Diameter_nm'</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">min_expected_diameter_nm</span><span class="p">)</span> <span class="o">&amp;</span>
+    <span class="p">(</span><span class="n">combined_df</span><span class="p">[</span><span class="s1">'Diameter_nm'</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">max_expected_diameter_nm</span><span class="p">)</span>
 <span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
 <span class="k">with</span> <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">scientific</span><span class="p">):</span>
@@ -987,18 +987,18 @@ to download the full example code.</p>
         <span class="n">ax_scatter</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs_inner</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
         <span class="n">ax_hist_y</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs_inner</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
 
-        <span class="n">df_facet</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">[</span><span class="n">combined_df</span><span class="p">[</span><span class="s1">&#39;Run_Title&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">title</span><span class="p">]</span>
+        <span class="n">df_facet</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">[</span><span class="n">combined_df</span><span class="p">[</span><span class="s1">'Run_Title'</span><span class="p">]</span> <span class="o">==</span> <span class="n">title</span><span class="p">]</span>
 
-        <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">populations</span></a> <span class="o">=</span> <span class="n">df_facet</span><span class="p">[</span><span class="s1">&#39;Population&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+        <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">populations</span></a> <span class="o">=</span> <span class="n">df_facet</span><span class="p">[</span><span class="s1">'Population'</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
         <span class="n">colors</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">color_palette</span><span class="p">(</span><span class="n">n_colors</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">populations</span></a><span class="p">))</span>
 
         <span class="k">for</span> <span class="n">pop_idx</span><span class="p">,</span> <span class="n">population</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">populations</span></a><span class="p">):</span>
-            <span class="n">df_pop</span> <span class="o">=</span> <span class="n">df_facet</span><span class="p">[</span><span class="n">df_facet</span><span class="p">[</span><span class="s1">&#39;Population&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">population</span><span class="p">]</span>
+            <span class="n">df_pop</span> <span class="o">=</span> <span class="n">df_facet</span><span class="p">[</span><span class="n">df_facet</span><span class="p">[</span><span class="s1">'Population'</span><span class="p">]</span> <span class="o">==</span> <span class="n">population</span><span class="p">]</span>
             <span class="n">current_color</span> <span class="o">=</span> <span class="n">colors</span><span class="p">[</span><span class="n">pop_idx</span><span class="p">]</span>
 
             <span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span>
-                <span class="n">x</span><span class="o">=</span><span class="s2">&quot;Diameter_nm&quot;</span><span class="p">,</span>
-                <span class="n">y</span><span class="o">=</span><span class="s2">&quot;Refractive Index&quot;</span><span class="p">,</span>
+                <span class="n">x</span><span class="o">=</span><span class="s2">"Diameter_nm"</span><span class="p">,</span>
+                <span class="n">y</span><span class="o">=</span><span class="s2">"Refractive Index"</span><span class="p">,</span>
                 <span class="n">data</span><span class="o">=</span><span class="n">df_pop</span><span class="p">,</span>
                 <span class="n">s</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.35</span><span class="p">,</span> <span class="n">rasterized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">ax</span><span class="o">=</span><span class="n">ax_scatter</span><span class="p">,</span>
@@ -1007,77 +1007,77 @@ to download the full example code.</p>
             <span class="p">)</span>
 
             <span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span>
-                <span class="n">x</span><span class="o">=</span><span class="n">df_pop</span><span class="p">[</span><span class="s2">&quot;Diameter_nm&quot;</span><span class="p">],</span>
+                <span class="n">x</span><span class="o">=</span><span class="n">df_pop</span><span class="p">[</span><span class="s2">"Diameter_nm"</span><span class="p">],</span>
                 <span class="n">ax</span><span class="o">=</span><span class="n">ax_hist_x</span><span class="p">,</span>
                 <span class="n">color</span><span class="o">=</span><span class="n">current_color</span><span class="p">,</span>
                 <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
             <span class="p">)</span>
 
             <span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span>
-                <span class="n">y</span><span class="o">=</span><span class="n">df_pop</span><span class="p">[</span><span class="s2">&quot;Refractive Index&quot;</span><span class="p">],</span>
+                <span class="n">y</span><span class="o">=</span><span class="n">df_pop</span><span class="p">[</span><span class="s2">"Refractive Index"</span><span class="p">],</span>
                 <span class="n">ax</span><span class="o">=</span><span class="n">ax_hist_y</span><span class="p">,</span>
                 <span class="n">color</span><span class="o">=</span><span class="n">current_color</span><span class="p">,</span>
                 <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="n">ax_scatter</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-        <span class="n">ax_scatter</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Diameter [nm]&quot;</span><span class="p">)</span>
-        <span class="n">ax_scatter</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Refractive Index&quot;</span><span class="p">)</span>
+        <span class="n">ax_scatter</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"Diameter [nm]"</span><span class="p">)</span>
+        <span class="n">ax_scatter</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"Refractive Index"</span><span class="p">)</span>
 
         <span class="n">ax_scatter</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">max_expected_diameter_nm</span> <span class="o">*</span> <span class="mf">1.1</span><span class="p">)</span>
         <span class="n">ax_hist_x</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">ax_scatter</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">())</span>
-        <span class="n">ax_scatter</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">combined_df</span><span class="p">[</span><span class="s1">&#39;Refractive Index&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">*</span> <span class="mf">0.99</span><span class="p">,</span> <span class="n">combined_df</span><span class="p">[</span><span class="s1">&#39;Refractive Index&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1.01</span><span class="p">)</span>
+        <span class="n">ax_scatter</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">combined_df</span><span class="p">[</span><span class="s1">'Refractive Index'</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">*</span> <span class="mf">0.99</span><span class="p">,</span> <span class="n">combined_df</span><span class="p">[</span><span class="s1">'Refractive Index'</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1.01</span><span class="p">)</span>
         <span class="n">ax_hist_y</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ax_scatter</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">())</span>
 
-        <span class="n">ax_scatter</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;linear&quot;</span><span class="p">)</span>
-        <span class="n">ax_hist_x</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;linear&quot;</span><span class="p">)</span>
+        <span class="n">ax_scatter</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">"linear"</span><span class="p">)</span>
+        <span class="n">ax_hist_x</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">"linear"</span><span class="p">)</span>
 
-        <span class="n">ax_hist_x</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="n">ax_hist_x</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="n">ax_hist_x</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">labelbottom</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">ax_hist_x</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">labelleft</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ax_hist_x</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
+        <span class="n">ax_hist_x</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
+        <span class="n">ax_hist_x</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"x"</span><span class="p">,</span> <span class="n">labelbottom</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ax_hist_x</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"y"</span><span class="p">,</span> <span class="n">labelleft</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-        <span class="n">ax_hist_y</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="n">ax_hist_y</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="n">ax_hist_y</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">labelbottom</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">ax_hist_y</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">labelleft</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ax_hist_y</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
+        <span class="n">ax_hist_y</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
+        <span class="n">ax_hist_y</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"x"</span><span class="p">,</span> <span class="n">labelbottom</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ax_hist_y</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"y"</span><span class="p">,</span> <span class="n">labelleft</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="p">[</span><span class="n">ax_scatter</span><span class="p">,</span> <span class="n">ax_hist_x</span><span class="p">,</span> <span class="n">ax_hist_y</span><span class="p">]:</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span>
-                <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span>
-                <span class="n">which</span><span class="o">=</span><span class="s2">&quot;major&quot;</span><span class="p">,</span>
+                <span class="n">axis</span><span class="o">=</span><span class="s2">"both"</span><span class="p">,</span>
+                <span class="n">which</span><span class="o">=</span><span class="s2">"major"</span><span class="p">,</span>
                 <span class="n">bottom</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                 <span class="n">labelbottom</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">labelleft</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">labelsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">4</span>
             <span class="p">)</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span>
-                <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span>
-                <span class="n">which</span><span class="o">=</span><span class="s2">&quot;minor&quot;</span><span class="p">,</span>
+                <span class="n">axis</span><span class="o">=</span><span class="s2">"both"</span><span class="p">,</span>
+                <span class="n">which</span><span class="o">=</span><span class="s2">"minor"</span><span class="p">,</span>
                 <span class="n">bottom</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                 <span class="n">length</span><span class="o">=</span><span class="mi">2</span>
             <span class="p">)</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;major&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">"major"</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
 
-        <span class="n">ax_hist_x</span><span class="o">.</span><span class="n">spines</span><span class="p">[[</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;bottom&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">ax_hist_y</span><span class="o">.</span><span class="n">spines</span><span class="p">[[</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;bottom&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ax_hist_x</span><span class="o">.</span><span class="n">spines</span><span class="p">[[</span><span class="s1">'top'</span><span class="p">,</span> <span class="s1">'right'</span><span class="p">,</span> <span class="s1">'left'</span><span class="p">,</span> <span class="s1">'bottom'</span><span class="p">]]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ax_hist_y</span><span class="o">.</span><span class="n">spines</span><span class="p">[[</span><span class="s1">'top'</span><span class="p">,</span> <span class="s1">'right'</span><span class="p">,</span> <span class="s1">'left'</span><span class="p">,</span> <span class="s1">'bottom'</span><span class="p">]]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">ax_scatter</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-            <span class="n">ax_scatter</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">labelleft</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">ax_scatter</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
+            <span class="n">ax_scatter</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"y"</span><span class="p">,</span> <span class="n">labelleft</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-        <span class="n">ax_scatter</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Population&quot;</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">)</span>
+        <span class="n">ax_scatter</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"Population"</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">'upper right'</span><span class="p">)</span>
 
     <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
-        <span class="s1">&#39;scatterers_with_marginals.png&#39;</span><span class="p">,</span>
+        <span class="s1">'scatterers_with_marginals.png'</span><span class="p">,</span>
         <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
         <span class="n">transparent</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span>
+        <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">"tight"</span><span class="p">,</span>
         <span class="n">facecolor</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 14.145 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 19.975 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-studies-sec-results-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/20b8e1b7bcebc6f5b54395d277dd2277/sec_results.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">sec_results.ipynb</span></code></a></p>

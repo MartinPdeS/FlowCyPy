@@ -31,7 +31,7 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
+    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
@@ -594,8 +594,8 @@ customize.</p>
 <p>This small helper draws a rectangular region centered at the origin and
 returns its boundaries in micrometers.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">add_region_to_ax</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">region</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="n">width</span> <span class="o">=</span> <span class="n">region</span><span class="o">.</span><span class="n">width</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;micrometer&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
-    <span class="n">height</span> <span class="o">=</span> <span class="n">region</span><span class="o">.</span><span class="n">height</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;micrometer&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
+    <span class="n">width</span> <span class="o">=</span> <span class="n">region</span><span class="o">.</span><span class="n">width</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">"micrometer"</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
+    <span class="n">height</span> <span class="o">=</span> <span class="n">region</span><span class="o">.</span><span class="n">height</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">"micrometer"</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
 
     <span class="n">left</span> <span class="o">=</span> <span class="o">-</span><span class="n">width</span> <span class="o">/</span> <span class="mf">2.0</span>
     <span class="n">right</span> <span class="o">=</span> <span class="o">+</span><span class="n">width</span> <span class="o">/</span> <span class="mf">2.0</span>
@@ -649,7 +649,7 @@ distributions for particle diameter and refractive index.</p>
 <span class="n">sampling_method</span> <span class="o">=</span> <span class="n">populations</span><span class="o">.</span><span class="n">ExplicitModel</span><span class="p">()</span>
 
 <span class="n">population_0</span> <span class="o">=</span> <span class="n">populations</span><span class="o">.</span><span class="n">SpherePopulation</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Pop 0&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"Pop 0"</span><span class="p">,</span>
     <span class="n">medium_refractive_index</span><span class="o">=</span><span class="n">medium_refractive_index</span><span class="p">,</span>
     <span class="n">concentration</span><span class="o">=</span><span class="mf">1e10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span><span class="p">,</span>
     <span class="n">diameter</span><span class="o">=</span><span class="n">diameter_dist</span><span class="p">,</span>
@@ -692,28 +692,28 @@ Particle positions are colored by their local velocity.</p>
 <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">top</span><span class="p">,</span> <span class="n">bottom</span> <span class="o">=</span> <span class="n">add_region_to_ax</span><span class="p">(</span>
     <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
     <span class="n">region</span><span class="o">=</span><span class="n">flow_cell</span><span class="o">.</span><span class="n">sheath</span><span class="p">,</span>
-    <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;lightskyblue&quot;</span><span class="p">,</span>
+    <span class="n">facecolor</span><span class="o">=</span><span class="s2">"lightskyblue"</span><span class="p">,</span>
     <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
-    <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+    <span class="n">edgecolor</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span>
     <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">sample_left</span><span class="p">,</span> <span class="n">sample_right</span><span class="p">,</span> <span class="n">sample_top</span><span class="p">,</span> <span class="n">sample_bottom</span> <span class="o">=</span> <span class="n">add_region_to_ax</span><span class="p">(</span>
     <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
     <span class="n">region</span><span class="o">=</span><span class="n">flow_cell</span><span class="o">.</span><span class="n">sample</span><span class="p">,</span>
-    <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;lightgreen&quot;</span><span class="p">,</span>
+    <span class="n">facecolor</span><span class="o">=</span><span class="s2">"lightgreen"</span><span class="p">,</span>
     <span class="n">alpha</span><span class="o">=</span><span class="mf">0.45</span><span class="p">,</span>
-    <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+    <span class="n">edgecolor</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span>
     <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">scatter_plot</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;micrometer&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;micrometer&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-    <span class="n">c</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">Velocity</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;meter/second&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">"micrometer"</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">"micrometer"</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+    <span class="n">c</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">Velocity</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">"meter/second"</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
     <span class="n">s</span><span class="o">=</span><span class="n">SCATTER_SIZE</span><span class="p">,</span>
     <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-    <span class="n">edgecolors</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+    <span class="n">edgecolors</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span>
     <span class="n">linewidths</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span>
     <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
 <span class="p">)</span>
@@ -727,59 +727,59 @@ Particle positions are colored by their local velocity.</p>
 <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
     <span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="n">left</span> <span class="o">-</span> <span class="n">x_margin</span><span class="p">,</span> <span class="n">right</span> <span class="o">+</span> <span class="n">x_margin</span><span class="p">],</span>
     <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="n">bottom</span> <span class="o">*</span> <span class="mf">1.1</span><span class="p">,</span> <span class="n">top</span> <span class="o">*</span> <span class="mf">1.1</span><span class="p">],</span>
-    <span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;x position [µm]&quot;</span><span class="p">,</span>
-    <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;y position [µm]&quot;</span><span class="p">,</span>
+    <span class="n">xlabel</span><span class="o">=</span><span class="s2">"x position [µm]"</span><span class="p">,</span>
+    <span class="n">ylabel</span><span class="o">=</span><span class="s2">"y position [µm]"</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">&quot;Q$_</span><span class="se">{{</span><span class="s2">sheath</span><span class="se">}}</span><span class="s2">$ / Q$_</span><span class="se">{{</span><span class="s2">sample</span><span class="se">}}</span><span class="s2">$ = </span><span class="si">{</span><span class="n">sheath_to_sample_ratio</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">"Q$_</span><span class="se">{{</span><span class="s2">sheath</span><span class="se">}}</span><span class="s2">$ / Q$_</span><span class="se">{{</span><span class="s2">sample</span><span class="se">}}</span><span class="s2">$ = </span><span class="si">{</span><span class="n">sheath_to_sample_ratio</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
     <span class="n">fontsize</span><span class="o">=</span><span class="n">TITLE_FONT_SIZE</span><span class="p">,</span>
     <span class="n">pad</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">"equal"</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
 
 <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">set_size</span><span class="p">(</span><span class="n">LABEL_FONT_SIZE</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">set_size</span><span class="p">(</span><span class="n">LABEL_FONT_SIZE</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="n">TICK_FONT_SIZE</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"both"</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="n">TICK_FONT_SIZE</span><span class="p">)</span>
 
 <span class="n">divider</span> <span class="o">=</span> <span class="n">make_axes_locatable</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
-<span class="n">colorbar_ax</span> <span class="o">=</span> <span class="n">divider</span><span class="o">.</span><span class="n">append_axes</span><span class="p">(</span><span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="s2">&quot;4%&quot;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mf">0.08</span><span class="p">)</span>
+<span class="n">colorbar_ax</span> <span class="o">=</span> <span class="n">divider</span><span class="o">.</span><span class="n">append_axes</span><span class="p">(</span><span class="s2">"right"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="s2">"4%"</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mf">0.08</span><span class="p">)</span>
 
 <span class="n">colorbar</span> <span class="o">=</span> <span class="n">figure</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">scatter_plot</span><span class="p">,</span> <span class="n">cax</span><span class="o">=</span><span class="n">colorbar_ax</span><span class="p">)</span>
-<span class="n">colorbar</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Velocity [m/s]&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">COLORBAR_LABEL_FONT_SIZE</span><span class="p">)</span>
+<span class="n">colorbar</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">"Velocity [m/s]"</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">COLORBAR_LABEL_FONT_SIZE</span><span class="p">)</span>
 <span class="n">colorbar</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="n">COLORBAR_TICK_FONT_SIZE</span><span class="p">)</span>
 
 <span class="n">legend_handles</span> <span class="o">=</span> <span class="p">[</span>
     <span class="n">Patch</span><span class="p">(</span>
-        <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;lightskyblue&quot;</span><span class="p">,</span>
-        <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+        <span class="n">facecolor</span><span class="o">=</span><span class="s2">"lightskyblue"</span><span class="p">,</span>
+        <span class="n">edgecolor</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span>
         <span class="n">alpha</span><span class="o">=</span><span class="mf">0.35</span><span class="p">,</span>
-        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Sheath flow&quot;</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">"Sheath flow"</span><span class="p">,</span>
     <span class="p">),</span>
     <span class="n">Patch</span><span class="p">(</span>
-        <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;lightgreen&quot;</span><span class="p">,</span>
-        <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+        <span class="n">facecolor</span><span class="o">=</span><span class="s2">"lightgreen"</span><span class="p">,</span>
+        <span class="n">edgecolor</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span>
         <span class="n">alpha</span><span class="o">=</span><span class="mf">0.60</span><span class="p">,</span>
-        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Sample flow&quot;</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">"Sample flow"</span><span class="p">,</span>
     <span class="p">),</span>
     <span class="n">Line2D</span><span class="p">(</span>
         <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
         <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-        <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span>
-        <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;None&quot;</span><span class="p">,</span>
-        <span class="n">markerfacecolor</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span>
-        <span class="n">markeredgecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+        <span class="n">marker</span><span class="o">=</span><span class="s2">"o"</span><span class="p">,</span>
+        <span class="n">linestyle</span><span class="o">=</span><span class="s2">"None"</span><span class="p">,</span>
+        <span class="n">markerfacecolor</span><span class="o">=</span><span class="s2">"gray"</span><span class="p">,</span>
+        <span class="n">markeredgecolor</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span>
         <span class="n">markersize</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
         <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Particles&quot;</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">"Particles"</span><span class="p">,</span>
     <span class="p">),</span>
 <span class="p">]</span>
 
 <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span>
     <span class="n">handles</span><span class="o">=</span><span class="n">legend_handles</span><span class="p">,</span>
-    <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">,</span>
+    <span class="n">loc</span><span class="o">=</span><span class="s2">"upper left"</span><span class="p">,</span>
     <span class="n">fontsize</span><span class="o">=</span><span class="n">LEGEND_FONT_SIZE</span><span class="p">,</span>
     <span class="n">framealpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
 <span class="p">)</span>
@@ -788,7 +788,7 @@ Particle positions are colored by their local velocity.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_flowcell_sampling_001.png" srcset="../../_images/sphx_glr_flowcell_sampling_001.png" alt="Q$_{sheath}$ / Q$_{sample}$ = 1.00" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.991 seconds)</p>
+<img src="../../_images/sphx_glr_flowcell_sampling_001.png" srcset="../../_images/sphx_glr_flowcell_sampling_001.png" alt="Q$_{sheath}$ / Q$_{sample}$ = 1.00" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.891 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-studies-flowcell-sampling-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/8d2dc1f5d670239af14f0bd0b030bf43/flowcell_sampling.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">flowcell_sampling.ipynb</span></code></a></p>

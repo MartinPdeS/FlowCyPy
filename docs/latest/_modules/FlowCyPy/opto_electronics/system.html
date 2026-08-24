@@ -30,7 +30,7 @@
 <link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
+    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
@@ -512,7 +512,7 @@
     <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">,</span>
+    <span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -520,7 +520,7 @@
 <a class="viewcode-back" href="../../../code/opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics">[docs]</a>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config_dict</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">OptoElectronics</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Base class for optoelectronic components in flow cytometry simulations.</span>
 
 <span class="sd">    This class serves as a base for various optoelectronic components, such as detectors and</span>
@@ -538,7 +538,7 @@
 <span class="sd">        The digitizer instance used to convert analog signals to digital form.</span>
 <span class="sd">    analog_processing : List[circuits.BaseCircuit]</span>
 <span class="sd">        List of analog processing circuits applied to the signals.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">detectors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Detector</span><span class="p">]</span>
     <span class="n">source</span><span class="p">:</span> <span class="n">source</span><span class="o">.</span><span class="n">BaseSource</span>
@@ -551,7 +551,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">initialize_optical_signal_dict</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Time</span><span class="p">,</span> <span class="n">background_power</span><span class="p">:</span> <span class="n">Power</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Initialize detector optical power traces.</span>
 
 <span class="sd">        Parameters</span>
@@ -565,11 +565,11 @@
 <span class="sd">        -------</span>
 <span class="sd">        dict</span>
 <span class="sd">            Optical power signal dictionary.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">signal_dict</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">signal_dict</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">digitizer</span><span class="o">.</span><span class="n">get_time_series</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">)</span>
+        <span class="n">signal_dict</span><span class="p">[</span><span class="s2">"Time"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">digitizer</span><span class="o">.</span><span class="n">get_time_series</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">)</span>
 
-        <span class="n">number_of_elements</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">signal_dict</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">])</span>
+        <span class="n">number_of_elements</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">signal_dict</span><span class="p">[</span><span class="s2">"Time"</span><span class="p">])</span>
 
         <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>
             <span class="n">signal_dict</span><span class="p">[</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">number_of_elements</span><span class="p">)</span> <span class="o">*</span> <span class="n">background_power</span>
@@ -580,7 +580,7 @@
 <div class="viewcode-block" id="OptoElectronics.convert_optical_power_to_photocurrent">
 <a class="viewcode-back" href="../../../code/opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics.convert_optical_power_to_photocurrent">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">convert_optical_power_to_photocurrent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">power_signal_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Convert detector optical power traces to photocurrent traces.</span>
 
 <span class="sd">        Parameters</span>
@@ -592,10 +592,10 @@
 <span class="sd">        -------</span>
 <span class="sd">        dict</span>
 <span class="sd">            Photocurrent signal dictionary.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>
             <span class="n">power_signal_dict</span><span class="p">[</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">*=</span> <span class="n">detector</span><span class="o">.</span><span class="n">responsivity</span><span class="o">.</span><span class="n">to</span><span class="p">(</span>
-                <span class="s2">&quot;ampere / watt&quot;</span>
+                <span class="s2">"ampere / watt"</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">power_signal_dict</span></div>
@@ -604,7 +604,7 @@
 <div class="viewcode-block" id="OptoElectronics.apply_detector_current_noise">
 <a class="viewcode-back" href="../../../code/opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics.apply_detector_current_noise">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">apply_detector_current_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">photocurrent_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Apply detector current noise to photocurrent traces.</span>
 
 <span class="sd">        Parameters</span>
@@ -616,7 +616,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        dict</span>
 <span class="sd">            Updated photocurrent signal dictionary.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>
             <span class="n">photocurrent_dict</span><span class="p">[</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">apply_dark_current_noise</span><span class="p">(</span>
                 <span class="n">signal</span><span class="o">=</span><span class="n">photocurrent_dict</span><span class="p">[</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">],</span>
@@ -629,7 +629,7 @@
 <div class="viewcode-block" id="OptoElectronics.apply_source_noise_to_optical_signals">
 <a class="viewcode-back" href="../../../code/opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics.apply_source_noise_to_optical_signals">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">apply_source_noise_to_optical_signals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">power_signal_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Apply source level optical noise processes.</span>
 
 <span class="sd">        Parameters</span>
@@ -641,7 +641,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        dict</span>
 <span class="sd">            Updated optical power signals.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">include_rin_noise</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">rin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">power_signal_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">add_rin_to_signal_dict</span><span class="p">(</span>
                 <span class="n">signal_dict</span><span class="o">=</span><span class="n">power_signal_dict</span><span class="p">,</span>
@@ -651,7 +651,7 @@
             <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>
                 <span class="n">power_signal_dict</span><span class="p">[</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">add_shot_noise_to_signal</span><span class="p">(</span>
                     <span class="n">signal</span><span class="o">=</span><span class="n">power_signal_dict</span><span class="p">[</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">],</span>
-                    <span class="n">time</span><span class="o">=</span><span class="n">power_signal_dict</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">],</span>
+                    <span class="n">time</span><span class="o">=</span><span class="n">power_signal_dict</span><span class="p">[</span><span class="s2">"Time"</span><span class="p">],</span>
                 <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">power_signal_dict</span></div>
@@ -662,7 +662,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">add_coupling_to_dataframe</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">event_collection</span><span class="p">:</span> <span class="n">EventCollection</span><span class="p">,</span> <span class="n">compute_cross_section</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Computes the detected signal for each scatterer in the provided DataFrame and updates it in place.</span>
 <span class="sd">        This method iterates over the list of detectors and computes the detected signal for each scatterer</span>
 <span class="sd">        using the `compute_detected_signal` function.</span>
@@ -675,8 +675,8 @@
 <span class="sd">            populations use ``CoreShellPopulation`` fields.</span>
 <span class="sd">        compute_cross_section : bool, optional</span>
 <span class="sd">            If True, the scattering cross section (Csca) is computed and added to the DataFrame under the</span>
-<span class="sd">            column &#39;Csca&#39;. Default is False.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">            column 'Csca'. Default is False.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">event_collection</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span>
 
@@ -695,7 +695,7 @@
 <div class="viewcode-block" id="OptoElectronics.convert_photocurrent_to_voltage">
 <a class="viewcode-back" href="../../../code/opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics.convert_photocurrent_to_voltage">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">convert_photocurrent_to_voltage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">photocurrent_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Convert photocurrent traces to analog voltage traces.</span>
 
 <span class="sd">        Parameters</span>
@@ -707,7 +707,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        dict</span>
 <span class="sd">            Analog voltage signal dictionary.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>
             <span class="n">photocurrent_dict</span><span class="p">[</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amplifier</span><span class="o">.</span><span class="n">amplify</span><span class="p">(</span>
                 <span class="n">signal</span><span class="o">=</span><span class="n">photocurrent_dict</span><span class="p">[</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">],</span>
@@ -720,7 +720,7 @@
 <div class="viewcode-block" id="OptoElectronics.convert_optical_power_to_voltage">
 <a class="viewcode-back" href="../../../code/opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics.convert_optical_power_to_voltage">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">convert_optical_power_to_voltage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">power_signal_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Convert optical power traces to analog voltage traces by applying the full optoelectronic chain.</span>
 
 <span class="sd">        Parameters</span>
@@ -732,7 +732,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        dict</span>
 <span class="sd">            Analog voltage signal dictionary.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">power_signal_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_source_noise_to_optical_signals</span><span class="p">(</span>
             <span class="n">power_signal_dict</span><span class="o">=</span><span class="n">power_signal_dict</span><span class="p">,</span>
         <span class="p">)</span>
@@ -755,7 +755,7 @@
 <div class="viewcode-block" id="OptoElectronics.copy_dict">
 <a class="viewcode-back" href="../../../code/opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics.copy_dict">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">copy_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dictionnary</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Create a safe working copy of a signal dictionary.</span>
 
 <span class="sd">        Parameters</span>
@@ -767,11 +767,11 @@
 <span class="sd">        -------</span>
 <span class="sd">        dict</span>
 <span class="sd">            Shallow copy in which values exposing ``copy()`` are duplicated.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">copied_signal_dict</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">dictionnary</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;copy&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">"copy"</span><span class="p">):</span>
                 <span class="n">copied_signal_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">copied_signal_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
@@ -782,7 +782,7 @@
 <div class="viewcode-block" id="OptoElectronics.apply_analog_processing">
 <a class="viewcode-back" href="../../../code/opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics.apply_analog_processing">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">apply_analog_processing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">analog_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Apply analog post processing circuits to an analog signal dictionary.</span>
 
 <span class="sd">        Parameters</span>
@@ -796,7 +796,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        dict</span>
 <span class="sd">            Processed analog signal dictionary.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">processed_analog_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy_dict</span><span class="p">(</span><span class="n">analog_dict</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>

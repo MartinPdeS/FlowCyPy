@@ -31,7 +31,7 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
+    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
@@ -591,15 +591,15 @@ log-scaled two-dimensional density maps.</p>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">get_current_execution_directory</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return the most useful execution directory for locating example data.</span>
 
 <span class="sd">    In normal Python execution, ``__file__`` is defined and points to this</span>
 <span class="sd">    script. In some documentation builders, notebooks, galleries, or execution</span>
 <span class="sd">    wrappers, ``__file__`` may be undefined. In that case, the current working</span>
 <span class="sd">    directory is used instead.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">file_name</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;__file__&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">file_name</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"__file__"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span>
@@ -608,7 +608,7 @@ log-scaled two-dimensional density maps.</p>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">find_experimental_data_path</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Locate an experimental data file used by the documentation examples.</span>
 
 <span class="sd">    The function searches from both the current example directory and the</span>
@@ -629,7 +629,7 @@ log-scaled two-dimensional density maps.</p>
 <span class="sd">    ------</span>
 <span class="sd">    FileNotFoundError</span>
 <span class="sd">        If the file cannot be found in the expected documentation locations.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">execution_directory</span> <span class="o">=</span> <span class="n">get_current_execution_directory</span><span class="p">()</span>
     <span class="n">working_directory</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
 
@@ -644,8 +644,8 @@ log-scaled two-dimensional density maps.</p>
     <span class="k">for</span> <span class="n">root</span> <span class="ow">in</span> <span class="n">search_roots</span><span class="p">:</span>
         <span class="n">candidate_paths</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
             <span class="p">[</span>
-                <span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span> <span class="o">/</span> <span class="n">file_name</span><span class="p">,</span>
-                <span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;docs&quot;</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span> <span class="o">/</span> <span class="n">file_name</span><span class="p">,</span>
+                <span class="n">root</span> <span class="o">/</span> <span class="s2">"data"</span> <span class="o">/</span> <span class="n">file_name</span><span class="p">,</span>
+                <span class="n">root</span> <span class="o">/</span> <span class="s2">"docs"</span> <span class="o">/</span> <span class="s2">"data"</span> <span class="o">/</span> <span class="n">file_name</span><span class="p">,</span>
             <span class="p">]</span>
         <span class="p">)</span>
 
@@ -653,13 +653,13 @@ log-scaled two-dimensional density maps.</p>
         <span class="k">if</span> <span class="n">candidate_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">candidate_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
 
-    <span class="n">searched_locations</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;  - </span><span class="si">{</span><span class="n">candidate_path</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">candidate_path</span> <span class="ow">in</span> <span class="n">candidate_paths</span>
+    <span class="n">searched_locations</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">"  - </span><span class="si">{</span><span class="n">candidate_path</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">candidate_path</span> <span class="ow">in</span> <span class="n">candidate_paths</span>
     <span class="p">)</span>
 
     <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;Could not locate experimental data file </span><span class="si">{</span><span class="n">file_name</span><span class="si">!r}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;Searched:</span><span class="se">\n</span><span class="si">{</span><span class="n">searched_locations</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="sa">f</span><span class="s2">"Could not locate experimental data file </span><span class="si">{</span><span class="n">file_name</span><span class="si">!r}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">"</span>
+        <span class="sa">f</span><span class="s2">"Searched:</span><span class="se">\n</span><span class="si">{</span><span class="n">searched_locations</span><span class="si">}</span><span class="s2">"</span>
     <span class="p">)</span>
 
 
@@ -670,9 +670,9 @@ log-scaled two-dimensional density maps.</p>
     <span class="n">y_column_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">quantile_limits</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Keep strictly positive data and remove extreme values by quantile filtering.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">lower_quantile</span><span class="p">,</span> <span class="n">upper_quantile</span> <span class="o">=</span> <span class="n">quantile_limits</span>
 
     <span class="n">positive_dataframe</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
@@ -682,7 +682,7 @@ log-scaled two-dimensional density maps.</p>
     <span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">positive_dataframe</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No strictly positive data available for log-scale plotting.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"No strictly positive data available for log-scale plotting."</span><span class="p">)</span>
 
     <span class="n">x_lower_bound</span><span class="p">,</span> <span class="n">x_upper_bound</span> <span class="o">=</span> <span class="n">positive_dataframe</span><span class="p">[</span><span class="n">x_column_name</span><span class="p">]</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span>
         <span class="p">[</span><span class="n">lower_quantile</span><span class="p">,</span> <span class="n">upper_quantile</span><span class="p">]</span>
@@ -697,7 +697,7 @@ log-scaled two-dimensional density maps.</p>
     <span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">filtered_dataframe</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No data remains after quantile filtering.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"No data remains after quantile filtering."</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">filtered_dataframe</span>
 
@@ -707,19 +707,19 @@ log-scaled two-dimensional density maps.</p>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">axis_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Validate that axis limits are compatible with logarithmic plotting.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">axis_limits</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span>
 
     <span class="n">lower_axis_limit</span><span class="p">,</span> <span class="n">upper_axis_limit</span> <span class="o">=</span> <span class="n">axis_limits</span>
 
     <span class="k">if</span> <span class="n">lower_axis_limit</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">upper_axis_limit</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">axis_name</span><span class="si">}</span><span class="s2"> values must be strictly positive.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">axis_name</span><span class="si">}</span><span class="s2"> values must be strictly positive."</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">lower_axis_limit</span> <span class="o">&gt;=</span> <span class="n">upper_axis_limit</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">axis_name</span><span class="si">}</span><span class="s2"> lower limit must be smaller than upper limit.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">axis_name</span><span class="si">}</span><span class="s2"> lower limit must be smaller than upper limit."</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">make_logarithmic_bins</span><span class="p">(</span>
@@ -729,9 +729,9 @@ log-scaled two-dimensional density maps.</p>
     <span class="n">number_of_bins</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">axis_limits</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class"><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span></a><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Create logarithmically spaced bin edges for a dataframe column.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">axis_limits</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">bin_minimum</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
         <span class="n">bin_maximum</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
@@ -740,13 +740,13 @@ log-scaled two-dimensional density maps.</p>
 
     <span class="k">if</span> <span class="n">bin_minimum</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">bin_maximum</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Cannot create logarithmic bins for non-positive </span><span class="si">{</span><span class="n">column_name</span><span class="si">!r}</span><span class="s2"> values.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Cannot create logarithmic bins for non-positive </span><span class="si">{</span><span class="n">column_name</span><span class="si">!r}</span><span class="s2"> values."</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">bin_minimum</span> <span class="o">&gt;=</span> <span class="n">bin_maximum</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Invalid logarithmic bin range for </span><span class="si">{</span><span class="n">column_name</span><span class="si">!r}</span><span class="s2">: &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bin_minimum</span><span class="si">}</span><span class="s2"> &gt;= </span><span class="si">{</span><span class="n">bin_maximum</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Invalid logarithmic bin range for </span><span class="si">{</span><span class="n">column_name</span><span class="si">!r}</span><span class="s2">: "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">bin_minimum</span><span class="si">}</span><span class="s2"> &gt;= </span><span class="si">{</span><span class="n">bin_maximum</span><span class="si">}</span><span class="s2">."</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.logspace.html#numpy.logspace" title="numpy.logspace" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">logspace</span></a><span class="p">(</span>
@@ -767,14 +767,14 @@ log-scaled two-dimensional density maps.</p>
     <span class="n">number_of_bins</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">250</span><span class="p">,</span>
     <span class="n">x_limits</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">y_limits</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">density_colormap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;turbo&quot;</span><span class="p">,</span>
+    <span class="n">density_colormap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"turbo"</span><span class="p">,</span>
     <span class="n">density_minimum_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Plot a log-scaled two-dimensional density map.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">validate_log_axis_limits</span><span class="p">(</span><span class="n">x_limits</span><span class="p">,</span> <span class="n">axis_name</span><span class="o">=</span><span class="s2">&quot;x_limits&quot;</span><span class="p">)</span>
-    <span class="n">validate_log_axis_limits</span><span class="p">(</span><span class="n">y_limits</span><span class="p">,</span> <span class="n">axis_name</span><span class="o">=</span><span class="s2">&quot;y_limits&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">validate_log_axis_limits</span><span class="p">(</span><span class="n">x_limits</span><span class="p">,</span> <span class="n">axis_name</span><span class="o">=</span><span class="s2">"x_limits"</span><span class="p">)</span>
+    <span class="n">validate_log_axis_limits</span><span class="p">(</span><span class="n">y_limits</span><span class="p">,</span> <span class="n">axis_name</span><span class="o">=</span><span class="s2">"y_limits"</span><span class="p">)</span>
 
     <span class="n">filtered_dataframe</span> <span class="o">=</span> <span class="n">filter_positive_log_data</span><span class="p">(</span>
         <span class="n">dataframe</span><span class="p">,</span>
@@ -813,11 +813,11 @@ log-scaled two-dimensional density maps.</p>
         <span class="n">masked_density_counts</span><span class="p">,</span>
         <span class="n">cmap</span><span class="o">=</span><span class="n">density_colormap</span><span class="p">,</span>
         <span class="n">norm</span><span class="o">=</span><span class="n">LogNorm</span><span class="p">(),</span>
-        <span class="n">shading</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">shading</span><span class="o">=</span><span class="s2">"auto"</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">axis</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
-    <span class="n">axis</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">"log"</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">"log"</span><span class="p">)</span>
     <span class="n">axis</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
     <span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">x_column_name</span><span class="p">)</span>
     <span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">y_column_name</span><span class="p">)</span>
@@ -835,16 +835,16 @@ log-scaled two-dimensional density maps.</p>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">simulation_dataframe</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">experimental_dataframe</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-    <span class="n">x_column_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;FSC-H&quot;</span><span class="p">,</span>
-    <span class="n">y_column_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;SSC-H&quot;</span><span class="p">,</span>
+    <span class="n">x_column_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"FSC-H"</span><span class="p">,</span>
+    <span class="n">y_column_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"SSC-H"</span><span class="p">,</span>
     <span class="n">number_of_bins</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">250</span><span class="p">,</span>
     <span class="n">quantile_limits</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
     <span class="n">x_limits</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e1</span><span class="p">,</span> <span class="mf">5e6</span><span class="p">),</span>
     <span class="n">y_limits</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e3</span><span class="p">,</span> <span class="mf">5e6</span><span class="p">),</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">Figure</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Plot simulated and experimental flow cytometry distributions side by side.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">figure</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
         <span class="n">nrows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">ncols</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
@@ -859,7 +859,7 @@ log-scaled two-dimensional density maps.</p>
         <span class="n">axis</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
         <span class="n">x_column_name</span><span class="o">=</span><span class="n">x_column_name</span><span class="p">,</span>
         <span class="n">y_column_name</span><span class="o">=</span><span class="n">y_column_name</span><span class="p">,</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Simulation&quot;</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"Simulation"</span><span class="p">,</span>
         <span class="n">number_of_bins</span><span class="o">=</span><span class="n">number_of_bins</span><span class="p">,</span>
         <span class="n">quantile_limits</span><span class="o">=</span><span class="n">quantile_limits</span><span class="p">,</span>
         <span class="n">x_limits</span><span class="o">=</span><span class="n">x_limits</span><span class="p">,</span>
@@ -871,19 +871,19 @@ log-scaled two-dimensional density maps.</p>
         <span class="n">axis</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
         <span class="n">x_column_name</span><span class="o">=</span><span class="n">x_column_name</span><span class="p">,</span>
         <span class="n">y_column_name</span><span class="o">=</span><span class="n">y_column_name</span><span class="p">,</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Experiment&quot;</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"Experiment"</span><span class="p">,</span>
         <span class="n">number_of_bins</span><span class="o">=</span><span class="n">number_of_bins</span><span class="p">,</span>
         <span class="n">quantile_limits</span><span class="o">=</span><span class="n">quantile_limits</span><span class="p">,</span>
         <span class="n">x_limits</span><span class="o">=</span><span class="n">x_limits</span><span class="p">,</span>
         <span class="n">y_limits</span><span class="o">=</span><span class="n">y_limits</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
 
     <span class="n">figure</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span>
         <span class="n">density_mesh</span><span class="p">,</span>
         <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span>
-        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Counts&quot;</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">"Counts"</span><span class="p">,</span>
         <span class="n">shrink</span><span class="o">=</span><span class="mf">0.85</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -898,9 +898,9 @@ log-scaled two-dimensional density maps.</p>
     <span class="n">medium_refractive_index</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">diameter_standard_deviation_fraction</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScattererCollection</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Create a scatterer collection from bead diameters and concentrations.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">()</span>
 
     <span class="k">for</span> <span class="n">diameter</span><span class="p">,</span> <span class="n">concentration</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">diameters</span><span class="p">,</span> <span class="n">concentrations</span><span class="p">):</span>
@@ -910,7 +910,7 @@ log-scaled two-dimensional density maps.</p>
         <span class="p">)</span>
 
         <span class="n">sphere_population</span> <span class="o">=</span> <span class="n">populations</span><span class="o">.</span><span class="n">SpherePopulation</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">diameter</span><span class="si">:</span><span class="s2">~P</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">diameter</span><span class="si">:</span><span class="s2">~P</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
             <span class="n">diameter</span><span class="o">=</span><span class="n">diameter_distribution</span><span class="p">,</span>
             <span class="n">refractive_index</span><span class="o">=</span><span class="n">refractive_index</span><span class="p">,</span>
             <span class="n">concentration</span><span class="o">=</span><span class="n">concentration</span><span class="p">,</span>
@@ -926,9 +926,9 @@ log-scaled two-dimensional density maps.</p>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">scatterer_collection</span><span class="p">:</span> <span class="n">ScattererCollection</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Fluidics</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Create the fluidics model used for the Rosetta bead simulation.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">flow_cell</span> <span class="o">=</span> <span class="n">FlowCell</span><span class="p">(</span>
         <span class="n">sample_volume_flow</span><span class="o">=</span><span class="n">SampleFlowRate</span><span class="o">.</span><span class="n">LOW</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="n">sheath_volume_flow</span><span class="o">=</span><span class="n">SheathFlowRate</span><span class="o">.</span><span class="n">LOW</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
@@ -959,9 +959,9 @@ log-scaled two-dimensional density maps.</p>
     <span class="n">time_constant</span><span class="p">,</span>
     <span class="n">include_shot_noise</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OptoElectronics</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Create the optical source, detectors, analog processing, and digitizer model.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">light_source</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">Gaussian</span><span class="p">(</span>
         <span class="n">waist_z</span><span class="o">=</span><span class="mf">10e-6</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">,</span>
         <span class="n">waist_y</span><span class="o">=</span><span class="mf">60e-6</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">,</span>
@@ -973,7 +973,7 @@ log-scaled two-dimensional density maps.</p>
 
     <span class="n">detectors</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">Detector</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;SSC&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">"SSC"</span><span class="p">,</span>
             <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
             <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span>
             <span class="n">responsivity</span><span class="o">=</span><span class="n">side_responsivity</span><span class="p">,</span>
@@ -981,7 +981,7 @@ log-scaled two-dimensional density maps.</p>
             <span class="n">current_noise_density</span><span class="o">=</span><span class="n">side_current_noise_density</span><span class="p">,</span>
         <span class="p">),</span>
         <span class="n">Detector</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;FSC&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">"FSC"</span><span class="p">,</span>
             <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
             <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
             <span class="n">cache_numerical_aperture</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span>
@@ -1003,17 +1003,17 @@ log-scaled two-dimensional density maps.</p>
         <span class="n">bit_depth</span><span class="o">=</span><span class="n">bit_depth</span><span class="p">,</span>
         <span class="n">use_auto_range</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">output_signed_codes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">channel_range_mode</span><span class="o">=</span><span class="s2">&quot;shared&quot;</span><span class="p">,</span>
+        <span class="n">channel_range_mode</span><span class="o">=</span><span class="s2">"shared"</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">digitizer</span><span class="o">.</span><span class="n">set_channel_voltage_range</span><span class="p">(</span>
-        <span class="n">channel_name</span><span class="o">=</span><span class="s2">&quot;FSC&quot;</span><span class="p">,</span>
+        <span class="n">channel_name</span><span class="o">=</span><span class="s2">"FSC"</span><span class="p">,</span>
         <span class="n">minimum_voltage</span><span class="o">=</span><span class="n">forward_voltage_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
         <span class="n">maximum_voltage</span><span class="o">=</span><span class="n">forward_voltage_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
     <span class="p">)</span>
 
     <span class="n">digitizer</span><span class="o">.</span><span class="n">set_channel_voltage_range</span><span class="p">(</span>
-        <span class="n">channel_name</span><span class="o">=</span><span class="s2">&quot;SSC&quot;</span><span class="p">,</span>
+        <span class="n">channel_name</span><span class="o">=</span><span class="s2">"SSC"</span><span class="p">,</span>
         <span class="n">minimum_voltage</span><span class="o">=</span><span class="n">side_voltage_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
         <span class="n">maximum_voltage</span><span class="o">=</span><span class="n">side_voltage_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
     <span class="p">)</span>
@@ -1051,11 +1051,11 @@ log-scaled two-dimensional density maps.</p>
     <span class="n">pre_buffer</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">post_buffer</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DigitalProcessing</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Create the digital processing model used to extract event features.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">dynamic_discriminator</span> <span class="o">=</span> <span class="n">discriminator</span><span class="o">.</span><span class="n">DynamicWindow</span><span class="p">(</span>
-        <span class="n">trigger_channel</span><span class="o">=</span><span class="s2">&quot;SSC&quot;</span><span class="p">,</span>
+        <span class="n">trigger_channel</span><span class="o">=</span><span class="s2">"SSC"</span><span class="p">,</span>
         <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span>
         <span class="n">pre_buffer</span><span class="o">=</span><span class="n">pre_buffer</span><span class="p">,</span>
         <span class="n">post_buffer</span><span class="o">=</span><span class="n">post_buffer</span><span class="p">,</span>
@@ -1067,9 +1067,9 @@ log-scaled two-dimensional density maps.</p>
         <span class="n">compute_area</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">allow_negative_area</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">support</span><span class="o">=</span><span class="n">peak_locator</span><span class="o">.</span><span class="n">FullWindowSupport</span><span class="p">(),</span>
-        <span class="n">polarity</span><span class="o">=</span><span class="s2">&quot;positive&quot;</span><span class="p">,</span>
-        <span class="n">height_mode</span><span class="o">=</span><span class="s2">&quot;peak_to_baseline&quot;</span><span class="p">,</span>
-        <span class="n">baseline_mode</span><span class="o">=</span><span class="s2">&quot;edge_mean&quot;</span><span class="p">,</span>
+        <span class="n">polarity</span><span class="o">=</span><span class="s2">"positive"</span><span class="p">,</span>
+        <span class="n">height_mode</span><span class="o">=</span><span class="s2">"peak_to_baseline"</span><span class="p">,</span>
+        <span class="n">baseline_mode</span><span class="o">=</span><span class="s2">"edge_mean"</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">DigitalProcessing</span><span class="p">(</span>
@@ -1104,9 +1104,9 @@ log-scaled two-dimensional density maps.</p>
     <span class="n">run_time</span><span class="p">,</span>
     <span class="n">include_shot_noise</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Simulate and process a flow cytometry acquisition for Rosetta bead populations.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">make_scatterer_collection</span><span class="p">(</span>
         <span class="n">diameters</span><span class="o">=</span><span class="n">diameters</span><span class="p">,</span>
         <span class="n">concentrations</span><span class="o">=</span><span class="n">concentrations</span><span class="p">,</span>
@@ -1195,7 +1195,7 @@ peaks and converted to a pandas dataframe.</p>
     <span class="n">time_constant</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">microsecond</span><span class="p">,</span>
     <span class="n">pre_buffer</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">post_buffer</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">threshold</span><span class="o">=</span><span class="s2">&quot;2.8sigma&quot;</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="o">=</span><span class="s2">"2.8sigma"</span><span class="p">,</span>
     <span class="n">run_time</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">millisecond</span><span class="p">,</span>
     <span class="n">include_shot_noise</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
@@ -1212,7 +1212,7 @@ peaks and converted to a pandas dataframe.</p>
 data directory. The path lookup is robust to documentation runners where
 <code class="docutils literal notranslate"><span class="pre">__file__</span></code> is not defined.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">experimental_data_path</span> <span class="o">=</span> <span class="n">find_experimental_data_path</span><span class="p">(</span>
-    <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;cytek_rosetta_beads.csv&quot;</span><span class="p">,</span>
+    <span class="n">file_name</span><span class="o">=</span><span class="s2">"cytek_rosetta_beads.csv"</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">experimental_dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">experimental_data_path</span><span class="p">)</span>
@@ -1227,8 +1227,8 @@ visual comparison reflects the same feature space.</p>
     <span class="n">plot_simulation_experiment_comparison</span><span class="p">(</span>
         <span class="n">simulation_dataframe</span><span class="o">=</span><span class="n">simulation_dataframe</span><span class="p">,</span>
         <span class="n">experimental_dataframe</span><span class="o">=</span><span class="n">experimental_dataframe</span><span class="p">,</span>
-        <span class="n">x_column_name</span><span class="o">=</span><span class="s2">&quot;FSC-H&quot;</span><span class="p">,</span>
-        <span class="n">y_column_name</span><span class="o">=</span><span class="s2">&quot;SSC-H&quot;</span><span class="p">,</span>
+        <span class="n">x_column_name</span><span class="o">=</span><span class="s2">"FSC-H"</span><span class="p">,</span>
+        <span class="n">y_column_name</span><span class="o">=</span><span class="s2">"SSC-H"</span><span class="p">,</span>
         <span class="n">number_of_bins</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
         <span class="n">quantile_limits</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
         <span class="n">x_limits</span><span class="o">=</span><span class="p">(</span><span class="mf">1e1</span><span class="p">,</span> <span class="mf">5e6</span><span class="p">),</span>
@@ -1238,7 +1238,7 @@ visual comparison reflects the same feature space.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_cytek_comparison_001.png" srcset="../../_images/sphx_glr_cytek_comparison_001.png" alt="Simulation, Experiment" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 9.007 seconds)</p>
+<img src="../../_images/sphx_glr_cytek_comparison_001.png" srcset="../../_images/sphx_glr_cytek_comparison_001.png" alt="Simulation, Experiment" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 9.341 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-studies-cytek-comparison-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/ea144ae4cacb6c94ac2bcc497350c603/cytek_comparison.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">cytek_comparison.ipynb</span></code></a></p>

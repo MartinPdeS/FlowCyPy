@@ -30,7 +30,7 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
+    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
@@ -519,7 +519,7 @@
 <div class="viewcode-block" id="FlowCytometer">
 <a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.flow_cytometer.FlowCytometer">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FlowCytometer</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    High level orchestrator for the flow cytometry simulation pipeline.</span>
 
 <span class="sd">    This class keeps only the persistent fluidic definition and the constant</span>
@@ -536,7 +536,7 @@
 <span class="sd">        Fluidic subsystem, including flow cell and population definitions.</span>
 <span class="sd">    background_power : pint.Quantity, optional</span>
 <span class="sd">        Constant optical background added to every detector channel.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="nd">@validate_units</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -553,7 +553,7 @@
         <span class="n">signal_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
         <span class="n">opto_electronics</span><span class="p">:</span> <span class="n">OptoElectronics</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Add explicit model detector signals to the optical power dictionary.</span>
 
 <span class="sd">        Parameters</span>
@@ -564,7 +564,7 @@
 <span class="sd">            Optical power signal dictionary updated in place.</span>
 <span class="sd">        opto_electronics : OptoElectronics</span>
 <span class="sd">            Opto electronic configuration.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">events</span> <span class="ow">in</span> <span class="n">event_collection</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">sampling_method</span><span class="p">,</span> <span class="n">populations</span><span class="o">.</span><span class="n">ExplicitModel</span><span class="p">):</span>
                 <span class="k">continue</span>
@@ -572,7 +572,7 @@
             <span class="k">if</span> <span class="n">events</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
                 <span class="k">continue</span>
 
-            <span class="n">time_array_seconds</span> <span class="o">=</span> <span class="n">signal_dict</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;second&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
+            <span class="n">time_array_seconds</span> <span class="o">=</span> <span class="n">signal_dict</span><span class="p">[</span><span class="s2">"Time"</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">"second"</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
 
             <span class="k">if</span> <span class="n">time_array_seconds</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">continue</span>
@@ -585,11 +585,11 @@
                     <span class="o">+</span> <span class="p">(</span><span class="n">time_array_seconds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">time_array_seconds</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="p">)</span>
 
-            <span class="n">event_times</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">get_quantity</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;second&quot;</span><span class="p">)</span>
-            <span class="n">event_velocities</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">get_quantity</span><span class="p">(</span><span class="s2">&quot;Velocity&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;meter / second&quot;</span><span class="p">)</span>
+            <span class="n">event_times</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">get_quantity</span><span class="p">(</span><span class="s2">"Time"</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">"second"</span><span class="p">)</span>
+            <span class="n">event_velocities</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">get_quantity</span><span class="p">(</span><span class="s2">"Velocity"</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">"meter / second"</span><span class="p">)</span>
             <span class="n">pulse_widths</span> <span class="o">=</span> <span class="n">opto_electronics</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">get_particle_width</span><span class="p">(</span>
                 <span class="n">event_velocities</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;second&quot;</span><span class="p">)</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">"second"</span><span class="p">)</span>
 
             <span class="n">event_time_values</span> <span class="o">=</span> <span class="n">event_times</span><span class="o">.</span><span class="n">magnitude</span>
             <span class="n">velocity_values</span> <span class="o">=</span> <span class="n">event_velocities</span><span class="o">.</span><span class="n">magnitude</span>
@@ -620,7 +620,7 @@
             <span class="n">wrapped_velocities</span> <span class="o">=</span> <span class="n">wrapped_velocity_values</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">second</span>
 
             <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="n">opto_electronics</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>
-                <span class="n">event_amplitudes</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">get_quantity</span><span class="p">(</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;watt&quot;</span><span class="p">)</span>
+                <span class="n">event_amplitudes</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">get_quantity</span><span class="p">(</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">"watt"</span><span class="p">)</span>
                 <span class="n">amplitude_values</span> <span class="o">=</span> <span class="n">event_amplitudes</span><span class="o">.</span><span class="n">magnitude</span>
                 <span class="n">wrapped_amplitude_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
                     <span class="p">[</span>
@@ -634,7 +634,7 @@
                     <span class="n">velocities</span><span class="o">=</span><span class="n">wrapped_velocities</span><span class="p">,</span>
                     <span class="n">pulse_centers</span><span class="o">=</span><span class="n">wrapped_times</span><span class="p">,</span>
                     <span class="n">pulse_amplitudes</span><span class="o">=</span><span class="n">wrapped_amplitude_values</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span>
-                    <span class="n">time_array</span><span class="o">=</span><span class="n">signal_dict</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">],</span>
+                    <span class="n">time_array</span><span class="o">=</span><span class="n">signal_dict</span><span class="p">[</span><span class="s2">"Time"</span><span class="p">],</span>
                     <span class="n">base_level</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span>
                 <span class="p">)</span>
 
@@ -646,7 +646,7 @@
         <span class="n">signal_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
         <span class="n">opto_electronics</span><span class="p">:</span> <span class="n">OptoElectronics</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Add gamma model detector signals to the optical power dictionary.</span>
 
 <span class="sd">        Parameters</span>
@@ -657,7 +657,7 @@
 <span class="sd">            Optical power signal dictionary updated in place.</span>
 <span class="sd">        opto_electronics : OptoElectronics</span>
 <span class="sd">            Opto electronic configuration.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">events</span> <span class="ow">in</span> <span class="n">event_collection</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">sampling_method</span><span class="p">,</span> <span class="n">populations</span><span class="o">.</span><span class="n">GammaModel</span><span class="p">):</span>
                 <span class="k">continue</span>
@@ -665,13 +665,13 @@
             <span class="k">if</span> <span class="n">events</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
                 <span class="k">continue</span>
 
-            <span class="n">expected_number_of_particles</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;ExpectedNumberOfParticles&quot;</span><span class="p">]</span>
+            <span class="n">expected_number_of_particles</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">"ExpectedNumberOfParticles"</span><span class="p">]</span>
 
             <span class="k">if</span> <span class="n">expected_number_of_particles</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">continue</span>
 
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">opto_electronics</span><span class="o">.</span><span class="n">detectors</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;opto_electronics must contain at least one detector.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"opto_electronics must contain at least one detector."</span><span class="p">)</span>
 
             <span class="n">reference_detector</span> <span class="o">=</span> <span class="n">opto_electronics</span><span class="o">.</span><span class="n">detectors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -680,21 +680,21 @@
             <span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
 
             <span class="n">reference_power_trace</span> <span class="o">=</span> <span class="n">opto_electronics</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">get_gamma_trace</span><span class="p">(</span>
-                <span class="n">time_array</span><span class="o">=</span><span class="n">signal_dict</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">],</span>
+                <span class="n">time_array</span><span class="o">=</span><span class="n">signal_dict</span><span class="p">[</span><span class="s2">"Time"</span><span class="p">],</span>
                 <span class="n">shape</span><span class="o">=</span><span class="n">expected_number_of_particles</span><span class="p">,</span>
                 <span class="n">scale</span><span class="o">=</span><span class="n">reference_mean_amplitude</span><span class="p">,</span>
-                <span class="n">mean_velocity</span><span class="o">=</span><span class="n">events</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;VelocityMean&quot;</span><span class="p">],</span>
+                <span class="n">mean_velocity</span><span class="o">=</span><span class="n">events</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">"VelocityMean"</span><span class="p">],</span>
             <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">reference_mean_amplitude</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;Gamma Model reference mean amplitude is zero, cannot normalize.&quot;</span>
+                    <span class="s2">"Gamma Model reference mean amplitude is zero, cannot normalize."</span>
                 <span class="p">)</span>
 
             <span class="n">particle_trace</span> <span class="o">=</span> <span class="n">reference_power_trace</span> <span class="o">/</span> <span class="n">reference_mean_amplitude</span>
 
-            <span class="n">events</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;ParticleTrace&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">particle_trace</span>
-            <span class="n">events</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;TimeTrace&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">signal_dict</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span>
+            <span class="n">events</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">"ParticleTrace"</span><span class="p">]</span> <span class="o">=</span> <span class="n">particle_trace</span>
+            <span class="n">events</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">"TimeTrace"</span><span class="p">]</span> <span class="o">=</span> <span class="n">signal_dict</span><span class="p">[</span><span class="s2">"Time"</span><span class="p">]</span>
 
             <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="n">opto_electronics</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>
                 <span class="n">mean_amplitude</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">get_quantity</span><span class="p">(</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
@@ -709,7 +709,7 @@
         <span class="n">event_collection</span><span class="p">:</span> <span class="n">EventCollection</span><span class="p">,</span>
         <span class="n">opto_electronics</span><span class="p">:</span> <span class="n">OptoElectronics</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Compute the full analog detector waveforms from an event collection.</span>
 
 <span class="sd">        Parameters</span>
@@ -725,7 +725,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        dict</span>
 <span class="sd">            Analog voltage signal dictionary.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_run_time</span><span class="p">(</span><span class="n">run_time</span><span class="p">)</span>
         <span class="n">power_signal_dict</span> <span class="o">=</span> <span class="n">opto_electronics</span><span class="o">.</span><span class="n">initialize_optical_signal_dict</span><span class="p">(</span>
             <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">,</span>
@@ -757,7 +757,7 @@
         <span class="n">digital_processing</span><span class="p">:</span> <span class="n">DigitalProcessing</span><span class="p">,</span>
         <span class="n">opto_electronics</span><span class="p">:</span> <span class="n">OptoElectronics</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunRecord</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Process an existing analog acquisition through the downstream signal</span>
 <span class="sd">        processing chain.</span>
 
@@ -779,7 +779,7 @@
 <span class="sd">        RunRecord</span>
 <span class="sd">            Run record containing the analog acquisition and all downstream</span>
 <span class="sd">            results that could be computed.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">run_record</span> <span class="o">=</span> <span class="n">RunRecord</span><span class="p">(</span>
             <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">,</span>
             <span class="n">event_collection</span><span class="o">=</span><span class="n">event_collection</span><span class="p">,</span>
@@ -804,9 +804,9 @@
         <span class="k">if</span> <span class="n">triggered_analog_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">run_record</span>
 
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">triggered_analog_dict</span><span class="p">[</span><span class="s2">&quot;segment_id&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">triggered_analog_dict</span><span class="p">[</span><span class="s2">"segment_id"</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                <span class="s2">&quot;No triggers detected. Returning analog signal without digital processing.&quot;</span>
+                <span class="s2">"No triggers detected. Returning analog signal without digital processing."</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">run_record</span>
 
@@ -833,7 +833,7 @@
         <span class="n">run_record</span><span class="p">:</span> <span class="n">RunRecord</span><span class="p">,</span>
         <span class="n">digital_processing</span><span class="p">:</span> <span class="n">DigitalProcessing</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunRecord</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Process an existing acquired run through the downstream signal</span>
 <span class="sd">        processing chain.</span>
 
@@ -861,16 +861,16 @@
 <span class="sd">            configuration.</span>
 <span class="sd">        ValueError</span>
 <span class="sd">            If the input run record does not contain analog signal data.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">run_record</span><span class="o">.</span><span class="n">opto_electronics</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;The provided run_record does not contain opto_electronics. &quot;</span>
-                <span class="s2">&quot;Make sure it was created with acquire() or manually populated.&quot;</span>
+                <span class="s2">"The provided run_record does not contain opto_electronics. "</span>
+                <span class="s2">"Make sure it was created with acquire() or manually populated."</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">run_record</span><span class="o">.</span><span class="n">signal</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">run_record</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">analog</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;The provided run_record does not contain analog signal data.&quot;</span>
+                <span class="s2">"The provided run_record does not contain analog signal data."</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_analog</span><span class="p">(</span>
@@ -890,7 +890,7 @@
         <span class="n">opto_electronics</span><span class="p">:</span> <span class="n">OptoElectronics</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunRecord</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Run the acquisition pipeline up to the analog stage.</span>
 
 <span class="sd">        Parameters</span>
@@ -906,7 +906,7 @@
 <span class="sd">            Run record containing the event collection, analog voltage</span>
 <span class="sd">            waveforms, and the opto electronic configuration used to produce</span>
 <span class="sd">            them.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_run_time</span><span class="p">(</span><span class="n">run_time</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_opto_electronics</span><span class="p">(</span><span class="n">opto_electronics</span><span class="p">)</span>
         <span class="n">event_collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fluidics</span><span class="o">.</span><span class="n">generate_event_collection</span><span class="p">(</span>
@@ -941,27 +941,27 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_run_time</span><span class="p">(</span><span class="n">run_time</span><span class="p">:</span> <span class="n">Time</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reject empty, negative, non-finite, or unitless run durations.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Reject empty, negative, non-finite, or unitless run durations."""</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">seconds</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">run_time</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;second&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span>
+            <span class="n">seconds</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">run_time</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">"second"</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;run_time must be a time quantity.&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">error</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"run_time must be a time quantity."</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">error</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">seconds</span><span class="p">)</span> <span class="ow">or</span> <span class="n">seconds</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;run_time must be finite and strictly positive.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"run_time must be finite and strictly positive."</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_opto_electronics</span><span class="p">(</span><span class="n">opto_electronics</span><span class="p">:</span> <span class="n">OptoElectronics</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate detector channels before starting an acquisition.&quot;&quot;&quot;</span>
-        <span class="n">detectors</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">opto_electronics</span><span class="p">,</span> <span class="s2">&quot;detectors&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""Validate detector channels before starting an acquisition."""</span>
+        <span class="n">detectors</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">opto_electronics</span><span class="p">,</span> <span class="s2">"detectors"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">detectors</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;opto_electronics must contain at least one detector.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"opto_electronics must contain at least one detector."</span><span class="p">)</span>
 
-        <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">detector</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="n">detectors</span><span class="p">]</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">detector</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="n">detectors</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Each detector must have a non-empty name.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Each detector must have a non-empty name."</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">names</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Detector names must be unique.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Detector names must be unique."</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FlowCytometer.run">
 <a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.flow_cytometer.FlowCytometer.run">[docs]</a>
@@ -972,7 +972,7 @@
         <span class="n">digital_processing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DigitalProcessing</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunRecord</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Run the full simulation pipeline from event generation to peak extraction.</span>
 
 <span class="sd">        Parameters</span>
@@ -988,7 +988,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        RunRecord</span>
 <span class="sd">            Full run record containing all available stages.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">digital_processing</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">digital_processing</span> <span class="o">=</span> <span class="n">DigitalProcessing</span><span class="p">()</span>
 
