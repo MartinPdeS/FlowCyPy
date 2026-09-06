@@ -29,7 +29,7 @@ abstract: >
 
 license: "MIT"
 
-repository-code: "https://github.com/your-user/FlowCyPy"
+repository-code: "https://github.com/MartinPdeS/FlowCyPy"
 
 keywords:
   - flow cytometry
