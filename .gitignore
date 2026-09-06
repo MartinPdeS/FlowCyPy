@@ -4,10 +4,14 @@
 
 # Except ...
 !.github
+!conda.recipe
+!conda.recipe/meta.yaml
 !FlowCyPy
 !development
 !docs
 !tests
+!tools
+!tools/*.py
 !.flake8
 !.gitignore
 !.pre-commit-config.yaml
@@ -23,6 +27,7 @@
 !makefile
 !CITATION.cff
 !.zenodo.json
+!CONTRIBUTING.md
 
 # But ignore docs/build inside docs and code
 docs/build/
