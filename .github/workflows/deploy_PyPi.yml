@@ -2,17 +2,14 @@ name: Deploy to PyPi
 
 on:
   push:
-    branches: [ "master" ]
-    tags: '*'
-  pull_request:
-    branches: [ "master" ]
+    tags: [ "v*" ]
 
 permissions:
-    contents: write
+  contents: read
 
 jobs:
   compiled_pypi_package:
-    uses: MartinPdeS/MPSActions/.github/workflows/publish_compiled_package_to_PyPi.yml@master
+    uses: MartinPdeS/MPSActions/.github/workflows/publish_compiled_package_to_PyPi.yml@v2
     with:
       python-version: "3.11"
       brew-package: fftw
