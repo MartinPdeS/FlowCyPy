@@ -4,6 +4,7 @@ name: Documentation
 on:
   push:
     branches: [ "**" ]
+    tags: [ "v*" ]
   pull_request:
     branches: [ "master" ]
 
@@ -24,4 +25,4 @@ jobs:
       python-version: "3.11"
       package-name: "FlowCyPy"
       apt-package: xvfb jq libfftw3-double3 libfftw3-dev
-      deploy-pages: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+      deploy-pages: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')) }}
