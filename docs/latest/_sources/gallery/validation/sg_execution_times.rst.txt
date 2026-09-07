@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**02:53.818** total execution time for 2 files **from gallery/validation**:
+**01:18.735** total execution time for 2 files **from gallery/validation**:
 
 .. container::
 
@@ -33,8 +33,8 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_gallery_validation_k_estimator.py` (``k_estimator.py``)
-     - 01:26.973
+     - 00:39.436
      - 0.0
    * - :ref:`sphx_glr_gallery_validation_j_estimator.py` (``j_estimator.py``)
-     - 01:26.845
+     - 00:39.298
      - 0.0
