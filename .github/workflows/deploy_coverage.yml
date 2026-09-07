@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   ManyLinux_x86_64:
-    uses: MartinPdeS/MPSActions/.github/workflows/publish_coverage.yml@v2
+    uses: MartinPdeS/MPSActions/.github/workflows/publish_coverage.yml@v5
     with:
       python-version: "3.11"
       apt-package: xvfb libfftw3-double3 libfftw3-dev
