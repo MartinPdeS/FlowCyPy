@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Check FlowCyPy's SCM-derived release metadata."""
 
-from __future__ import annotations
 
 import argparse
 from pathlib import Path

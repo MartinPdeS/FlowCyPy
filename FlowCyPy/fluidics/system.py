@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 from TypedUnit import Time, Frequency, Concentration
 import numpy as np

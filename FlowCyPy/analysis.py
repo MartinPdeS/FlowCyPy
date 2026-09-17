@@ -1,6 +1,5 @@
 """Analysis helpers for simulated flow-cytometry acquisitions."""
 
-from __future__ import annotations
 
 from typing import Iterable, Optional, Sequence
 

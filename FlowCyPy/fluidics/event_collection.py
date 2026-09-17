@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import annotations
 
 """Utilities for managing and visualizing collections of simulated events.
 
