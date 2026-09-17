@@ -1,0 +1,5 @@
+# Documentation and research notebooks should not determine repository language
+# statistics. Core Python and C++ sources remain counted.
+docs/** linguist-documentation
+notebook.ipynb linguist-documentation
+development/notebooks/** linguist-documentation
