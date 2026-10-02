@@ -494,24 +494,20 @@
                 <article class="bd-article">
                   
   <h1>Source code for FlowCyPy.flow_cytometer</h1><div class="highlight"><pre>
-<span></span><span class="ch">#!/usr/bin/env python</span>
-<span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Power</span><span class="p">,</span> <span class="n">Time</span><span class="p">,</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">validate_units</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluidics</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fluidics</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluidics</span><span class="w"> </span><span class="kn">import</span> <span class="n">populations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.digital_processing</span><span class="w"> </span><span class="kn">import</span> <span class="n">DigitalProcessing</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluidics</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fluidics</span><span class="p">,</span> <span class="n">populations</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluidics.event_collection</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventCollection</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.opto_electronics</span><span class="w"> </span><span class="kn">import</span> <span class="n">OptoElectronics</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.run_record</span><span class="w"> </span><span class="kn">import</span> <span class="n">RunRecord</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.digital_processing</span><span class="w"> </span><span class="kn">import</span> <span class="n">DigitalProcessing</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.sub_frames.acquisition</span><span class="w"> </span><span class="kn">import</span> <span class="n">AcquisitionDataFrame</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.sub_frames.peaks</span><span class="w"> </span><span class="kn">import</span> <span class="n">PeakDataFrame</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.sub_frames.triggered</span><span class="w"> </span><span class="kn">import</span> <span class="n">TriggerDataFrame</span>
-
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -542,7 +538,7 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">fluidics</span><span class="p">:</span> <span class="n">Fluidics</span><span class="p">,</span>
-        <span class="n">background_power</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Power</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliwatt</span><span class="p">,</span>
+        <span class="n">background_power</span><span class="p">:</span> <span class="n">Power</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliwatt</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fluidics</span> <span class="o">=</span> <span class="n">fluidics</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">background_power</span> <span class="o">=</span> <span class="n">background_power</span>
@@ -969,7 +965,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">run_time</span><span class="p">:</span> <span class="n">Time</span><span class="p">,</span>
         <span class="n">opto_electronics</span><span class="p">:</span> <span class="n">OptoElectronics</span><span class="p">,</span>
-        <span class="n">digital_processing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DigitalProcessing</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">digital_processing</span><span class="p">:</span> <span class="n">DigitalProcessing</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunRecord</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
