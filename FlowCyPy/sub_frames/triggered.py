@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-from typing import List, Mapping
+from collections.abc import Mapping
 
 import pandas as pd
 
@@ -122,7 +121,7 @@ class TriggerDataFrame(pd.DataFrame):
             raise ValueError("data_dict['Time'] must have a 'magnitude' attribute.")
 
         detector_names = [
-            key for key in data_dict.keys() if key not in ["segment_id", "Time"]
+            key for key in data_dict if key not in ["segment_id", "Time"]
         ]
 
         if len(detector_names) == 0:
@@ -176,7 +175,7 @@ class TriggerDataFrame(pd.DataFrame):
         return trigger_dataframe
 
     @property
-    def detector_names(self) -> List[str]:
+    def detector_names(self) -> list[str]:
         """
         Return detector column names.
         """

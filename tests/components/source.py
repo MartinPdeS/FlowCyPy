@@ -1,9 +1,8 @@
 import math
 
 import pytest
+from FlowCyPy.opto_electronics.source import FlatTop, Gaussian
 
-
-from FlowCyPy.opto_electronics.source import Gaussian, FlatTop
 from FlowCyPy.units import ureg
 
 

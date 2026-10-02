@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 import matplotlib.pyplot as plt
-from MPSPlots import helper
-import seaborn as sns
 import pandas as pd
+import seaborn as sns
+from MPSPlots import helper
 
 
 class ClassifierDataFrame(pd.DataFrame):

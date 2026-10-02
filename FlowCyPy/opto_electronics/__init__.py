@@ -5,7 +5,7 @@ from pathlib import Path
 
 from FlowCyPy.units import ureg  # noqa: F401
 
-from .system import OptoElectronics, Digitizer, circuits, Detector, Amplifier, source
+from .system import Amplifier, Detector, Digitizer, OptoElectronics, circuits, source
 
 
 def _load_native_module(name: str):

@@ -1,13 +1,12 @@
+from enum import Enum
+
 from TypedUnit import FlowRate, Power, ureg
 
-from FlowCyPy.presets.detector import PMT
+from FlowCyPy import digital_processing, fluidics, opto_electronics
 from FlowCyPy.flow_cytometer import FlowCytometer
-from FlowCyPy import fluidics
-from FlowCyPy import opto_electronics
-from FlowCyPy import digital_processing
+from FlowCyPy.fluidics import SampleFlowRate, SheathFlowRate
+from FlowCyPy.presets.detector import PMT
 from FlowCyPy.run_record import RunRecord
-from FlowCyPy.fluidics import SheathFlowRate, SampleFlowRate
-from enum import Enum
 
 
 class FacsCanto:

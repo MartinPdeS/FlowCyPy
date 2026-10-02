@@ -1,8 +1,8 @@
-from typing import Any, List
+from typing import Any
 
 import numpy
 import pandas as pd
-from TypedUnit import Quantity, ureg
+from TypedUnit import ureg
 
 
 class PeakMetricsMixin:
@@ -26,8 +26,8 @@ class PeakMetricsMixin:
         return self.loc[detector_name, metrics].mean(axis=0)
 
     def get_sub_dataframe(
-        self, columns: List[str], rows: List[str]
-    ) -> tuple[pd.DataFrame, List[Any]]:
+        self, columns: list[str], rows: list[str]
+    ) -> tuple[pd.DataFrame, list[Any]]:
         """Extract detector rows and convert columns to compact units."""
         dataframe = self.loc[rows, columns].copy()
         units = []

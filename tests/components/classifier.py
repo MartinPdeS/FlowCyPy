@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 import pytest
+from FlowCyPy.digital_processing.classifier import DBScanClassifier, KmeansClassifier
 
-from FlowCyPy.digital_processing.classifier import KmeansClassifier, DBScanClassifier
 from FlowCyPy.sub_frames.classifier import ClassifierDataFrame
 
 
@@ -227,7 +227,7 @@ def test_kmeans_invalid_input_shape():
     """
     classifier = KmeansClassifier(2)
 
-    with pytest.raises(Exception):
+    with pytest.raises(AttributeError):
         classifier.run(
             dataframe=np.array([1.0, 2.0, 3.0]),
             features=["Height"],
@@ -247,7 +247,7 @@ def test_kmeans_empty_matrix():
         detectors=["forward", "side"],
     )
 
-    with pytest.raises(Exception):
+    with pytest.raises(RuntimeError):
         classifier.run(
             dataframe=empty_dataframe,
             features=["Height"],
@@ -388,7 +388,7 @@ def test_dbscan_invalid_input_shape_raises():
     """
     classifier = DBScanClassifier(epsilon=0.5, minimum_samples=5)
 
-    with pytest.raises(Exception):
+    with pytest.raises(AttributeError):
         classifier.run(
             dataframe=np.array([1.0, 2.0, 3.0]),
             features=["Height"],
@@ -408,7 +408,7 @@ def test_dbscan_empty_matrix_raises():
         detectors=["forward", "side"],
     )
 
-    with pytest.raises(Exception):
+    with pytest.raises(RuntimeError):
         classifier.run(
             dataframe=empty_dataframe,
             features=["Height"],

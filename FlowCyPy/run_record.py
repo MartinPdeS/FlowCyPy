@@ -1,12 +1,10 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 from dataclasses import dataclass, field
-from typing import Any, Optional
-from TypedUnit import Frequency, Time, Voltage
+from typing import Any
 
 import matplotlib.pyplot as plt
-import numpy as np
 import MPSPlots
+import numpy as np
+from TypedUnit import Frequency, Time, Voltage
 
 from FlowCyPy.fluidics.event_collection import EventCollection
 
@@ -96,7 +94,7 @@ class RunRecord:
         return int(np.sum(len(events) for events in self.event_collection))
 
     @property
-    def number_of_triggers(self) -> Optional[int]:
+    def number_of_triggers(self) -> int | None:
         """
         Return the number of triggered segments detected during the run.
 
@@ -112,7 +110,7 @@ class RunRecord:
         return len(self.signal.digital.groupby("SegmentID"))
 
     @property
-    def capture_ratio(self) -> Optional[float]:
+    def capture_ratio(self) -> float | None:
         """
         Return the ratio of detected triggers to simulated scatterers.
 
@@ -247,7 +245,7 @@ class RunRecord:
         return self.number_of_scatterers / self.run_time.to("second")
 
     @property
-    def trigger_rate(self) -> Optional[Frequency]:
+    def trigger_rate(self) -> Frequency | None:
         """
         Return the trigger rate over the acquisition interval.
 
@@ -520,9 +518,9 @@ class RunRecord:
 
     def plot_peaks(
         self,
-        x: tuple[str, str] = None,
-        y: tuple[str, str] = None,
-        z: tuple[str, str] = None,
+        x: tuple[str, str] | None = None,
+        y: tuple[str, str] | None = None,
+        z: tuple[str, str] | None = None,
         **kwargs,
     ) -> plt.Figure:
         """Plot peak features using the run peak dataframe.

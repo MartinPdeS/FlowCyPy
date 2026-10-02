@@ -1,44 +1,42 @@
 import math
-from typing import List
+
 import numpy as np
+from pydantic import ConfigDict
+from pydantic.dataclasses import dataclass
 from TypedUnit import (
-    Length,
-    Power,
     FlowRate,
     Frequency,
+    Length,
+    Power,
     Resistance,
     Time,
 )
-from pydantic import ConfigDict
-from pydantic.dataclasses import dataclass
 
-from FlowCyPy.units import ureg
+# Convenience exports used by the documented workflow examples.
+from FlowCyPy.digital_processing import (
+    DigitalProcessing,
+    classifier,  # noqa: F401
+    discriminator,
+    peak_locator,
+)
+from FlowCyPy.digital_processing.discriminator import BaseDiscriminator  # noqa: F401
+from FlowCyPy.flow_cytometer import FlowCytometer
 from FlowCyPy.fluidics import (
     FlowCell,
     Fluidics,
-    distributions,
+    distributions,  # noqa: F401
     populations,
-)  # noqa: F401
-
-from FlowCyPy.fluidics.populations import GammaModel, ExplicitModel  # noqa: F401
-
-from FlowCyPy.flow_cytometer import FlowCytometer
-from FlowCyPy.opto_electronics.source import Gaussian, FlatTop  # noqa: F401
+)
+from FlowCyPy.fluidics.populations import ExplicitModel, GammaModel  # noqa: F401
 from FlowCyPy.opto_electronics import (
-    Detector,
-    OptoElectronics,
     Amplifier,
-    circuits,
+    Detector,
     Digitizer,
+    OptoElectronics,
+    circuits,  # noqa: F401
 )
-
-from FlowCyPy.digital_processing import (
-    DigitalProcessing,
-    classifier,
-    peak_locator,
-    discriminator,
-)
-from FlowCyPy.digital_processing.discriminator import BaseDiscriminator
+from FlowCyPy.opto_electronics.source import FlatTop, Gaussian  # noqa: F401
+from FlowCyPy.units import ureg
 
 config_dict = ConfigDict(arbitrary_types_allowed=True, extra="forbid", kw_only=True)
 
@@ -62,20 +60,20 @@ class Workflow:
     height: Length
 
     # Opto-electronic parameters
-    detectors: List[Detector] = None
+    detectors: list[Detector] = None
     bit_depth: int
     use_auto_range: bool = True
     sampling_rate: Frequency
     background_power: Power = 0 * ureg.watt
 
     # Population parameters
-    population_list: List[populations.SpherePopulation] = None
+    population_list: list[populations.SpherePopulation] = None
     dilution_factor: float = 1
 
     # signal processing parameters
     gain: Resistance
     bandwidth: Frequency
-    analog_processing: List[object] = None
+    analog_processing: list[object] = None
     peak_locator: peak_locator.BasePeakLocator
     discriminator: discriminator.BaseDiscriminator
 

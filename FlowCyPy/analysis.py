@@ -1,7 +1,7 @@
 """Analysis helpers for simulated flow-cytometry acquisitions."""
 
 
-from typing import Iterable, Optional, Sequence
+from collections.abc import Iterable, Sequence
 
 import numpy as np
 import pandas as pd
@@ -103,8 +103,8 @@ class DetectionAnalyzer:
     def summary(
         self,
         run_records: Sequence,
-        population_names: Optional[Iterable[str]] = None,
-        condition_names: Optional[Sequence[str]] = None,
+        population_names: Iterable[str] | None = None,
+        condition_names: Sequence[str] | None = None,
     ) -> pd.DataFrame:
         """Return simulated counts, detected counts, and efficiencies.
 

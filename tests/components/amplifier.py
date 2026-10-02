@@ -1,9 +1,8 @@
-import math
 import numpy as np
 import pytest
 from FlowCyPy.opto_electronics.amplifier import Amplifier
 from pint import UnitRegistry
-
+from pint.errors import DimensionalityError
 
 ureg = UnitRegistry()
 
@@ -178,12 +177,12 @@ def test_reject_negative_current_noise_density():
 
 
 def test_reject_gain_with_wrong_units():
-    with pytest.raises(Exception):
+    with pytest.raises(DimensionalityError):
         Amplifier(gain=10.0 * ureg.volt)
 
 
 def test_reject_bandwidth_with_wrong_units():
-    with pytest.raises(Exception):
+    with pytest.raises(DimensionalityError):
         Amplifier(
             gain=1e6 * ureg.ohm,
             bandwidth=10.0 * ureg.volt,
@@ -191,7 +190,7 @@ def test_reject_bandwidth_with_wrong_units():
 
 
 def test_reject_voltage_noise_density_with_wrong_units():
-    with pytest.raises(Exception):
+    with pytest.raises(DimensionalityError):
         Amplifier(
             gain=1e6 * ureg.ohm,
             voltage_noise_density=1.0 * ureg.hertz,
@@ -199,7 +198,7 @@ def test_reject_voltage_noise_density_with_wrong_units():
 
 
 def test_reject_current_noise_density_with_wrong_units():
-    with pytest.raises(Exception):
+    with pytest.raises(DimensionalityError):
         Amplifier(
             gain=1e6 * ureg.ohm,
             current_noise_density=1.0 * ureg.hertz,

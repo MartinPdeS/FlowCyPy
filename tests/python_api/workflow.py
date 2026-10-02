@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 import matplotlib
 
@@ -11,27 +10,28 @@ import numpy as np
 import pytest
 
 from FlowCyPy import FlowCytometer
-from FlowCyPy.workflow import Workflow
-from FlowCyPy.digital_processing import DigitalProcessing
-from FlowCyPy.digital_processing import discriminator
-from FlowCyPy.digital_processing import peak_locator
-from FlowCyPy.fluidics import FlowCell
-from FlowCyPy.fluidics import Fluidics
-from FlowCyPy.fluidics import ScattererCollection
-from FlowCyPy.fluidics import distributions
-from FlowCyPy.fluidics import populations
+from FlowCyPy.digital_processing import DigitalProcessing, discriminator, peak_locator
+from FlowCyPy.fluidics import (
+    FlowCell,
+    Fluidics,
+    ScattererCollection,
+    distributions,
+    populations,
+)
 from FlowCyPy.fluidics.event_collection import EventCollection
-from FlowCyPy.opto_electronics import Amplifier
-from FlowCyPy.opto_electronics import Detector
-from FlowCyPy.opto_electronics import Digitizer
-from FlowCyPy.opto_electronics import OptoElectronics
-from FlowCyPy.opto_electronics import circuits
-from FlowCyPy.opto_electronics import source
+from FlowCyPy.opto_electronics import (
+    Amplifier,
+    Detector,
+    Digitizer,
+    OptoElectronics,
+    circuits,
+    source,
+)
 from FlowCyPy.run_record import RunRecord
 from FlowCyPy.sub_frames.peaks import PeakDataFrame
 from FlowCyPy.units import ureg
+from FlowCyPy.workflow import Workflow
 from tests.python_api.event_collection import make_population_events
-
 
 # ----------------- FIXTURES -----------------
 
@@ -475,6 +475,7 @@ def test_peak_plot_dependencies_are_called_without_rendering(
 
     with patch.object(run_record, "plot_analog", autospec=True) as mocked_plot_analog:
         run_record.plot_analog()
+        mocked_plot_analog.assert_called_once_with()
 
     dynamic_window_discriminator = make_dynamic_window_discriminator()
 

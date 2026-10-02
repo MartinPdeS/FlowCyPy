@@ -1,6 +1,7 @@
+import math
+
 import numpy as np
 import pytest
-import math
 
 from FlowCyPy.digital_processing import peak_locator
 

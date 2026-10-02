@@ -1,9 +1,9 @@
 import numpy as np
 import pytest
+from FlowCyPy.opto_electronics.source import Gaussian
 from TypedUnit import ureg
 
 from FlowCyPy.opto_electronics import Detector, Digitizer
-from FlowCyPy.opto_electronics.source import Gaussian
 
 
 class PhysicalConstant:

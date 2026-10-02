@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 
 """Utilities for managing and visualizing collections of simulated events.
@@ -17,19 +15,21 @@ The class is intentionally lightweight: it stores the population event blocks
 and computes derived dataframes or figures on demand.
 """
 
+from __future__ import annotations
+
+from collections.abc import Iterator, Mapping
 from dataclasses import dataclass, field
-from collections.abc import Mapping
-from typing import Any, Iterator, List, Optional, Union
+from typing import TYPE_CHECKING, Any
 
 import matplotlib.pyplot as plt
+import MPSPlots
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import MPSPlots
 
 from FlowCyPy.sub_frames.events import EventDataFrame
+
 from .populations import ExplicitModel, GammaModel
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .population_events import PopulationEvents
@@ -75,7 +75,7 @@ class EventCollection:
         """Return ``True`` when all stored event blocks are empty."""
         return all(events.empty for events in self.events_list)
 
-    def copy(self) -> "EventCollection":
+    def copy(self) -> EventCollection:
         """Return a detached copy of the event collection.
 
         Returns
@@ -91,7 +91,7 @@ class EventCollection:
         self,
         column_units: dict[str, Any],
         inplace: bool = True,
-    ) -> "EventCollection":
+    ) -> EventCollection:
         """
         Convert stored dataframe columns to the requested units.
 
@@ -155,7 +155,7 @@ class EventCollection:
     def get_population_events(
         self,
         population_name: str,
-    ) -> Optional[PopulationEvents]:
+    ) -> PopulationEvents | None:
         """Return the event block matching a population name.
 
         Parameters
@@ -176,7 +176,7 @@ class EventCollection:
 
     def _get_selected_events(
         self,
-        filter_population: Optional[List[str]] = None,
+        filter_population: list[str] | None = None,
     ) -> list[PopulationEvents]:
         """Return the non-empty event blocks selected for an operation.
 
@@ -288,7 +288,7 @@ class EventCollection:
 
     def _build_dataframe_and_units(
         self,
-        filter_population: Optional[List[str]] = None,
+        filter_population: list[str] | None = None,
     ) -> tuple[pd.DataFrame, dict[str, Any]]:
         """Build a population-indexed dataframe aligned in common units.
 
@@ -356,7 +356,7 @@ class EventCollection:
 
     def _get_population_weight_map(
         self,
-        filter_population: Optional[List[str]] = None,
+        filter_population: list[str] | None = None,
     ) -> dict[str, float]:
         """Return concentration-based plotting weights by population.
 
@@ -481,7 +481,7 @@ class EventCollection:
         self,
         ax,
         time_units: str,
-        filter_population: Optional[List[str]] = None,
+        filter_population: list[str] | None = None,
     ) -> None:
         """Draw a time-domain population overview on an existing axis.
 
@@ -524,7 +524,7 @@ class EventCollection:
 
     def get_concatenated_dataframe(
         self,
-        filter_population: Optional[List[str]] = None,
+        filter_population: list[str] | None = None,
     ) -> EventDataFrame:
         """Return all selected event blocks as one unit-aware dataframe.
 
@@ -549,9 +549,9 @@ class EventCollection:
 
     def plot(
         self,
-        x: str = None,
-        y: str = None,
-        z: str = None,
+        x: str | None = None,
+        y: str | None = None,
+        z: str | None = None,
         **kwargs,
     ) -> plt.Figure:
         """Dispatch to a 1D, 2D, or 3D plotting helper.
@@ -591,8 +591,8 @@ class EventCollection:
         self,
         x: str = "Diameter",
         kde: bool = False,
-        bins: Optional[int] = 50,
-        color: Optional[Union[str, dict]] = None,
+        bins: int | None = 50,
+        color: str | dict | None = None,
         xscale: str = "linear",
         yscale: str = "linear",
         figure_size: tuple[float, float] = (6, 6),
@@ -602,8 +602,8 @@ class EventCollection:
         ylabel: str | None = None,
         xlim: tuple[float, float] | None = None,
         ylim: tuple[float, float] | None = None,
-        filter_population: Optional[List[str]] = None,
-        binrange: Optional[tuple] = None,
+        filter_population: list[str] | None = None,
+        binrange: tuple | None = None,
         common_norm: bool = False,
         common_bins: bool = False,
         scale_by_concentration: bool = False,
@@ -788,7 +788,7 @@ class EventCollection:
         ylabel: str | None = None,
         xlim: tuple[float, float] | None = None,
         ylim: tuple[float, float] | None = None,
-        filter_population: Optional[List[str]] = None,
+        filter_population: list[str] | None = None,
     ) -> plt.Figure:
         """Plot a 2D population distribution with marginal histograms.
 
@@ -956,7 +956,7 @@ class EventCollection:
         z: str,
         hue: str = "Population",
         alpha: float = 0.8,
-        filter_population: Optional[List[str]] = None,
+        filter_population: list[str] | None = None,
     ) -> plt.Figure:
         """Plot a 3D population scatter distribution.
 

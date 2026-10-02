@@ -1,5 +1,5 @@
 try:
-    from ._version import version as __version__  # noqa: F401
+    from ._version import version as __version__
 
 except ImportError:
     __version__ = "0.0.0"
@@ -42,7 +42,8 @@ def __getattr__(name: str):
     globals()[name] = value
     return value
 
-__all__ = [
+# Preserve the established public export order.
+__all__ = [  # noqa: RUF022
     "__version__",
     "FlowCytometer",
     "Workflow",

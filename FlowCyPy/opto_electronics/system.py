@@ -1,16 +1,15 @@
-from typing import List
 
-from TypedUnit import Time, Power
 import numpy as np
 from pydantic import ConfigDict
 from pydantic.dataclasses import dataclass
+from TypedUnit import Power, Time
 
-from . import source, circuits
+from FlowCyPy.fluidics.event_collection import EventCollection
+
+from . import circuits, source
 from .amplifier import Amplifier
 from .detector import Detector
 from .digitizer import Digitizer
-from FlowCyPy.fluidics.event_collection import EventCollection
-
 
 config_dict = ConfigDict(
     arbitrary_types_allowed=True,
@@ -42,11 +41,11 @@ class OptoElectronics:
         List of analog processing circuits applied to the signals.
     """
 
-    detectors: List[Detector]
+    detectors: list[Detector]
     source: source.BaseSource
     amplifier: Amplifier
     digitizer: Digitizer
-    analog_processing: List[circuits.BaseCircuit] = tuple()
+    analog_processing: list[circuits.BaseCircuit] = ()
 
     def initialize_optical_signal_dict(
         self, run_time: Time, background_power: Power

@@ -1,11 +1,9 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 from pathlib import Path
 
 import FlowCyPy
 
-__all__ = ["root_path", "project_path", "doc_path", "doc_css_path", "logo_path"]
+__all__ = ["doc_css_path", "doc_path", "logo_path", "project_path", "root_path"]
 
 root_path = Path(FlowCyPy.__path__[0])
 

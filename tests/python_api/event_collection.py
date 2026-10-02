@@ -1,9 +1,9 @@
+import matplotlib.pyplot as plt
 import numpy as np
 import pytest
-import matplotlib.pyplot as plt
+from FlowCyPy.fluidics.population_events import PopulationEvents
 
 from FlowCyPy.fluidics.event_collection import EventCollection
-from FlowCyPy.fluidics.population_events import PopulationEvents
 from FlowCyPy.sub_frames.events import EventDataFrame
 from FlowCyPy.units import ureg
 

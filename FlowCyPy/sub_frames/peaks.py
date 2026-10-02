@@ -1,17 +1,15 @@
-from typing import Any, List, Optional, Tuple, Union
+from typing import Any
 
 import matplotlib.pyplot as plt
 import MPSPlots
-from MPSPlots import helper
 import numpy
-import pandas as pd
-import seaborn as sns
-from TypedUnit import ureg
-
-from MPSPlots.styles import mps
 import numpy as np
+import pandas as pd
 import pint_pandas
+import seaborn as sns
+from MPSPlots import helper
 from TypedUnit import Quantity
+
 from .peak_metrics import PeakMetricsMixin
 
 
@@ -301,8 +299,8 @@ class PeakDataFrame(PeakMetricsMixin, pd.DataFrame):
         self,
         x: tuple[str, str],
         kde: bool = False,
-        bins: Optional[int] = 50,
-        color: Optional[Union[str, dict]] = None,
+        bins: int | None = 50,
+        color: str | dict | None = None,
         xscale: str = "linear",
         yscale: str = "linear",
         figure_size: tuple[float, float] = (6, 6),
@@ -312,8 +310,8 @@ class PeakDataFrame(PeakMetricsMixin, pd.DataFrame):
         ylabel: str | None = None,
         xlim: tuple[float, float] | None = None,
         ylim: tuple[float, float] | None = None,
-        binrange: Optional[tuple] = None,
-        clip_data: Optional[Union[str, Any]] = None,
+        binrange: tuple | None = None,
+        clip_data: str | Any | None = None,
     ) -> plt.Figure:
         """
         Plot a histogram distribution for one detector-feature pair.
@@ -460,7 +458,7 @@ class PeakDataFrame(PeakMetricsMixin, pd.DataFrame):
         hexbin_min_count: int = 1,
         hexbin_reduce_function=None,
         cmap: str = "Blues",
-        clip_data: Optional[Union[str, Any]] = None,
+        clip_data: str | Any | None = None,
     ) -> tuple[plt.Figure, plt.Axes]:
         """
         Plot the joint distribution of one feature against another for two channels.
@@ -651,17 +649,17 @@ class PeakDataFrame(PeakMetricsMixin, pd.DataFrame):
                         )
 
                 elif plot_type == "hexbin":
-                    hexbin_kwargs = dict(
-                        x=x_values,
-                        y=y_values,
-                        gridsize=hexbin_grid_size,
-                        cmap=cmap,
-                        mincnt=hexbin_min_count,
-                        reduce_C_function=hexbin_reduce_function,
-                        linewidths=0.0,
-                        xscale=xscale,
-                        yscale=yscale,
-                    )
+                    hexbin_kwargs = {
+                        "x": x_values,
+                        "y": y_values,
+                        "gridsize": hexbin_grid_size,
+                        "cmap": cmap,
+                        "mincnt": hexbin_min_count,
+                        "reduce_C_function": hexbin_reduce_function,
+                        "linewidths": 0.0,
+                        "xscale": xscale,
+                        "yscale": yscale,
+                    }
 
                     if color_scale == "log":
                         hexbin_kwargs["bins"] = "log"

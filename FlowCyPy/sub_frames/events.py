@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, ClassVar
 
 import numpy as np
 import pandas as pd
@@ -13,7 +13,7 @@ class EventDataFrame(pd.DataFrame):
     if that column has a registered unit.
     """
 
-    _metadata = ["scatterer_type"]
+    _metadata: ClassVar[list[str]] = ["scatterer_type"]
 
     @property
     def _constructor(self):

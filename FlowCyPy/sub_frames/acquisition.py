@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-from typing import List, Mapping
+from collections.abc import Mapping
 
 import pandas as pd
 from TypedUnit import Time, Voltage, ureg
@@ -77,9 +76,13 @@ class AcquisitionDataFrame(pd.DataFrame):
         """
         output = super().__getitem__(key)
 
-        if isinstance(key, str) and key in self.columns:
-            if "units" in self.attrs and key in self.attrs["units"]:
-                return output.to_numpy() * self.attrs["units"][key]
+        if (
+            isinstance(key, str)
+            and key in self.columns
+            and "units" in self.attrs
+            and key in self.attrs["units"]
+        ):
+            return output.to_numpy() * self.attrs["units"][key]
 
         return output
 
@@ -216,7 +219,7 @@ class AcquisitionDataFrame(pd.DataFrame):
         return self.attrs["units"][column]
 
     @property
-    def detector_names(self) -> List[str]:
+    def detector_names(self) -> list[str]:
         """
         Return detector column names.
         """

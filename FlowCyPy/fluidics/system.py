@@ -1,11 +1,18 @@
+from __future__ import annotations
 
-from TypedUnit import Time, Frequency, Concentration
+from typing import TYPE_CHECKING
+
 import numpy as np
+from TypedUnit import Concentration, Frequency, Time
+
+from FlowCyPy.sub_frames.events import EventDataFrame
 
 from .event_collection import EventCollection
 from .flow_cell import FlowCell
 from .populations import BasePopulation, ExplicitModel, GammaModel
-from FlowCyPy.sub_frames.events import EventDataFrame
+
+if TYPE_CHECKING:
+    from .population_events import PopulationEvents
 
 
 class Fluidics:

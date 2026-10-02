@@ -1,15 +1,15 @@
 import importlib.machinery
 import importlib.util
 import sys
-from pathlib import Path
 from enum import Enum
+from pathlib import Path
 
 from FlowCyPy.units import ureg
 
+from . import distributions, populations
 from .flow_cell import FlowCell
-from . import populations
-from . import distributions
 from .system import Fluidics
+
 
 class SheathFlowRate(Enum):
     """Preset sheath-flow operating points used by convenience APIs."""
@@ -64,8 +64,8 @@ __all__ = [
     "FlowCell",
     "Fluidics",
     "PopulationEvents",
-    "ScattererCollection",
     "SampleFlowRate",
+    "ScattererCollection",
     "SheathFlowRate",
     "distributions",
     "populations",

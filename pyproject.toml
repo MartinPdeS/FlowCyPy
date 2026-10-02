@@ -117,3 +117,12 @@ test-command = 'python -m pytest {project}/tests --config-file={project}/pytest.
 archs = ["AMD64"]
 build = ["cp311-*", "cp312-*", "cp313-*"]
 test-command = 'python -m pytest {project}/tests --config-file={project}/pytest.ini'
+
+[tool.ruff]
+target-version = "py311"
+# setuptools-scm regenerates this file during every build.
+extend-exclude = ["FlowCyPy/_version.py"]
+
+[tool.ruff.lint]
+# FlowCyPy is the established public import name.
+ignore = ["N999"]

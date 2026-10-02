@@ -1,15 +1,15 @@
 import numpy as np
 import pytest
 
-from FlowCyPy.units import ureg
 import FlowCyPy
 from FlowCyPy.fluidics import (
-    Fluidics,
     FlowCell,
+    Fluidics,
     ScattererCollection,
     distributions,
     populations,
 )
+from FlowCyPy.units import ureg
 
 FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
 
@@ -71,6 +71,7 @@ def test_generate_distributions_size(dist, default_flow_cell):
     fluidics = Fluidics(
         scatterer_collection=scatterer_collection, flow_cell=default_flow_cell
     )
+    assert fluidics.flow_cell is default_flow_cell
 
 
 @pytest.mark.parametrize("dist", distributions_list, ids=lambda x: x.__class__)

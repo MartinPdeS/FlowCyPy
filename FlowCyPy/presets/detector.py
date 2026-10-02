@@ -1,6 +1,15 @@
+from FlowCyPy.opto_electronics.detector import Detector
 from FlowCyPy.units import ureg
 
-from FlowCyPy.opto_electronics.detector import Detector
+_PMT_DEFAULT_RESPONSIVITY = ureg.Quantity(0.2, ureg.ampere / ureg.watt)
+_PMT_DEFAULT_DARK_CURRENT = ureg.Quantity(1e-9, ureg.ampere)
+_PMT_DEFAULT_CURRENT_NOISE_DENSITY = ureg.Quantity(0.0, ureg.ampere / ureg.hertz**0.5)
+_PIN_DEFAULT_RESPONSIVITY = ureg.Quantity(0.5, ureg.ampere / ureg.watt)
+_PIN_DEFAULT_DARK_CURRENT = ureg.Quantity(1e-8, ureg.ampere)
+_PIN_DEFAULT_CURRENT_NOISE_DENSITY = ureg.Quantity(0.0, ureg.ampere / ureg.hertz**0.5)
+_APD_DEFAULT_RESPONSIVITY = ureg.Quantity(0.7, ureg.ampere / ureg.watt)
+_APD_DEFAULT_DARK_CURRENT = ureg.Quantity(5e-9, ureg.ampere)
+_APD_DEFAULT_CURRENT_NOISE_DENSITY = ureg.Quantity(0.0, ureg.ampere / ureg.hertz**0.5)
 
 
 class PMT:
@@ -11,11 +20,9 @@ class PMT:
         name: str,
         phi_angle: ureg.Quantity,
         numerical_aperture: ureg.Quantity,
-        responsivity: ureg.Quantity = ureg.Quantity(0.2, ureg.ampere / ureg.watt),
-        dark_current: ureg.Quantity = ureg.Quantity(1e-9, ureg.ampere),
-        current_noise_density: ureg.Quantity = ureg.Quantity(
-            0.0, ureg.ampere / ureg.hertz**0.5
-        ),
+        responsivity: ureg.Quantity = _PMT_DEFAULT_RESPONSIVITY,
+        dark_current: ureg.Quantity = _PMT_DEFAULT_DARK_CURRENT,
+        current_noise_density: ureg.Quantity = _PMT_DEFAULT_CURRENT_NOISE_DENSITY,
         **kwargs,
     ):
         """Create a :class:`Detector` configured with PMT-like defaults."""
@@ -39,11 +46,9 @@ class PIN:
         name: str,
         phi_angle: ureg.Quantity,
         numerical_aperture: ureg.Quantity,
-        responsivity=ureg.Quantity(
-            0.5, ureg.ampere / ureg.watt
-        ),  # Higher responsivity for PIN
-        dark_current=ureg.Quantity(1e-8, ureg.ampere),  # Slightly higher dark current
-        current_noise_density=ureg.Quantity(0.0, ureg.ampere / ureg.hertz**0.5),
+        responsivity=_PIN_DEFAULT_RESPONSIVITY,  # Higher responsivity for PIN
+        dark_current=_PIN_DEFAULT_DARK_CURRENT,  # Slightly higher dark current
+        current_noise_density=_PIN_DEFAULT_CURRENT_NOISE_DENSITY,
         **kwargs,
     ):
         """Create a :class:`Detector` configured with PIN-photodiode defaults."""
@@ -67,11 +72,9 @@ class APD:
         name: str,
         phi_angle: ureg.Quantity,
         numerical_aperture: ureg.Quantity,
-        responsivity=ureg.Quantity(
-            0.7, ureg.ampere / ureg.watt
-        ),  # APDs often have high responsivity
-        dark_current=ureg.Quantity(5e-9, ureg.ampere),
-        current_noise_density=ureg.Quantity(0.0, ureg.ampere / ureg.hertz**0.5),
+        responsivity=_APD_DEFAULT_RESPONSIVITY,  # APDs often have high responsivity
+        dark_current=_APD_DEFAULT_DARK_CURRENT,
+        current_noise_density=_APD_DEFAULT_CURRENT_NOISE_DENSITY,
         **kwargs,
     ):
         """Create a :class:`Detector` configured with APD-like defaults."""

@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
-
 from PyMieSim.units import ureg
+
 from FlowCyPy.opto_electronics import Detector
 
 
@@ -243,7 +243,7 @@ def test_bandwidth_can_be_set_to_none():
 
 
 def test_rejects_unitless_phi_angle():
-    with pytest.raises(Exception):
+    with pytest.raises(TypeError):
         Detector(
             phi_angle=90.0,
             numerical_aperture=0.7,
@@ -251,7 +251,7 @@ def test_rejects_unitless_phi_angle():
 
 
 def test_rejects_unitless_gamma_angle():
-    with pytest.raises(Exception):
+    with pytest.raises(TypeError):
         Detector(
             phi_angle=90 * ureg.degree,
             numerical_aperture=0.7,
@@ -260,7 +260,7 @@ def test_rejects_unitless_gamma_angle():
 
 
 def test_rejects_unitless_responsivity():
-    with pytest.raises(Exception):
+    with pytest.raises(TypeError):
         Detector(
             phi_angle=90 * ureg.degree,
             numerical_aperture=0.7,
@@ -269,7 +269,7 @@ def test_rejects_unitless_responsivity():
 
 
 def test_rejects_unitless_dark_current():
-    with pytest.raises(Exception):
+    with pytest.raises(TypeError):
         Detector(
             phi_angle=90 * ureg.degree,
             numerical_aperture=0.7,
@@ -278,7 +278,7 @@ def test_rejects_unitless_dark_current():
 
 
 def test_rejects_unitless_bandwidth():
-    with pytest.raises(Exception):
+    with pytest.raises(TypeError):
         Detector(
             phi_angle=90 * ureg.degree,
             numerical_aperture=0.7,
@@ -294,12 +294,12 @@ def test_rejects_unitless_signal_in_apply_dark_current_noise():
         bandwidth=10 * ureg.megahertz,
     )
 
-    with pytest.raises(Exception):
+    with pytest.raises(AttributeError):
         detector.apply_dark_current_noise(np.array([0.0, 1e-9, 2e-9]))
 
 
 def test_rejects_negative_numerical_aperture():
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         Detector(
             phi_angle=90 * ureg.degree,
             numerical_aperture=-0.1,
@@ -307,7 +307,7 @@ def test_rejects_negative_numerical_aperture():
 
 
 def test_rejects_negative_cache_numerical_aperture():
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         Detector(
             phi_angle=90 * ureg.degree,
             numerical_aperture=0.7,
@@ -316,7 +316,7 @@ def test_rejects_negative_cache_numerical_aperture():
 
 
 def test_rejects_non_positive_sampling():
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         Detector(
             phi_angle=90 * ureg.degree,
             numerical_aperture=0.7,
@@ -325,7 +325,7 @@ def test_rejects_non_positive_sampling():
 
 
 def test_rejects_negative_responsivity():
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         Detector(
             phi_angle=90 * ureg.degree,
             numerical_aperture=0.7,
@@ -334,7 +334,7 @@ def test_rejects_negative_responsivity():
 
 
 def test_rejects_negative_dark_current():
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         Detector(
             phi_angle=90 * ureg.degree,
             numerical_aperture=0.7,
@@ -343,7 +343,7 @@ def test_rejects_negative_dark_current():
 
 
 def test_rejects_non_positive_bandwidth():
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         Detector(
             phi_angle=90 * ureg.degree,
             numerical_aperture=0.7,
@@ -361,7 +361,7 @@ def test_rejects_non_positive_method_bandwidth_in_apply_dark_current_noise():
 
     signal = np.array([1e-9, 2e-9, 3e-9]) * ureg.ampere
 
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         detector.apply_dark_current_noise(signal, bandwidth=0 * ureg.hertz)
 
 

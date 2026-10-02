@@ -1,10 +1,9 @@
 import numpy as np
 import pytest
-
 from FlowCyPy.digital_processing.peak_locator import (
+    FullWindowSupport,
     GlobalPeakLocator,
     SlidingWindowPeakLocator,
-    FullWindowSupport,
 )
 
 # ----------------- HELPER FUNCTIONS -----------------

@@ -3,7 +3,7 @@ from unittest.mock import patch
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
-from TypedUnit import ureg, Length
+from TypedUnit import Length, ureg
 
 import FlowCyPy
 from FlowCyPy.fluidics import distributions as dist
@@ -61,7 +61,6 @@ def test_number_of_samples(mock_show, distribution):
 
 def test_uniform_properties():
     """Test boundary conditions in the PDF generation."""
-    distribution = distributions[2]
 
 
 def test_normal_properties():

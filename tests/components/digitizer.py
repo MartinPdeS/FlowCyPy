@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
-
 from PyMieSim.units import ureg
+
 from FlowCyPy.opto_electronics import Digitizer
 
 
@@ -593,7 +593,7 @@ def test_shared_auto_range_is_not_polluted_by_segment_id_metadata():
 
 
 def test_rejects_invalid_channel_range_mode():
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         Digitizer(
             sampling_rate=100 * ureg.megahertz,
             channel_range_mode="not_a_mode",
@@ -601,7 +601,7 @@ def test_rejects_invalid_channel_range_mode():
 
 
 def test_rejects_unitless_sampling_rate():
-    with pytest.raises(Exception):
+    with pytest.raises(TypeError):
         Digitizer(
             sampling_rate=100e6,
             bandwidth=20 * ureg.megahertz,
@@ -609,7 +609,7 @@ def test_rejects_unitless_sampling_rate():
 
 
 def test_rejects_unitless_voltage_bounds():
-    with pytest.raises(Exception):
+    with pytest.raises(TypeError):
         Digitizer(
             sampling_rate=100 * ureg.megahertz,
             bandwidth=20 * ureg.megahertz,
@@ -623,7 +623,7 @@ def test_rejects_unitless_channel_voltage_range():
         sampling_rate=100 * ureg.megahertz,
     )
 
-    with pytest.raises(Exception):
+    with pytest.raises(TypeError):
         digitizer.set_channel_voltage_range("forward", -0.2, 1.5)
 
 
@@ -636,7 +636,7 @@ def test_rejects_unitless_signal():
         max_voltage=1.0 * ureg.volt,
     )
 
-    with pytest.raises(Exception):
+    with pytest.raises(TypeError):
         digitizer.process_signal(np.array([0.0, 0.5, 1.0]))
 
 

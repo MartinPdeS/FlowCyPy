@@ -1,8 +1,7 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-import FlowCyPy.units as _
-from . import discriminator
-from . import peak_locator
+# Initialize the shared unit registry before loading native processing modules.
+import FlowCyPy.units as _  # noqa: F401
+
+from . import discriminator, peak_locator
 
 
 class DigitalProcessing:

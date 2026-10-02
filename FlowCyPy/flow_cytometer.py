@@ -1,21 +1,17 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 import logging
 import math
-from typing import Optional
+
 import numpy as np
 from TypedUnit import Power, Time, ureg, validate_units
 
-from FlowCyPy.fluidics import Fluidics
-from FlowCyPy.fluidics import populations
+from FlowCyPy.digital_processing import DigitalProcessing
+from FlowCyPy.fluidics import Fluidics, populations
 from FlowCyPy.fluidics.event_collection import EventCollection
 from FlowCyPy.opto_electronics import OptoElectronics
 from FlowCyPy.run_record import RunRecord
-from FlowCyPy.digital_processing import DigitalProcessing
 from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
 from FlowCyPy.sub_frames.peaks import PeakDataFrame
 from FlowCyPy.sub_frames.triggered import TriggerDataFrame
-
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +40,7 @@ class FlowCytometer:
     def __init__(
         self,
         fluidics: Fluidics,
-        background_power: Optional[Power] = 0 * ureg.milliwatt,
+        background_power: Power | None = 0 * ureg.milliwatt,
     ):
         self.fluidics = fluidics
         self.background_power = background_power
@@ -457,7 +453,7 @@ class FlowCytometer:
         self,
         run_time: Time,
         opto_electronics: OptoElectronics,
-        digital_processing: Optional[DigitalProcessing] = None,
+        digital_processing: DigitalProcessing | None = None,
         random_state: int | np.random.Generator | None = None,
     ) -> RunRecord:
         """
