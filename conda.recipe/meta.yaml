@@ -29,21 +29,26 @@ requirements:
   host:
     - python {{ PY_VER }}*
     - scikit-build-core ~=0.3
-    - pybind11 ~=2.13
+    - pybind11 ~=2.13  # [py<314]
+    - pybind11 >=3.0.1,<4  # [py>=314]
     - python-build ~=1.2
     - setuptools_scm[toml] ~=8.0
-    - numpy >=2.0,<3
+    - numpy >=2.0,<3  # [py<314]
+    - numpy >=2.3.3,<3  # [py>=314]
     - fftw
     - pip
   run:
     - pip
     - python {{PY_VER}}*
-    - pandas ~=2.2
+    - pandas ~=2.2  # [py<314]
+    - pandas >=2.3.3,<4  # [py>=314]
     - seaborn ~=0.13
     - pydantic ~=2.9
-    - numpy >=2.0
+    - numpy >=2.0  # [py<314]
+    - numpy >=2.3.3,<3  # [py>=314]
     - pint ~=0.24
-    - martinpdes::pymiesim ==5.1.0
+    - martinpdes::pymiesim ==5.1.0  # [py<314]
+    - martinpdes::pymiesim >=5.8.0,<5.9  # [py>=314]
     - martinpdes::mpsplots >=1.8.9
     - martinpdes::typedunit
 
@@ -72,6 +77,7 @@ test:
   requires:
     - python {{ PY_VER }}*
     - python_abi 3.13.* *_cp313   # [py==313]
+    - python_abi 3.14.* *_cp314   # [py==314]
     - pytest >=0.6
     - pytest-cov >=2.0
     - pytest-json-report ==1.5

@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   release:
-    uses: MartinPdeS/MPSActions/.github/workflows/publish_release.yml@v5
+    uses: MartinPdeS/MPSActions/.github/workflows/publish_release.yml@v6
     with:
       pypi_python_version: "3.11"
       pypi_build_linux: true
@@ -17,7 +17,7 @@ jobs:
       pypi_build_windows: false
       pypi_apt_package: libfftw3-double3 libfftw3-dev
       pypi_brew_package: fftw
-      conda_python_versions: '["3.11", "3.12", "3.13"]'
+      conda_python_versions: '["3.11", "3.12", "3.13", "3.14"]'
       conda_os_list: '["ubuntu-latest", "macos-latest"]'
       conda_package_name: flowcypy
       conda_recipe_path: conda.recipe

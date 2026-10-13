@@ -35,6 +35,7 @@ classifiers = [
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
     'Programming Language :: Python :: 3.13',
+    'Programming Language :: Python :: 3.14',
     'Programming Language :: Python :: Implementation :: CPython',
     'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Science/Research',
@@ -57,7 +58,8 @@ dependencies = [
     "pydantic ~=2.9",
     "numpy >=2.0",
     'pint ~=0.24',
-    'PyMieSim ==5.2.0',
+    "PyMieSim ==5.2.0; python_version < '3.14'",
+    "PyMieSim >=5.8.0,<5.9; python_version >= '3.14'",
     'MPSPlots >=1.8.9',
     "TypedUnit"
 ]
@@ -95,28 +97,29 @@ dev = [
 [tool.cibuildwheel]
 build-frontend = "build"
 test-extras = ["testing"]
+environment = { MPLBACKEND="Agg" }
 
 
 [tool.cibuildwheel.linux]
 archs = ["x86_64"]
 before-build = "yum install -y fftw-devel"
-build = ["cp311-manylinux*", "cp312-manylinux*", "cp313-manylinux*", ]
+build = ["cp311-manylinux*", "cp312-manylinux*", "cp313-manylinux*", "cp314-manylinux*"]
 manylinux-x86_64-image = "manylinux_2_28"
 repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"
-test-command = "python -m pytest {project}/tests --config-file={project}/pytest.ini"
+test-command = "cd /tmp && python -m pytest --import-mode=importlib {project}/tests --config-file={project}/pytest.ini"
 
 [tool.cibuildwheel.macos]
 archs = ["arm64"]
 before-build = "brew install fftw"
-build = ["cp311-*", "cp312-*", "cp313-*"]
+build = ["cp311-*", "cp312-*", "cp313-*", "cp314-*"]
 repair-wheel-command = "delocate-wheel -w {dest_dir} -v {wheel}"  # --exclude=libomp.dylib
-test-command = 'python -m pytest {project}/tests --config-file={project}/pytest.ini'  # DYLD_PRINT_LIBRARIES=NO
+test-command = 'cd /tmp && python -m pytest --import-mode=importlib {project}/tests --config-file={project}/pytest.ini'  # DYLD_PRINT_LIBRARIES=NO
 
 
 [tool.cibuildwheel.windows]
 archs = ["AMD64"]
-build = ["cp311-*", "cp312-*", "cp313-*"]
-test-command = 'python -m pytest {project}/tests --config-file={project}/pytest.ini'
+build = ["cp311-*", "cp312-*", "cp313-*", "cp314-*"]
+test-command = 'cd /d %TEMP% && python -m pytest --import-mode=importlib {project}/tests --config-file={project}/pytest.ini'
 
 [tool.ruff]
 target-version = "py311"
