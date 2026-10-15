@@ -76,7 +76,7 @@ Use this class for layered particles composed of a core and a shell with distinc
    :show-inheritance:
 
 Population events
-++++++++++++++++
++++++++++++++++++
 
 Native population event blocks preserve the sampled dataframe, population
 metadata, and sampling method used to generate each group of events.
