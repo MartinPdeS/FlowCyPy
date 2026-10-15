@@ -264,8 +264,6 @@ class OptoElectronics:
         ----------
         analog_dict : dict
             Analog voltage signals.
-            digital_processing : DigitalProcessing
-                Processing configuration applied after digitization.
 
         Returns
         -------

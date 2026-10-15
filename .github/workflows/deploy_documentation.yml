@@ -5,14 +5,15 @@ on:
   push:
     branches: [ "**" ]
     tags: [ "v*" ]
+
   pull_request:
-    branches: [ "master" ]
+    branches:
+      - master
 
 concurrency:
-  group: documentation-build-${{ github.repository }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: documentation-build-${{ github.repository }}
+  cancel-in-progress: false
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: write
   pages: write
@@ -26,3 +27,73 @@ jobs:
       package-name: "FlowCyPy"
       apt-package: xvfb jq libfftw3-double3 libfftw3-dev
       deploy-pages: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')) }}
+
+  maintain_documentation:
+    needs: ManyLinux_x86_64
+    if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')) }}
+    runs-on: ubuntu-latest
+    env:
+      DOCUMENTATION_BRANCH: documentation_page
+
+    steps:
+      - name: Checkout documentation branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          fetch-depth: 0
+          ref: ${{ env.DOCUMENTATION_BRANCH }}
+
+      - name: Install documentation landing page
+        run: |
+          set -Eeuo pipefail
+          git show "${GITHUB_SHA}:docs/redirect.html" > index.html
+          test -s docs/latest/index.html
+
+      - name: Rebuild version switcher
+        run: |
+          set -Eeuo pipefail
+
+          base_url="https://martinpdes.github.io/FlowCyPy/docs"
+          mapfile -t versions < <(
+            find docs \
+              -mindepth 1 \
+              -maxdepth 1 \
+              -type d \
+              -printf "%f\n" \
+              | grep -v "^latest$" \
+              | sort -V -r
+          )
+
+          jq -n \
+            --arg base_url "${base_url}" \
+            --argjson versions "$(printf '%s\n' "${versions[@]}" | jq -R . | jq -s .)" \
+            '[
+              {
+                name: "latest",
+                version: "latest",
+                url: ($base_url + "/latest")
+              }
+            ] + [
+              $versions[] | {
+                name: .,
+                version: .,
+                url: ($base_url + "/" + .)
+              }
+            ]' > version_switcher.json
+
+          jq . version_switcher.json
+
+      - name: Commit documentation landing page
+        run: |
+          set -Eeuo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html version_switcher.json
+
+          if git diff --cached --quiet; then
+            echo "Documentation landing page and version switcher are up to date."
+            exit 0
+          fi
+
+          git commit -m "Update documentation landing page and version switcher [skip ci]"
+          git push origin "HEAD:${DOCUMENTATION_BRANCH}"

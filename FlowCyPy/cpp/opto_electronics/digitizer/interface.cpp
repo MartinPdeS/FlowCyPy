@@ -802,12 +802,8 @@ PYBIND11_MODULE(digitizer, module) {
             },
             py::arg("signal"),
             R"pbdoc(
-                Update internal range information using the persistent ``use_auto_range`` setting.
-
-                Parameters
-                ----------
-                signal : pint.Quantity
-                    One dimensional voltage signal.
+                Update range information from a one-dimensional voltage ``signal``
+                using the persistent ``use_auto_range`` setting.
             )pbdoc"
         )
         .def(
@@ -821,15 +817,9 @@ PYBIND11_MODULE(digitizer, module) {
             py::arg("signal"),
             py::arg("use_auto_range"),
             R"pbdoc(
-                Update internal range information with an explicit auto range override.
-
-                Parameters
-                ----------
-                signal : pint.Quantity
-                    One dimensional voltage signal.
-                use_auto_range : bool
-                    If ``True``, infer and store the signal min and max as the
-                    instance level voltage range.
+                Update range information from a one-dimensional voltage ``signal``
+                with an explicit ``use_auto_range`` override. If true, infer and
+                store the signal minimum and maximum as the instance voltage range.
             )pbdoc"
         )
         .def(
@@ -914,7 +904,8 @@ PYBIND11_MODULE(digitizer, module) {
 
                 Supported input formats
                 -----------------------
-                Flat acquisition dictionary:
+                Flat acquisition dictionary::
+
                     {
                         "Time": time_quantity,
                         "DetectorA": voltage_quantity,
@@ -931,9 +922,11 @@ PYBIND11_MODULE(digitizer, module) {
 
                 1. explicit channel range set with :meth:`set_channel_voltage_range`
                 2. if ``use_auto_range`` is ``True``:
+
                    a. shared inferred range when ``channel_range_mode == "shared"``
                    b. per channel inferred range when ``channel_range_mode == "per_channel"``
                 3. if ``use_auto_range`` is ``False``:
+
                    instance level ``min_voltage`` and ``max_voltage``
 
                 Parameters

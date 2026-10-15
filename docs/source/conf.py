@@ -7,29 +7,21 @@ import sys
 from pathlib import Path
 
 from MPSPlots.styles import use_mpsplots_style
-from sphinx_gallery.sorting import FileNameSortKey
 
 import FlowCyPy
-from FlowCyPy.directories import doc_css_path
 
 package_name = "FlowCyPy"
 version = FlowCyPy.__version__
+
+# Keep gallery reset hooks importable so Sphinx can cache its configuration.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 current_dir = Path("../")
 
 sys.path.append(str(current_dir.resolve()))
 
 
-def setup(app):
-    app.add_css_file(str(doc_css_path))
 
-
-autodoc_mock_imports = [
-    "numpy",
-    "pydantic",
-    "matplotlib",
-    "numpydoc",
-]
 
 
 project = package_name
@@ -38,6 +30,7 @@ author = "Martin Poinsinet de Sivry-Houle"
 
 extensions = [
     "sphinx.ext.mathjax",
+    "sphinx_design",
     "pyvista.ext.plot_directive",
     "sphinx_gallery.gen_gallery",
     "sphinx.ext.autosummary",
@@ -55,8 +48,8 @@ autosummary_generate = True
 napoleon_google_docstring = False
 napoleon_numpy_docstring = True
 
-html_logo = "_static/thumbnail.png"
-html_favicon = "_static/thumbnail.png"
+html_logo = "_static/logo.svg"
+html_favicon = "_static/favicon.ico"
 
 
 def reset_mpl(gallery_conf, fname):
@@ -79,8 +72,9 @@ sphinx_gallery_conf = {
     "filename_pattern": r".*\.py",
     "plot_gallery": True,
     "thumbnail_size": [600, 600],
+    "default_thumb_file": str(Path(__file__).resolve().parent / "_static" / "gallery-default.png"),
     "download_all_examples": False,
-    "reset_modules": reset_mpl,
+    "reset_modules": "conf.reset_mpl",
     "line_numbers": False,
     "remove_config_comments": True,
     "capture_repr": ("_repr_html_", "__repr__"),
@@ -94,7 +88,7 @@ autodoc_default_options = {
     "undoc-members": False,
     "show-inheritance": True,
     "exclude-members": "__annotations__",
-    "members-order": "bysource",
+    "member-order": "bysource",
 }
 
 autosectionlabel_prefix_document = True
@@ -116,28 +110,33 @@ show_authors = True
 pygments_style = "sphinx"
 
 # -- Sphinx-gallery configuration --------------------------------------------
-major, minor = version[:2]
+major, minor = version.split(".")[:2]
 binder_branch = f"v{major}.{minor}.x"
 
 html_context = {
     "github_url": "https://github.com",  # or your GitHub Enterprise site
-    "github_user": "FlowCyPy",
+    "github_user": "MartinPdeS",
     "github_repo": "FlowCyPy",
     "github_version": "master",
-    "doc_path": "doc/source",
+    "doc_path": "docs/source",
     "default_mode": "dark",
 }
 
 html_theme_options = dict()
 
-html_theme_options["logo"] = dict(text=package_name, image="_static/thumbnail.png")
-# html_theme_options["show_nav_level"] = 0
+html_theme_options["logo"] = dict(text=package_name, image="_static/logo.svg", alt_text="FlowCyPy logo")
+# html_theme_options["show_nav_level"] = 1
 
 
 html_theme_options.update(
     {
         "github_url": "https://github.com/MartinPdeS/FlowCyPy",
         "icon_links": [
+            {
+                "name": "GitHub",
+                "url": f"https://github.com/MartinPdeS/{package_name}",
+                "icon": "fa-brands fa-github",
+            },
             {
                 "name": "PyPI",
                 "url": f"https://pypi.org/project/{package_name}/",
@@ -151,7 +150,7 @@ html_theme_options.update(
         ],
         "navbar_align": "left",
         "navbar_end": ["version-switcher", "theme-switcher", "navbar-icon-links"],
-        "show_prev_next": False,
+        "show_prev_next": True,
         "show_version_warning_banner": True,
         # Footer
         "footer_start": ["copyright"],
@@ -159,7 +158,7 @@ html_theme_options.update(
         # Other
         "pygments_light_style": "default",
         "pygments_dark_style": "github-dark",
-        "show_nav_level": 2,
+        "show_nav_level": 1,
         "collapse_navigation": False,
     }
 )
@@ -204,7 +203,7 @@ epub_title = project
 
 html_static_path = ["_static"]
 templates_path = ["_templates"]
-html_css_files = ["_static/default.css"]
+html_css_files = ["default.css"]
 epub_exclude_files = ["search.html"]
 
 
