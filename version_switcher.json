@@ -1,52 +1,61 @@
 [
-  {
-    "name": "latest",
-    "version": "latest",
-    "url": "https://martinpdes.github.io/FlowCyPy/docs/latest"
-  },
-  {
-    "name": "v1.2.1",
-    "version": "v1.2.1",
-    "url": "https://martinpdes.github.io/FlowCyPy/docs/v1.2.1"
-  },
-  {
-    "name": "v1.2.0",
-    "version": "v1.2.0",
-    "url": "https://martinpdes.github.io/FlowCyPy/docs/v1.2.0"
-  },
-  {
-    "name": "v1.1.1",
-    "version": "v1.1.1",
-    "url": "https://martinpdes.github.io/FlowCyPy/docs/v1.1.1"
-  },
-  {
-    "name": "v1.1.0",
-    "version": "v1.1.0",
-    "url": "https://martinpdes.github.io/FlowCyPy/docs/v1.1.0"
-  },
-  {
-    "name": "v1.0.4",
-    "version": "v1.0.4",
-    "url": "https://martinpdes.github.io/FlowCyPy/docs/v1.0.4"
-  },
-  {
-    "name": "v1.0.3",
-    "version": "v1.0.3",
-    "url": "https://martinpdes.github.io/FlowCyPy/docs/v1.0.3"
-  },
-  {
-    "name": "v1.0.2",
-    "version": "v1.0.2",
-    "url": "https://martinpdes.github.io/FlowCyPy/docs/v1.0.2"
-  },
-  {
-    "name": "v1.0.1",
-    "version": "v1.0.1",
-    "url": "https://martinpdes.github.io/FlowCyPy/docs/v1.0.1"
-  },
-  {
-    "name": "v1.0.0",
-    "version": "v1.0.0",
-    "url": "https://martinpdes.github.io/FlowCyPy/docs/v1.0.0"
-  }
+{
+  "name": "latest",
+  "version": "latest",
+  "url": "https://martinpdes.github.io/FlowCyPy/docs/latest"
+}
+,
+{
+  "name": "v1.2.1",
+  "version": "v1.2.1",
+  "url": "https://martinpdes.github.io/FlowCyPy/docs/v1.2.1"
+}
+,
+{
+  "name": "v1.2.0",
+  "version": "v1.2.0",
+  "url": "https://martinpdes.github.io/FlowCyPy/docs/v1.2.0"
+}
+,
+{
+  "name": "v1.1.1",
+  "version": "v1.1.1",
+  "url": "https://martinpdes.github.io/FlowCyPy/docs/v1.1.1"
+}
+,
+{
+  "name": "v1.1.0",
+  "version": "v1.1.0",
+  "url": "https://martinpdes.github.io/FlowCyPy/docs/v1.1.0"
+}
+,
+{
+  "name": "v1.0.4",
+  "version": "v1.0.4",
+  "url": "https://martinpdes.github.io/FlowCyPy/docs/v1.0.4"
+}
+,
+{
+  "name": "v1.0.3",
+  "version": "v1.0.3",
+  "url": "https://martinpdes.github.io/FlowCyPy/docs/v1.0.3"
+}
+,
+{
+  "name": "v1.0.2",
+  "version": "v1.0.2",
+  "url": "https://martinpdes.github.io/FlowCyPy/docs/v1.0.2"
+}
+,
+{
+  "name": "v1.0.1",
+  "version": "v1.0.1",
+  "url": "https://martinpdes.github.io/FlowCyPy/docs/v1.0.1"
+}
+,
+{
+  "name": "v1.0.0",
+  "version": "v1.0.0",
+  "url": "https://martinpdes.github.io/FlowCyPy/docs/v1.0.0"
+}
 ]
