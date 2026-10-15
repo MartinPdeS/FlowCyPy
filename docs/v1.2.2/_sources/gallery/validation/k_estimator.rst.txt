@@ -468,8 +468,8 @@ Estimate K
 
 
     K estimation results
-    Estimated K: 0.23536220112128212 dimensionless
-    Linear intercept: -2.346665e+01
+    Estimated K: 0.23863384646320848 dimensionless
+    Linear intercept: -2.231803e+01
 
 
 
@@ -505,7 +505,7 @@ Plot estimation and diagnostics
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 26.958 seconds)
+   **Total running time of the script:** (0 minutes 41.563 seconds)
 
 
 .. _sphx_glr_download_gallery_validation_k_estimator.py:

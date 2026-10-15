@@ -471,8 +471,8 @@ Estimate J
 
 
     J estimation results
-    Estimated J: 0.12436538892913476 dimensionless
-    Linear intercept: 4.067642e-05
+    Estimated J: 0.11885783366134005 dimensionless
+    Linear intercept: 4.981062e-05
 
 
 
@@ -513,7 +513,7 @@ Plot estimation and diagnostics
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 26.871 seconds)
+   **Total running time of the script:** (0 minutes 41.230 seconds)
 
 
 .. _sphx_glr_download_gallery_validation_j_estimator.py:
