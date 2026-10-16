@@ -41,7 +41,14 @@ def main() -> int:
         if not VERSION_FILE.exists():
             raise RuntimeError("SCM versioning did not generate FlowCyPy/_version.py")
         run("git", "add", "FlowCyPy/_version.py")
-        run("git", "commit", "-m", f"Release {arguments.tag}")
+        run(
+            "git",
+            "commit",
+            "-m",
+            f"Release {arguments.tag}",
+            "-m",
+            "Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+        )
         run("git", "tag", "-a", arguments.tag, "-m", f"Release {arguments.tag}")
     except (RuntimeError, subprocess.CalledProcessError) as error:
         print(f"release aborted: {error}", file=sys.stderr)

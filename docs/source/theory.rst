@@ -39,16 +39,17 @@ Where:
 Mie theory also allows us to compute the **extinction cross-section** and **backscatter cross-section**,
 which are important for measuring attenuation and detecting backscatter signals in flow cytometry.
 
-### Phase Function
+Phase Function
+^^^^^^^^^^^^^^
 
 The phase function describes how light is scattered as a function of angle relative to the incident light. For spherical particles, the Mie phase function can be quite complex, but it generally shows more intense forward scattering than side or backward scattering. The intensity of scattered light at an angle :math:`\theta` is:
 
 .. math::
-    I(\theta) = \frac{I_0}{k^2 r^2} \left( |S_1(\theta)|^2 + |S_2(\theta)|^2 \right)
+    I(\theta, R) = \frac{I_0}{k^2 R^2} \left( |S_1(\theta)|^2 + |S_2(\theta)|^2 \right)
 
 Where:
 - :math:`I_0` is the intensity of the incident light,
-- :math:`r` is the radius of the particle,
+- :math:`R` is the distance from the particle to the observation point,
 - :math:`S_1(\theta)` and :math:`S_2(\theta)` are the scattering amplitudes for perpendicular and parallel polarized components, respectively.
 
 The **scattering amplitude functions** are derived from Mie theory and involve sums over spherical harmonics and complex exponential terms. These terms account for the interaction of light with both the surface and the interior of the particle.
@@ -66,7 +67,8 @@ Where:
 - :math:`r` is the radial distance from the beam center,
 - :math:`w_0` is the waist radius of the beam.
 
-### Beam Waist and Numerical Aperture
+Beam Waist and Numerical Aperture
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The **beam waist** is determined by the focusing optics and is related to the **numerical aperture (NA)** of the system, which is defined by:
 
@@ -84,22 +86,28 @@ The **beam waist** :math:`w_0` can be related to the numerical aperture and wave
 
 For small numerical apertures, the beam waist is larger, and the focal spot of the laser is more diffuse. Conversely, for higher numerical apertures, the beam waist is smaller, resulting in a more tightly focused beam.
 
-### Power Density and Spot Size
+Power Density and Spot Size
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The power density of the Gaussian beam at the focal point (beam waist) is a critical parameter because it determines the amount of light that interacts with each particle. The power density is highest at the beam center and decreases exponentially with radial distance:
+For a beam with total optical power :math:`P_0`, the power density (intensity) at the focal plane is highest at the center and decreases with radial distance :math:`r`:
 
 .. math::
     P_{\text{density}} = \frac{2 P_0}{\pi w_0^2} \exp \left( - \frac{2 r^2}{w_0^2} \right)
 
-Where:
-- :math:`P_0` is the total power of the laser.
+Here :math:`w_0` is the beam-waist radius. At the center, the peak power density is :math:`2P_0/(\pi w_0^2)`, so focusing the same laser power into a smaller waist increases the peak intensity. The spot diameter is often quoted as the :math:`1/e^2` intensity diameter:
+
+.. math::
+    d_{1/e^2} = 2 w_0
+
+At a radial distance :math:`r = w_0`, the intensity has fallen to :math:`e^{-2}` (about 13.5%) of its peak value. Stating the spot-size convention matters when comparing laser specifications, since some sources report a radius while others report a diameter.
 
 Detection Scheme
 ----------------
 
 In flow cytometry, detectors are placed at different angles relative to the incident laser beam to measure both **forward scatter (FSC)** and **side scatter (SSC)**. The **forward scatter** detector is typically aligned with the axis of the laser beam, while the **side scatter** detector is positioned at a 90-degree angle.
 
-### Forward Scatter (FSC)
+Forward Scatter (FSC)
+^^^^^^^^^^^^^^^^^^^^^
 
 **Forward scatter (FSC)** is primarily sensitive to particle size. When particles pass through the focused laser beam, light is scattered predominantly in the forward direction due to the larger phase shift and constructive interference of light waves. The intensity of the forward scatter signal is proportional to the particle's cross-sectional area:
 
@@ -111,7 +119,8 @@ Where:
 
 Thus, larger particles produce stronger forward scatter signals, allowing for size differentiation in flow cytometry.
 
-### Side Scatter (SSC)
+Side Scatter (SSC)
+^^^^^^^^^^^^^^^^^^
 
 **Side scatter (SSC)** is primarily sensitive to the internal complexity or granularity of the particle, such as cell granules or surface roughness. Side scatter arises from light being scattered at large angles (typically 90 degrees). The intensity of the side scatter signal depends on the **granularity** and refractive index mismatch between the particle and the surrounding medium. It can be empirically modeled as:
 
@@ -123,7 +132,8 @@ Where:
 - :math:`n` is an empirical parameter controlling the angular dependence,
 - Granularity is a dimensionless measure of the particle's internal complexity.
 
-### Detector Configuration
+Detector Configuration
+^^^^^^^^^^^^^^^^^^^^^^
 
 Detectors in flow cytometry are characterized by several important parameters:
 - **Acquisition Frequency**: The rate at which the detector samples the scattered signal (e.g., 10,000 Hz).

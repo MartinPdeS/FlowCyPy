@@ -147,7 +147,7 @@ html_theme_options.update(
                 "icon": "fa-brands fa-python",
             },
         ],
-        "navbar_align": "left",
+        "navbar_align": "content",
         "navbar_end": ["version-switcher", "theme-switcher", "navbar-icon-links"],
         "show_prev_next": True,
         "show_version_warning_banner": True,

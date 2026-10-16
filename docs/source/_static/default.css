@@ -1,6 +1,7 @@
 /* Responsive layout and shared styling for the PyData Sphinx theme. */
 
 html {
+    --flowcypy-sidebar-width: 16rem;
     --pst-sidebar-secondary: 15rem;
 }
 
@@ -21,17 +22,43 @@ html {
 }
 
 .bd-main .bd-content .bd-article-container .bd-article {
+    max-width: 78rem;
+    margin-inline: auto;
     padding: 0;
+    font-size: 1.025rem;
     line-height: 1.65;
     overflow-wrap: break-word;
 }
 
 /* Leave the theme's mobile drawers and collapsed sidebar behavior intact. */
 @media (min-width: 960px) {
-    .bd-sidebar-primary:not(.pst-squeeze) {
-        --pst-sidebar-primary-width: 16rem;
-        flex: 0 0 16rem;
-        width: 16rem;
+    .bd-sidebar-primary,
+    .bd-sidebar-primary.pst-squeeze {
+        --pst-sidebar-primary-width: var(--flowcypy-sidebar-width);
+        flex: 0 0 var(--flowcypy-sidebar-width);
+        width: var(--flowcypy-sidebar-width);
+    }
+
+    #pst-primary-sidebar .pst-sidebar-collapse {
+        display: none;
+    }
+}
+
+@media (min-width: 1200px) {
+    #pst-header .navbar-brand {
+        box-sizing: border-box;
+        flex: 0 0 var(--flowcypy-sidebar-width);
+        width: var(--flowcypy-sidebar-width);
+    }
+
+    #pst-header .navbar-brand img.logo__image {
+        width: 4rem;
+        height: 4rem;
+    }
+
+    #pst-header .navbar-brand .logo__title {
+        font-size: 2.5rem;
+        line-height: 1;
     }
 }
 
@@ -177,6 +204,34 @@ div.math mjx-mtr + mjx-mtr mjx-mtd {
     width: 2.5rem;
     height: 2.5rem;
     max-height: none;
+}
+
+@media (min-width: 768px) {
+    #pst-header .navbar-nav {
+        gap: 0.3rem;
+    }
+
+    #pst-header .navbar-nav .nav-item {
+        position: relative;
+    }
+
+    #pst-header .navbar-nav > .nav-item:not(:last-child)::after {
+        position: absolute;
+        top: 50%;
+        right: -0.15rem;
+        height: 1rem;
+        border-right: 1px solid var(--pst-color-border);
+        content: "";
+        transform: translateY(-50%);
+        pointer-events: none;
+    }
+
+    #pst-header .navbar-nav .nav-link {
+        padding: 0.65rem 0.8rem;
+        border-radius: 0.4rem;
+        font-size: 1.05rem;
+        font-weight: 600;
+    }
 }
 
 /* Gallery outputs need a full row: the default multi-image rule uses 42%. */
