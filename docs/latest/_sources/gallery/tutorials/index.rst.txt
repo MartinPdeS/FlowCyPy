@@ -28,7 +28,7 @@ Examples: Tutorials
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Flow Cytometry Simulation: FacsCanto System</div>
+      <div class="sphx-glr-thumbnail-title">FACSCanto simulation</div>
     </div>
 
 
@@ -45,7 +45,7 @@ Examples: Tutorials
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Flow Cytometry Simulation: Full System Example</div>
+      <div class="sphx-glr-thumbnail-title">Full system simulation</div>
     </div>
 
 
@@ -62,7 +62,7 @@ Examples: Tutorials
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Flow Cytometry Simulation: Full System Example with Workflow</div>
+      <div class="sphx-glr-thumbnail-title">Workflow API</div>
     </div>
 
 

@@ -18,8 +18,8 @@
 .. _sphx_glr_gallery_studies_concentration_sweep.py:
 
 
-Concentration Sweep: From Isolated Events to Coincidence
-========================================================
+Concentration and coincidence
+=============================
 
 This tutorial studies how increasing particle concentration changes the detector
 signal and the extracted event statistics.
@@ -157,7 +157,7 @@ Step 1: Build a reusable cytometer configuration
 Step 2: Sweep concentration
 ---------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 115-167
+.. GENERATED FROM PYTHON SOURCE LINES 115-168
 
 .. code-block:: Python
 
@@ -220,79 +220,193 @@ Step 2: Sweep concentration
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 168-170
 
-Step 3: Compare analog traces and extracted events
---------------------------------------------------
+.. GENERATED FROM PYTHON SOURCE LINES 169-172
 
-.. GENERATED FROM PYTHON SOURCE LINES 170-173
+Analog trace at 1e8 particles/mL
+--------------------------------
+Inspect pulse overlap as concentration increases.
+
+.. GENERATED FROM PYTHON SOURCE LINES 172-174
 
 .. code-block:: Python
 
-    for run_record in run_records:
-        _ = run_record.plot_analog(figure_size=(12, 4))
-        _ = run_record.plot_peaks(x=("side", "Height"))
+    _ = run_records[0].plot_analog(figure_size=(12, 4))
 
 
 
-.. rst-class:: sphx-glr-horizontal
+
+.. image-sg:: /gallery/studies/images/sphx_glr_concentration_sweep_001.png
+   :alt: concentration sweep
+   :srcset: /gallery/studies/images/sphx_glr_concentration_sweep_001.png
+   :class: sphx-glr-single-img
 
 
-    *
 
-      .. image-sg:: /gallery/studies/images/sphx_glr_concentration_sweep_001.png
-         :alt: concentration sweep
-         :srcset: /gallery/studies/images/sphx_glr_concentration_sweep_001.png
-         :class: sphx-glr-multi-img
 
-    *
 
-      .. image-sg:: /gallery/studies/images/sphx_glr_concentration_sweep_002.png
-         :alt: Distribution of side | Height
-         :srcset: /gallery/studies/images/sphx_glr_concentration_sweep_002.png
-         :class: sphx-glr-multi-img
+.. GENERATED FROM PYTHON SOURCE LINES 175-178
 
-    *
+Peak heights at 1e8 particles/mL
+--------------------------------
+Compare the recovered side-scatter peak distribution with the corresponding trace.
 
-      .. image-sg:: /gallery/studies/images/sphx_glr_concentration_sweep_003.png
-         :alt: concentration sweep
-         :srcset: /gallery/studies/images/sphx_glr_concentration_sweep_003.png
-         :class: sphx-glr-multi-img
+.. GENERATED FROM PYTHON SOURCE LINES 178-180
 
-    *
+.. code-block:: Python
 
-      .. image-sg:: /gallery/studies/images/sphx_glr_concentration_sweep_004.png
-         :alt: Distribution of side | Height
-         :srcset: /gallery/studies/images/sphx_glr_concentration_sweep_004.png
-         :class: sphx-glr-multi-img
+    _ = run_records[0].plot_peaks(x=("side", "Height"))
 
-    *
 
-      .. image-sg:: /gallery/studies/images/sphx_glr_concentration_sweep_005.png
-         :alt: concentration sweep
-         :srcset: /gallery/studies/images/sphx_glr_concentration_sweep_005.png
-         :class: sphx-glr-multi-img
 
-    *
 
-      .. image-sg:: /gallery/studies/images/sphx_glr_concentration_sweep_006.png
-         :alt: Distribution of side | Height
-         :srcset: /gallery/studies/images/sphx_glr_concentration_sweep_006.png
-         :class: sphx-glr-multi-img
+.. image-sg:: /gallery/studies/images/sphx_glr_concentration_sweep_002.png
+   :alt: Distribution of side | Height
+   :srcset: /gallery/studies/images/sphx_glr_concentration_sweep_002.png
+   :class: sphx-glr-single-img
 
-    *
 
-      .. image-sg:: /gallery/studies/images/sphx_glr_concentration_sweep_007.png
-         :alt: concentration sweep
-         :srcset: /gallery/studies/images/sphx_glr_concentration_sweep_007.png
-         :class: sphx-glr-multi-img
 
-    *
 
-      .. image-sg:: /gallery/studies/images/sphx_glr_concentration_sweep_008.png
-         :alt: Distribution of side | Height
-         :srcset: /gallery/studies/images/sphx_glr_concentration_sweep_008.png
-         :class: sphx-glr-multi-img
+
+.. GENERATED FROM PYTHON SOURCE LINES 181-184
+
+Analog trace at 5e8 particles/mL
+--------------------------------
+Inspect pulse overlap as concentration increases.
+
+.. GENERATED FROM PYTHON SOURCE LINES 184-186
+
+.. code-block:: Python
+
+    _ = run_records[1].plot_analog(figure_size=(12, 4))
+
+
+
+
+.. image-sg:: /gallery/studies/images/sphx_glr_concentration_sweep_003.png
+   :alt: concentration sweep
+   :srcset: /gallery/studies/images/sphx_glr_concentration_sweep_003.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 187-190
+
+Peak heights at 5e8 particles/mL
+--------------------------------
+Compare the recovered side-scatter peak distribution with the corresponding trace.
+
+.. GENERATED FROM PYTHON SOURCE LINES 190-192
+
+.. code-block:: Python
+
+    _ = run_records[1].plot_peaks(x=("side", "Height"))
+
+
+
+
+.. image-sg:: /gallery/studies/images/sphx_glr_concentration_sweep_004.png
+   :alt: Distribution of side | Height
+   :srcset: /gallery/studies/images/sphx_glr_concentration_sweep_004.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 193-196
+
+Analog trace at 1e9 particles/mL
+--------------------------------
+Inspect pulse overlap as concentration increases.
+
+.. GENERATED FROM PYTHON SOURCE LINES 196-198
+
+.. code-block:: Python
+
+    _ = run_records[2].plot_analog(figure_size=(12, 4))
+
+
+
+
+.. image-sg:: /gallery/studies/images/sphx_glr_concentration_sweep_005.png
+   :alt: concentration sweep
+   :srcset: /gallery/studies/images/sphx_glr_concentration_sweep_005.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 199-202
+
+Peak heights at 1e9 particles/mL
+--------------------------------
+Compare the recovered side-scatter peak distribution with the corresponding trace.
+
+.. GENERATED FROM PYTHON SOURCE LINES 202-204
+
+.. code-block:: Python
+
+    _ = run_records[2].plot_peaks(x=("side", "Height"))
+
+
+
+
+.. image-sg:: /gallery/studies/images/sphx_glr_concentration_sweep_006.png
+   :alt: Distribution of side | Height
+   :srcset: /gallery/studies/images/sphx_glr_concentration_sweep_006.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 205-208
+
+Analog trace at 5e9 particles/mL
+--------------------------------
+Inspect pulse overlap as concentration increases.
+
+.. GENERATED FROM PYTHON SOURCE LINES 208-210
+
+.. code-block:: Python
+
+    _ = run_records[3].plot_analog(figure_size=(12, 4))
+
+
+
+
+.. image-sg:: /gallery/studies/images/sphx_glr_concentration_sweep_007.png
+   :alt: concentration sweep
+   :srcset: /gallery/studies/images/sphx_glr_concentration_sweep_007.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 211-214
+
+Peak heights at 5e9 particles/mL
+--------------------------------
+Compare the recovered side-scatter peak distribution with the corresponding trace.
+
+.. GENERATED FROM PYTHON SOURCE LINES 214-215
+
+.. code-block:: Python
+
+    _ = run_records[3].plot_peaks(x=("side", "Height"))
+
+
+
+.. image-sg:: /gallery/studies/images/sphx_glr_concentration_sweep_008.png
+   :alt: Distribution of side | Height
+   :srcset: /gallery/studies/images/sphx_glr_concentration_sweep_008.png
+   :class: sphx-glr-single-img
 
 
 
@@ -301,7 +415,7 @@ Step 3: Compare analog traces and extracted events
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 8.027 seconds)
+   **Total running time of the script:** (0 minutes 13.216 seconds)
 
 
 .. _sphx_glr_download_gallery_studies_concentration_sweep.py:

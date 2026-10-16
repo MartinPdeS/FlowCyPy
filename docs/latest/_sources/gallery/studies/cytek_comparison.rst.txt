@@ -18,8 +18,8 @@
 .. _sphx_glr_gallery_studies_cytek_comparison.py:
 
 
-Compare simulated and experimental flow cytometry bead distributions
-====================================================================
+Cytek bead comparison
+=====================
 
 This example compares simulated and experimental flow cytometry measurements
 for Rosetta bead populations.
@@ -745,7 +745,7 @@ Compare simulated and experimental distributions
 The two datasets are shown with identical FSC-H and SSC-H limits so that the
 visual comparison reflects the same feature space.
 
-.. GENERATED FROM PYTHON SOURCE LINES 691-704
+.. GENERATED FROM PYTHON SOURCE LINES 691-705
 
 .. code-block:: Python
 
@@ -765,6 +765,7 @@ visual comparison reflects the same feature space.
     plt.show()
 
 
+
 .. image-sg:: /gallery/studies/images/sphx_glr_cytek_comparison_001.png
    :alt: Simulation, Experiment
    :srcset: /gallery/studies/images/sphx_glr_cytek_comparison_001.png
@@ -777,7 +778,7 @@ visual comparison reflects the same feature space.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 6.294 seconds)
+   **Total running time of the script:** (0 minutes 9.011 seconds)
 
 
 .. _sphx_glr_download_gallery_studies_cytek_comparison.py:

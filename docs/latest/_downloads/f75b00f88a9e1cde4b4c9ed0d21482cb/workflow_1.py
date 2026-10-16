@@ -1,6 +1,6 @@
 """
-Flow Cytometry Simulation: Full System Example with Workflow
-============================================================
+Workflow API
+============
 
 This tutorial demonstrates a complete flow cytometry simulation using the FlowCyPy library.
 It models fluidics, optics, signal processing, and classification of multiple particle populations.
@@ -29,6 +29,12 @@ from FlowCyPy.workflow import (
     GammaModel,
     classifier,
 )
+
+
+# %%
+# Define the particle mixture
+# ---------------------------
+# Specify the size, refractive index and concentration of each population.
 
 population_0 = populations.SpherePopulation(
     name="Pop 0",
@@ -62,6 +68,12 @@ population_1 = populations.SpherePopulation(
     sampling_method=GammaModel(number_of_samples=1_000),
 )
 
+
+
+# %%
+# Configure detection and processing
+# ----------------------------------
+# Set the collection angles, trigger threshold, peak locator and analog filters.
 
 detector_0 = Detector(
     name="side",
@@ -104,6 +116,12 @@ source = FlatTop(
 )
 
 
+
+# %%
+# Build the workflow
+# ------------------
+# Combine fluidics, optics and electronics into a reusable simulation.
+
 workflow = Workflow(
     source=source,
     sample_volume_flow=80 * ureg.microliter / ureg.minute,
@@ -124,9 +142,21 @@ workflow = Workflow(
     peak_locator=peak_locator,
 )
 
+
+# %%
+# Run the acquisition
+# -------------------
+# Initialize the model and acquire one millisecond of particle events.
+
 workflow.initialize()
 
 run_record = workflow.run(run_time=1 * ureg.millisecond)
+
+
+# %%
+# Inspect particle sizes
+# ----------------------
+# Check the sampled diameter distribution before examining the detector response.
 
 _ = run_record.event_collection.plot(x="Diameter")
 

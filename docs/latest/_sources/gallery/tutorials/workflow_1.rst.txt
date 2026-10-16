@@ -18,8 +18,8 @@
 .. _sphx_glr_gallery_tutorials_workflow_1.py:
 
 
-Flow Cytometry Simulation: Full System Example with Workflow
-============================================================
+Workflow API
+============
 
 This tutorial demonstrates a complete flow cytometry simulation using the FlowCyPy library.
 It models fluidics, optics, signal processing, and classification of multiple particle populations.
@@ -34,7 +34,7 @@ Steps Covered:
 6. Apply triggering and peak detection
 7. Classify particle events based on peak features
 
-.. GENERATED FROM PYTHON SOURCE LINES 18-133
+.. GENERATED FROM PYTHON SOURCE LINES 18-34
 
 .. code-block:: Python
 
@@ -52,6 +52,25 @@ Steps Covered:
         GammaModel,
         classifier,
     )
+
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 35-38
+
+Define the particle mixture
+---------------------------
+Specify the size, refractive index and concentration of each population.
+
+.. GENERATED FROM PYTHON SOURCE LINES 38-73
+
+.. code-block:: Python
+
 
     population_0 = populations.SpherePopulation(
         name="Pop 0",
@@ -84,6 +103,25 @@ Steps Covered:
         ),
         sampling_method=GammaModel(number_of_samples=1_000),
     )
+
+
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 74-77
+
+Configure detection and processing
+----------------------------------
+Set the collection angles, trigger threshold, peak locator and analog filters.
+
+.. GENERATED FROM PYTHON SOURCE LINES 77-120
+
+.. code-block:: Python
 
 
     detector_0 = Detector(
@@ -127,6 +165,25 @@ Steps Covered:
     )
 
 
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 121-124
+
+Build the workflow
+------------------
+Combine fluidics, optics and electronics into a reusable simulation.
+
+.. GENERATED FROM PYTHON SOURCE LINES 124-146
+
+.. code-block:: Python
+
+
     workflow = Workflow(
         source=source,
         sample_volume_flow=80 * ureg.microliter / ureg.minute,
@@ -147,9 +204,47 @@ Steps Covered:
         peak_locator=peak_locator,
     )
 
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 147-150
+
+Run the acquisition
+-------------------
+Initialize the model and acquire one millisecond of particle events.
+
+.. GENERATED FROM PYTHON SOURCE LINES 150-156
+
+.. code-block:: Python
+
+
     workflow.initialize()
 
     run_record = workflow.run(run_time=1 * ureg.millisecond)
+
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 157-160
+
+Inspect particle sizes
+----------------------
+Check the sampled diameter distribution before examining the detector response.
+
+.. GENERATED FROM PYTHON SOURCE LINES 160-163
+
+.. code-block:: Python
+
 
     _ = run_record.event_collection.plot(x="Diameter")
 
@@ -165,12 +260,12 @@ Steps Covered:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 134-136
+.. GENERATED FROM PYTHON SOURCE LINES 164-166
 
 Step 5: Plot Events and Raw Analog Signals
 ------------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 136-139
+.. GENERATED FROM PYTHON SOURCE LINES 166-169
 
 .. code-block:: Python
 
@@ -189,12 +284,12 @@ Step 5: Plot Events and Raw Analog Signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 140-142
+.. GENERATED FROM PYTHON SOURCE LINES 170-172
 
 Plot raw analog signals
 -----------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 142-145
+.. GENERATED FROM PYTHON SOURCE LINES 172-175
 
 .. code-block:: Python
 
@@ -213,12 +308,12 @@ Plot raw analog signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 146-148
+.. GENERATED FROM PYTHON SOURCE LINES 176-178
 
 Step 6: Plot Triggered Analog Segments
 --------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 148-151
+.. GENERATED FROM PYTHON SOURCE LINES 178-181
 
 .. code-block:: Python
 
@@ -237,12 +332,12 @@ Step 6: Plot Triggered Analog Segments
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 152-154
+.. GENERATED FROM PYTHON SOURCE LINES 182-184
 
 Step 7: Plot Peak Features
 --------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 154-157
+.. GENERATED FROM PYTHON SOURCE LINES 184-187
 
 .. code-block:: Python
 
@@ -261,12 +356,12 @@ Step 7: Plot Peak Features
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 158-160
+.. GENERATED FROM PYTHON SOURCE LINES 188-190
 
 Step 8: Classify Events from Peak Features
 ------------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 160-169
+.. GENERATED FROM PYTHON SOURCE LINES 190-199
 
 .. code-block:: Python
 
@@ -294,7 +389,7 @@ Step 8: Classify Events from Peak Features
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.833 seconds)
+   **Total running time of the script:** (0 minutes 4.454 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow_1.py:

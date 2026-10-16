@@ -1,6 +1,6 @@
 """
-K Estimator Validation — Variable Bead Size, Fixed Illumination
-===============================================================
+K estimator validation
+======================
 
 This example estimates the K parameter, which quantifies how the
 robust standard deviation scales with the square root of the

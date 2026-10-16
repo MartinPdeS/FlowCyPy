@@ -234,7 +234,13 @@ Digital Processing Pipeline
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 130-141
+.. GENERATED FROM PYTHON SOURCE LINES 130-133
+
+Run the acquisition
+-------------------
+Simulate the nanoparticle mixture with the configured noise and processing.
+
+.. GENERATED FROM PYTHON SOURCE LINES 133-144
 
 .. code-block:: Python
 
@@ -256,11 +262,13 @@ Digital Processing Pipeline
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 142-143
+.. GENERATED FROM PYTHON SOURCE LINES 145-148
 
 Plot Raw Analog Signal
+----------------------
+Compare particle pulses with the detector noise baseline.
 
-.. GENERATED FROM PYTHON SOURCE LINES 143-145
+.. GENERATED FROM PYTHON SOURCE LINES 148-150
 
 .. code-block:: Python
 
@@ -284,11 +292,13 @@ Plot Raw Analog Signal
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 146-147
+.. GENERATED FROM PYTHON SOURCE LINES 151-154
 
 Plot Triggered Analog Signal Segments
+-------------------------------------
+Inspect which weak pulses survived the discriminator threshold.
 
-.. GENERATED FROM PYTHON SOURCE LINES 147-148
+.. GENERATED FROM PYTHON SOURCE LINES 154-155
 
 .. code-block:: Python
 
@@ -314,7 +324,7 @@ Plot Triggered Analog Signal Segments
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 4.698 seconds)
+   **Total running time of the script:** (0 minutes 5.919 seconds)
 
 
 .. _sphx_glr_download_gallery_studies_limit_of_detection.py:

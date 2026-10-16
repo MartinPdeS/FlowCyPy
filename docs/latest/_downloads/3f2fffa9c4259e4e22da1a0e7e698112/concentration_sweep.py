@@ -1,6 +1,6 @@
 """
-Concentration Sweep: From Isolated Events to Coincidence
-========================================================
+Concentration and coincidence
+=============================
 
 This tutorial studies how increasing particle concentration changes the detector
 signal and the extracted event statistics.
@@ -164,9 +164,51 @@ for concentration_value in concentration_values:
 
     run_records.append(run_record)
 
+
 # %%
-# Step 3: Compare analog traces and extracted events
-# --------------------------------------------------
-for run_record in run_records:
-    _ = run_record.plot_analog(figure_size=(12, 4))
-    _ = run_record.plot_peaks(x=("side", "Height"))
+# Analog trace at 1e8 particles/mL
+# --------------------------------
+# Inspect pulse overlap as concentration increases.
+_ = run_records[0].plot_analog(figure_size=(12, 4))
+
+# %%
+# Peak heights at 1e8 particles/mL
+# --------------------------------
+# Compare the recovered side-scatter peak distribution with the corresponding trace.
+_ = run_records[0].plot_peaks(x=("side", "Height"))
+
+# %%
+# Analog trace at 5e8 particles/mL
+# --------------------------------
+# Inspect pulse overlap as concentration increases.
+_ = run_records[1].plot_analog(figure_size=(12, 4))
+
+# %%
+# Peak heights at 5e8 particles/mL
+# --------------------------------
+# Compare the recovered side-scatter peak distribution with the corresponding trace.
+_ = run_records[1].plot_peaks(x=("side", "Height"))
+
+# %%
+# Analog trace at 1e9 particles/mL
+# --------------------------------
+# Inspect pulse overlap as concentration increases.
+_ = run_records[2].plot_analog(figure_size=(12, 4))
+
+# %%
+# Peak heights at 1e9 particles/mL
+# --------------------------------
+# Compare the recovered side-scatter peak distribution with the corresponding trace.
+_ = run_records[2].plot_peaks(x=("side", "Height"))
+
+# %%
+# Analog trace at 5e9 particles/mL
+# --------------------------------
+# Inspect pulse overlap as concentration increases.
+_ = run_records[3].plot_analog(figure_size=(12, 4))
+
+# %%
+# Peak heights at 5e9 particles/mL
+# --------------------------------
+# Compare the recovered side-scatter peak distribution with the corresponding trace.
+_ = run_records[3].plot_peaks(x=("side", "Height"))

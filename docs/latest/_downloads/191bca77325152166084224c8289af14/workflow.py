@@ -1,6 +1,6 @@
 """
-Flow Cytometry Simulation: Full System Example
-==============================================
+Full system simulation
+======================
 
 This tutorial demonstrates a complete flow cytometry simulation using the FlowCyPy library.
 It models fluidics, optics, signal processing, and classification of multiple particle populations.
@@ -195,6 +195,12 @@ run_record = cytometer.run(
     digital_processing=digital_processing,
     run_time=1 * ureg.millisecond,
 )
+
+
+# %%
+# Inspect particle sizes
+# ----------------------
+# Check the sampled diameter distribution before examining the detector response.
 
 _ = run_record.event_collection.plot(x="Diameter")
 

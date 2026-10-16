@@ -18,8 +18,8 @@
 .. _sphx_glr_gallery_studies_threshold_sensitivity.py:
 
 
-Threshold Sensitivity: Event Detection Near the Noise Floor
-===========================================================
+Threshold sensitivity
+=====================
 
 This tutorial investigates how discriminator threshold affects event recovery
 for weak signals close to baseline noise.
@@ -166,7 +166,7 @@ Step 1: Build a weak-signal simulation
 Step 2: Sweep discriminator threshold
 -------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 124-147
+.. GENERATED FROM PYTHON SOURCE LINES 124-148
 
 .. code-block:: Python
 
@@ -200,119 +200,294 @@ Step 2: Sweep discriminator threshold
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 148-150
 
-Step 3: Compare recovered events
---------------------------------
+.. GENERATED FROM PYTHON SOURCE LINES 149-152
 
-.. GENERATED FROM PYTHON SOURCE LINES 150-155
+Analog signal at 2sigma
+-----------------------
+Inspect the signal and baseline before reviewing the recovered events.
+
+.. GENERATED FROM PYTHON SOURCE LINES 152-155
 
 .. code-block:: Python
 
-    for threshold_value, run_record in run_records:
-        print(f"Threshold: {threshold_value}")
-        _ = run_record.plot_analog(figure_size=(12, 4))
-        _ = run_record.plot_digital(figure_size=(12, 4), xlim=(0, 0.1 * ureg.millisecond))
-        _ = run_record.plot_peaks(x=("side", "Height"))
+    threshold_value, run_record = run_records[0]
+    _ = run_record.plot_analog(figure_size=(12, 4))
 
 
 
-.. rst-class:: sphx-glr-horizontal
+
+.. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_001.png
+   :alt: threshold sensitivity
+   :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_001.png
+   :class: sphx-glr-single-img
 
 
-    *
-
-      .. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_001.png
-         :alt: threshold sensitivity
-         :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_001.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_002.png
-         :alt: threshold sensitivity
-         :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_002.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_003.png
-         :alt: Distribution of side | Height
-         :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_003.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_004.png
-         :alt: threshold sensitivity
-         :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_004.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_005.png
-         :alt: threshold sensitivity
-         :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_005.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_006.png
-         :alt: Distribution of side | Height
-         :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_006.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_007.png
-         :alt: threshold sensitivity
-         :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_007.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_008.png
-         :alt: threshold sensitivity
-         :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_008.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_009.png
-         :alt: Distribution of side | Height
-         :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_009.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_010.png
-         :alt: threshold sensitivity
-         :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_010.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_011.png
-         :alt: threshold sensitivity
-         :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_011.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_012.png
-         :alt: Distribution of side | Height
-         :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_012.png
-         :class: sphx-glr-multi-img
 
 
-.. rst-class:: sphx-glr-script-out
 
- .. code-block:: none
+.. GENERATED FROM PYTHON SOURCE LINES 156-159
 
-    Threshold: 2sigma
-    Threshold: 3sigma
-    Threshold: 4sigma
-    Threshold: 5sigma
+Triggered segments at 2sigma
+----------------------------
+Inspect the first 0.1 milliseconds of triggered signal segments.
+
+.. GENERATED FROM PYTHON SOURCE LINES 159-161
+
+.. code-block:: Python
+
+    _ = run_record.plot_digital(figure_size=(12, 4), xlim=(0, 0.1 * ureg.millisecond))
+
+
+
+
+.. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_002.png
+   :alt: threshold sensitivity
+   :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_002.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 162-165
+
+Peak heights at 2sigma
+----------------------
+Compare the recovered weak-event distribution as the threshold rises.
+
+.. GENERATED FROM PYTHON SOURCE LINES 165-167
+
+.. code-block:: Python
+
+    _ = run_record.plot_peaks(x=("side", "Height"))
+
+
+
+
+.. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_003.png
+   :alt: Distribution of side | Height
+   :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_003.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 168-171
+
+Analog signal at 3sigma
+-----------------------
+Inspect the signal and baseline before reviewing the recovered events.
+
+.. GENERATED FROM PYTHON SOURCE LINES 171-174
+
+.. code-block:: Python
+
+    threshold_value, run_record = run_records[1]
+    _ = run_record.plot_analog(figure_size=(12, 4))
+
+
+
+
+.. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_004.png
+   :alt: threshold sensitivity
+   :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_004.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 175-178
+
+Triggered segments at 3sigma
+----------------------------
+Inspect the first 0.1 milliseconds of triggered signal segments.
+
+.. GENERATED FROM PYTHON SOURCE LINES 178-180
+
+.. code-block:: Python
+
+    _ = run_record.plot_digital(figure_size=(12, 4), xlim=(0, 0.1 * ureg.millisecond))
+
+
+
+
+.. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_005.png
+   :alt: threshold sensitivity
+   :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_005.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 181-184
+
+Peak heights at 3sigma
+----------------------
+Compare the recovered weak-event distribution as the threshold rises.
+
+.. GENERATED FROM PYTHON SOURCE LINES 184-186
+
+.. code-block:: Python
+
+    _ = run_record.plot_peaks(x=("side", "Height"))
+
+
+
+
+.. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_006.png
+   :alt: Distribution of side | Height
+   :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_006.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 187-190
+
+Analog signal at 4sigma
+-----------------------
+Inspect the signal and baseline before reviewing the recovered events.
+
+.. GENERATED FROM PYTHON SOURCE LINES 190-193
+
+.. code-block:: Python
+
+    threshold_value, run_record = run_records[2]
+    _ = run_record.plot_analog(figure_size=(12, 4))
+
+
+
+
+.. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_007.png
+   :alt: threshold sensitivity
+   :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_007.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 194-197
+
+Triggered segments at 4sigma
+----------------------------
+Inspect the first 0.1 milliseconds of triggered signal segments.
+
+.. GENERATED FROM PYTHON SOURCE LINES 197-199
+
+.. code-block:: Python
+
+    _ = run_record.plot_digital(figure_size=(12, 4), xlim=(0, 0.1 * ureg.millisecond))
+
+
+
+
+.. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_008.png
+   :alt: threshold sensitivity
+   :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_008.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 200-203
+
+Peak heights at 4sigma
+----------------------
+Compare the recovered weak-event distribution as the threshold rises.
+
+.. GENERATED FROM PYTHON SOURCE LINES 203-205
+
+.. code-block:: Python
+
+    _ = run_record.plot_peaks(x=("side", "Height"))
+
+
+
+
+.. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_009.png
+   :alt: Distribution of side | Height
+   :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_009.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 206-209
+
+Analog signal at 5sigma
+-----------------------
+Inspect the signal and baseline before reviewing the recovered events.
+
+.. GENERATED FROM PYTHON SOURCE LINES 209-212
+
+.. code-block:: Python
+
+    threshold_value, run_record = run_records[3]
+    _ = run_record.plot_analog(figure_size=(12, 4))
+
+
+
+
+.. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_010.png
+   :alt: threshold sensitivity
+   :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_010.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 213-216
+
+Triggered segments at 5sigma
+----------------------------
+Inspect the first 0.1 milliseconds of triggered signal segments.
+
+.. GENERATED FROM PYTHON SOURCE LINES 216-218
+
+.. code-block:: Python
+
+    _ = run_record.plot_digital(figure_size=(12, 4), xlim=(0, 0.1 * ureg.millisecond))
+
+
+
+
+.. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_011.png
+   :alt: threshold sensitivity
+   :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_011.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 219-222
+
+Peak heights at 5sigma
+----------------------
+Compare the recovered weak-event distribution as the threshold rises.
+
+.. GENERATED FROM PYTHON SOURCE LINES 222-223
+
+.. code-block:: Python
+
+    _ = run_record.plot_peaks(x=("side", "Height"))
+
+
+
+.. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_012.png
+   :alt: Distribution of side | Height
+   :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_012.png
+   :class: sphx-glr-single-img
+
 
 
 
@@ -320,7 +495,7 @@ Step 3: Compare recovered events
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.169 seconds)
+   **Total running time of the script:** (0 minutes 6.328 seconds)
 
 
 .. _sphx_glr_download_gallery_studies_threshold_sensitivity.py:

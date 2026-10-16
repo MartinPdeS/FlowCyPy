@@ -1,6 +1,6 @@
 """
-Signal Processing in Flow Cytometry
-=====================================
+Signal processing
+=================
 
 This example demonstrates how to apply signal processing techniques
 to flow cytometry data using FlowCyPy. The simulation is set up with a

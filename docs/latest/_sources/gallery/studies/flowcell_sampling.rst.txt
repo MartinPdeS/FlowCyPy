@@ -18,9 +18,8 @@
 .. _sphx_glr_gallery_studies_flowcell_sampling.py:
 
 
-=========================================================
-Visualize particle sampling in a rectangular flow cell
-=========================================================
+Flow-cell sampling
+==================
 
 This example shows how to simulate particle trajectories in a rectangular
 flow cell and visualize their transverse positions.
@@ -34,7 +33,7 @@ The figure highlights three pieces of information:
 This is a convenient way to inspect how hydrodynamic focusing shapes the
 particle distribution before optical interrogation.
 
-.. GENERATED FROM PYTHON SOURCE LINES 18-37
+.. GENERATED FROM PYTHON SOURCE LINES 17-36
 
 .. code-block:: Python
 
@@ -64,14 +63,14 @@ particle distribution before optical interrogation.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 39-43
+.. GENERATED FROM PYTHON SOURCE LINES 38-42
 
 Plot configuration
 ------------------
 Define all figure style parameters in one place so the example is easy to
 customize.
 
-.. GENERATED FROM PYTHON SOURCE LINES 43-53
+.. GENERATED FROM PYTHON SOURCE LINES 42-52
 
 .. code-block:: Python
 
@@ -92,14 +91,14 @@ customize.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 54-58
+.. GENERATED FROM PYTHON SOURCE LINES 53-57
 
 Helper function
 ---------------
 This small helper draws a rectangular region centered at the origin and
 returns its boundaries in micrometers.
 
-.. GENERATED FROM PYTHON SOURCE LINES 58-79
+.. GENERATED FROM PYTHON SOURCE LINES 57-78
 
 .. code-block:: Python
 
@@ -131,14 +130,14 @@ returns its boundaries in micrometers.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 80-84
+.. GENERATED FROM PYTHON SOURCE LINES 79-83
 
 Define the flow cell
 --------------------
 The flow cell geometry and the sample and sheath flow rates determine the
 size of the focused sample core.
 
-.. GENERATED FROM PYTHON SOURCE LINES 84-93
+.. GENERATED FROM PYTHON SOURCE LINES 83-92
 
 .. code-block:: Python
 
@@ -158,14 +157,14 @@ size of the focused sample core.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 94-98
+.. GENERATED FROM PYTHON SOURCE LINES 93-97
 
 Define the particle population
 ------------------------------
 Here we construct a single spherical population with user-defined
 distributions for particle diameter and refractive index.
 
-.. GENERATED FROM PYTHON SOURCE LINES 98-131
+.. GENERATED FROM PYTHON SOURCE LINES 97-130
 
 .. code-block:: Python
 
@@ -209,14 +208,14 @@ distributions for particle diameter and refractive index.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 132-136
+.. GENERATED FROM PYTHON SOURCE LINES 131-135
 
 Generate particle events
 ------------------------
 The Fluidics object uses the flow cell and the scatterer collection to
 generate particle events over the requested run time.
 
-.. GENERATED FROM PYTHON SOURCE LINES 136-150
+.. GENERATED FROM PYTHON SOURCE LINES 135-149
 
 .. code-block:: Python
 
@@ -241,7 +240,7 @@ generate particle events over the requested run time.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 151-156
+.. GENERATED FROM PYTHON SOURCE LINES 150-155
 
 Plot the transverse particle distribution
 -----------------------------------------
@@ -249,7 +248,7 @@ The outer rectangle represents the full channel cross section.
 The inner rectangle represents the focused sample core.
 Particle positions are colored by their local velocity.
 
-.. GENERATED FROM PYTHON SOURCE LINES 156-255
+.. GENERATED FROM PYTHON SOURCE LINES 155-255
 
 .. code-block:: Python
 
@@ -355,6 +354,7 @@ Particle positions are colored by their local velocity.
     plt.show()
 
 
+
 .. image-sg:: /gallery/studies/images/sphx_glr_flowcell_sampling_001.png
    :alt: Q$_{sheath}$ / Q$_{sample}$ = 1.00
    :srcset: /gallery/studies/images/sphx_glr_flowcell_sampling_001.png
@@ -367,7 +367,7 @@ Particle positions are colored by their local velocity.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.903 seconds)
+   **Total running time of the script:** (0 minutes 2.025 seconds)
 
 
 .. _sphx_glr_download_gallery_studies_flowcell_sampling.py:

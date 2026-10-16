@@ -171,3 +171,34 @@ div.math mjx-mtr + mjx-mtr mjx-mtd {
         padding: 0.6rem;
     }
 }
+
+/* Keep the flow-cell mark crisp and consistently sized beside the wordmark. */
+.navbar-brand img.logo__image {
+    width: 2.5rem;
+    height: 2.5rem;
+    max-height: none;
+}
+
+/* Gallery outputs need a full row: the default multi-image rule uses 42%. */
+.bd-article ul.sphx-glr-horizontal {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin: 2rem 0;
+    padding: 0;
+}
+
+.bd-article ul.sphx-glr-horizontal li {
+    display: block;
+    width: 100%;
+    margin: 0;
+}
+
+.bd-article img.sphx-glr-multi-img,
+.bd-article img.sphx-glr-single-img {
+    display: block;
+    width: 100%;
+    max-width: 64rem;
+    height: auto;
+    margin: 1.5rem auto;
+}

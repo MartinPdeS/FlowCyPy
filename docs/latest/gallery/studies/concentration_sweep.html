@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Concentration Sweep: From Isolated Events to Coincidence &#8212; FlowCyPy  documentation</title>
+    <title>Concentration and coincidence &#8212; FlowCyPy  documentation</title>
   
   
   
@@ -35,7 +35,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/default.css?v=02978338" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css?v=af6c6b24" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
@@ -52,7 +52,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.2.2';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.2.3';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
@@ -60,12 +60,12 @@
     <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Compare simulated and experimental flow cytometry bead distributions" href="cytek_comparison.html" />
+    <link rel="next" title="Cytek bead comparison" href="cytek_comparison.html" />
     <link rel="prev" title="Examples: Studies" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.2.2" />
+  <meta name="docsearch:version" content="1.2.3" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -252,17 +252,6 @@
           
           
           
-          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          
-          
           <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -425,17 +414,6 @@
           
           
           
-          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          
-          
           <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -481,24 +459,24 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Examples: Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/facs_canto.html">Flow Cytometry Simulation: FacsCanto System</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow.html">Flow Cytometry Simulation: Full System Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow_1.html">Flow Cytometry Simulation: Full System Example with Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/facs_canto.html">FACSCanto simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow.html">Full system simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow_1.html">Workflow API</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: Studies</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">Concentration Sweep: From Isolated Events to Coincidence</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cytek_comparison.html">Compare simulated and experimental flow cytometry bead distributions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="flowcell_sampling.html">Visualize particle sampling in a rectangular flow cell</a></li>
+<li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">Concentration and coincidence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cytek_comparison.html">Cytek bead comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flowcell_sampling.html">Flow-cell sampling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="limit_of_detection.html">Limit of Detection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sec_results.html">Example with SEC columns</a></li>
-<li class="toctree-l2"><a class="reference internal" href="signal_processing.html">Signal Processing in Flow Cytometry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="threshold_sensitivity.html">Threshold Sensitivity: Event Detection Near the Noise Floor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sec_results.html">Size-exclusion chromatography</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signal_processing.html">Signal processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="threshold_sensitivity.html">Threshold sensitivity</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../validation/index.html">Examples: Validation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../validation/j_estimator.html">J Estimator Validation — Fixed Bead Size, Variable Illumination</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../validation/k_estimator.html">K Estimator Validation — Variable Bead Size, Fixed Illumination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../validation/j_estimator.html">J estimator validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../validation/k_estimator.html">K estimator validation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -547,7 +525,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Examples: Studies</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Concentration Sweep: From Isolated Events to Coincidence</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Concentration and coincidence</span></li>
   </ul>
 </nav>
 </div>
@@ -569,8 +547,8 @@
 <p><a class="reference internal" href="#sphx-glr-download-gallery-studies-concentration-sweep-py"><span class="std std-ref">Go to the end</span></a>
 to download the full example code.</p>
 </div>
-<section class="sphx-glr-example-title" id="concentration-sweep-from-isolated-events-to-coincidence">
-<span id="sphx-glr-gallery-studies-concentration-sweep-py"></span><h1>Concentration Sweep: From Isolated Events to Coincidence<a class="headerlink" href="#concentration-sweep-from-isolated-events-to-coincidence" title="Link to this heading">#</a></h1>
+<section class="sphx-glr-example-title" id="concentration-and-coincidence">
+<span id="sphx-glr-gallery-studies-concentration-sweep-py"></span><h1>Concentration and coincidence<a class="headerlink" href="#concentration-and-coincidence" title="Link to this heading">#</a></h1>
 <p>This tutorial studies how increasing particle concentration changes the detector
 signal and the extracted event statistics.
 %
@@ -733,23 +711,54 @@ resulting analog traces, trigger counts, and peak distributions.</p>
 </span>    <span class="n">run_records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">run_record</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
 </section>
-<section id="step-3-compare-analog-traces-and-extracted-events">
-<h2>Step 3: Compare analog traces and extracted events<a class="headerlink" href="#step-3-compare-analog-traces-and-extracted-events" title="Link to this heading">#</a></h2>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="k">for</span> <span class="n">run_record</span> <span class="ow">in</span> <span class="n">run_records</span><span class="p">:</span><span class="w">
-</span>    <span class="n">_</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">plot_analog</span><span class="p">(</span><span class="n">figure_size</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="p">)</span><span class="w">
-</span>    <span class="n">_</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">plot_peaks</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">side</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">Height</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">)</span><span class="w">
+<section id="analog-trace-at-1e8-particles-ml">
+<h2>Analog trace at 1e8 particles/mL<a class="headerlink" href="#analog-trace-at-1e8-particles-ml" title="Link to this heading">#</a></h2>
+<p>Inspect pulse overlap as concentration increases.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_</span> <span class="o">=</span> <span class="n">run_records</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_analog</span><span class="p">(</span><span class="n">figure_size</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<ul class="sphx-glr-horizontal">
-<li><img src="../../_images/sphx_glr_concentration_sweep_001.png" srcset="../../_images/sphx_glr_concentration_sweep_001.png" alt="concentration sweep" class = "sphx-glr-multi-img"/></li>
-<li><img src="../../_images/sphx_glr_concentration_sweep_002.png" srcset="../../_images/sphx_glr_concentration_sweep_002.png" alt="Distribution of side | Height" class = "sphx-glr-multi-img"/></li>
-<li><img src="../../_images/sphx_glr_concentration_sweep_003.png" srcset="../../_images/sphx_glr_concentration_sweep_003.png" alt="concentration sweep" class = "sphx-glr-multi-img"/></li>
-<li><img src="../../_images/sphx_glr_concentration_sweep_004.png" srcset="../../_images/sphx_glr_concentration_sweep_004.png" alt="Distribution of side | Height" class = "sphx-glr-multi-img"/></li>
-<li><img src="../../_images/sphx_glr_concentration_sweep_005.png" srcset="../../_images/sphx_glr_concentration_sweep_005.png" alt="concentration sweep" class = "sphx-glr-multi-img"/></li>
-<li><img src="../../_images/sphx_glr_concentration_sweep_006.png" srcset="../../_images/sphx_glr_concentration_sweep_006.png" alt="Distribution of side | Height" class = "sphx-glr-multi-img"/></li>
-<li><img src="../../_images/sphx_glr_concentration_sweep_007.png" srcset="../../_images/sphx_glr_concentration_sweep_007.png" alt="concentration sweep" class = "sphx-glr-multi-img"/></li>
-<li><img src="../../_images/sphx_glr_concentration_sweep_008.png" srcset="../../_images/sphx_glr_concentration_sweep_008.png" alt="Distribution of side | Height" class = "sphx-glr-multi-img"/></li>
-</ul>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 8.027 seconds)</p>
+<img src="../../_images/sphx_glr_concentration_sweep_001.png" srcset="../../_images/sphx_glr_concentration_sweep_001.png" alt="concentration sweep" class = "sphx-glr-single-img"/></section>
+<section id="peak-heights-at-1e8-particles-ml">
+<h2>Peak heights at 1e8 particles/mL<a class="headerlink" href="#peak-heights-at-1e8-particles-ml" title="Link to this heading">#</a></h2>
+<p>Compare the recovered side-scatter peak distribution with the corresponding trace.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_</span> <span class="o">=</span> <span class="n">run_records</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_peaks</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">side</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">Height</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<img src="../../_images/sphx_glr_concentration_sweep_002.png" srcset="../../_images/sphx_glr_concentration_sweep_002.png" alt="Distribution of side | Height" class = "sphx-glr-single-img"/></section>
+<section id="analog-trace-at-5e8-particles-ml">
+<h2>Analog trace at 5e8 particles/mL<a class="headerlink" href="#analog-trace-at-5e8-particles-ml" title="Link to this heading">#</a></h2>
+<p>Inspect pulse overlap as concentration increases.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_</span> <span class="o">=</span> <span class="n">run_records</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot_analog</span><span class="p">(</span><span class="n">figure_size</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<img src="../../_images/sphx_glr_concentration_sweep_003.png" srcset="../../_images/sphx_glr_concentration_sweep_003.png" alt="concentration sweep" class = "sphx-glr-single-img"/></section>
+<section id="peak-heights-at-5e8-particles-ml">
+<h2>Peak heights at 5e8 particles/mL<a class="headerlink" href="#peak-heights-at-5e8-particles-ml" title="Link to this heading">#</a></h2>
+<p>Compare the recovered side-scatter peak distribution with the corresponding trace.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_</span> <span class="o">=</span> <span class="n">run_records</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot_peaks</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">side</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">Height</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<img src="../../_images/sphx_glr_concentration_sweep_004.png" srcset="../../_images/sphx_glr_concentration_sweep_004.png" alt="Distribution of side | Height" class = "sphx-glr-single-img"/></section>
+<section id="analog-trace-at-1e9-particles-ml">
+<h2>Analog trace at 1e9 particles/mL<a class="headerlink" href="#analog-trace-at-1e9-particles-ml" title="Link to this heading">#</a></h2>
+<p>Inspect pulse overlap as concentration increases.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_</span> <span class="o">=</span> <span class="n">run_records</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot_analog</span><span class="p">(</span><span class="n">figure_size</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<img src="../../_images/sphx_glr_concentration_sweep_005.png" srcset="../../_images/sphx_glr_concentration_sweep_005.png" alt="concentration sweep" class = "sphx-glr-single-img"/></section>
+<section id="peak-heights-at-1e9-particles-ml">
+<h2>Peak heights at 1e9 particles/mL<a class="headerlink" href="#peak-heights-at-1e9-particles-ml" title="Link to this heading">#</a></h2>
+<p>Compare the recovered side-scatter peak distribution with the corresponding trace.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_</span> <span class="o">=</span> <span class="n">run_records</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot_peaks</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">side</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">Height</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<img src="../../_images/sphx_glr_concentration_sweep_006.png" srcset="../../_images/sphx_glr_concentration_sweep_006.png" alt="Distribution of side | Height" class = "sphx-glr-single-img"/></section>
+<section id="analog-trace-at-5e9-particles-ml">
+<h2>Analog trace at 5e9 particles/mL<a class="headerlink" href="#analog-trace-at-5e9-particles-ml" title="Link to this heading">#</a></h2>
+<p>Inspect pulse overlap as concentration increases.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_</span> <span class="o">=</span> <span class="n">run_records</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">plot_analog</span><span class="p">(</span><span class="n">figure_size</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<img src="../../_images/sphx_glr_concentration_sweep_007.png" srcset="../../_images/sphx_glr_concentration_sweep_007.png" alt="concentration sweep" class = "sphx-glr-single-img"/></section>
+<section id="peak-heights-at-5e9-particles-ml">
+<h2>Peak heights at 5e9 particles/mL<a class="headerlink" href="#peak-heights-at-5e9-particles-ml" title="Link to this heading">#</a></h2>
+<p>Compare the recovered side-scatter peak distribution with the corresponding trace.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_</span> <span class="o">=</span> <span class="n">run_records</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">plot_peaks</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">side</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">Height</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<img src="../../_images/sphx_glr_concentration_sweep_008.png" srcset="../../_images/sphx_glr_concentration_sweep_008.png" alt="Distribution of side | Height" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 13.216 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-studies-concentration-sweep-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/6c2f44bdbe64e8b2fe58c75e0b2234f5/concentration_sweep.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">concentration_sweep.ipynb</span></code></a></p>
@@ -789,7 +798,7 @@ resulting analog traces, trigger counts, and peak distributions.</p>
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Compare simulated and experimental flow cytometry bead distributions</p>
+        <p class="prev-next-title">Cytek bead comparison</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -815,7 +824,14 @@ resulting analog traces, trigger counts, and peak distributions.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#questions-addressed">Questions addressed</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1-build-a-reusable-cytometer-configuration">Step 1: Build a reusable cytometer configuration</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-sweep-concentration">Step 2: Sweep concentration</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3-compare-analog-traces-and-extracted-events">Step 3: Compare analog traces and extracted events</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analog-trace-at-1e8-particles-ml">Analog trace at 1e8 particles/mL</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#peak-heights-at-1e8-particles-ml">Peak heights at 1e8 particles/mL</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analog-trace-at-5e8-particles-ml">Analog trace at 5e8 particles/mL</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#peak-heights-at-5e8-particles-ml">Peak heights at 5e8 particles/mL</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analog-trace-at-1e9-particles-ml">Analog trace at 1e9 particles/mL</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#peak-heights-at-1e9-particles-ml">Peak heights at 1e9 particles/mL</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analog-trace-at-5e9-particles-ml">Analog trace at 5e9 particles/mL</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#peak-heights-at-5e9-particles-ml">Peak heights at 5e9 particles/mL</a></li>
 </ul>
   </nav></div>
 

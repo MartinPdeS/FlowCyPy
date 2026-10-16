@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Example with SEC columns &#8212; FlowCyPy  documentation</title>
+    <title>Size-exclusion chromatography &#8212; FlowCyPy  documentation</title>
   
   
   
@@ -35,7 +35,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/default.css?v=02978338" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css?v=af6c6b24" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
@@ -52,7 +52,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.2.2';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.2.3';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
@@ -60,12 +60,12 @@
     <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Signal Processing in Flow Cytometry" href="signal_processing.html" />
+    <link rel="next" title="Signal processing" href="signal_processing.html" />
     <link rel="prev" title="Limit of Detection" href="limit_of_detection.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.2.2" />
+  <meta name="docsearch:version" content="1.2.3" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -252,17 +252,6 @@
           
           
           
-          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          
-          
           <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -425,17 +414,6 @@
           
           
           
-          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          
-          
           <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -481,24 +459,24 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Examples: Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/facs_canto.html">Flow Cytometry Simulation: FacsCanto System</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow.html">Flow Cytometry Simulation: Full System Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow_1.html">Flow Cytometry Simulation: Full System Example with Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/facs_canto.html">FACSCanto simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow.html">Full system simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow_1.html">Workflow API</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: Studies</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="concentration_sweep.html">Concentration Sweep: From Isolated Events to Coincidence</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cytek_comparison.html">Compare simulated and experimental flow cytometry bead distributions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="flowcell_sampling.html">Visualize particle sampling in a rectangular flow cell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concentration_sweep.html">Concentration and coincidence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cytek_comparison.html">Cytek bead comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flowcell_sampling.html">Flow-cell sampling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="limit_of_detection.html">Limit of Detection</a></li>
-<li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">Example with SEC columns</a></li>
-<li class="toctree-l2"><a class="reference internal" href="signal_processing.html">Signal Processing in Flow Cytometry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="threshold_sensitivity.html">Threshold Sensitivity: Event Detection Near the Noise Floor</a></li>
+<li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">Size-exclusion chromatography</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signal_processing.html">Signal processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="threshold_sensitivity.html">Threshold sensitivity</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../validation/index.html">Examples: Validation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../validation/j_estimator.html">J Estimator Validation — Fixed Bead Size, Variable Illumination</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../validation/k_estimator.html">K Estimator Validation — Variable Bead Size, Fixed Illumination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../validation/j_estimator.html">J estimator validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../validation/k_estimator.html">K estimator validation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -547,7 +525,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Examples: Studies</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Example with SEC columns</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Size-exclusion chromatography</span></li>
   </ul>
 </nav>
 </div>
@@ -569,22 +547,9 @@
 <p><a class="reference internal" href="#sphx-glr-download-gallery-studies-sec-results-py"><span class="std std-ref">Go to the end</span></a>
 to download the full example code.</p>
 </div>
-<section class="sphx-glr-example-title" id="example-with-sec-columns">
-<span id="sphx-glr-gallery-studies-sec-results-py"></span><h1>Example with SEC columns<a class="headerlink" href="#example-with-sec-columns" title="Link to this heading">#</a></h1>
+<section class="sphx-glr-example-title" id="size-exclusion-chromatography">
+<span id="sphx-glr-gallery-studies-sec-results-py"></span><h1>Size-exclusion chromatography<a class="headerlink" href="#size-exclusion-chromatography" title="Link to this heading">#</a></h1>
 <p>This example demonstrates how to simulate flow cytometry data for extracellular vesicles (EVs) and lipoproteins (LPs) under different Size Exclusion Chromatography (SEC) scenarios. The simulation includes the generation of scatterer populations, opto-electronic configurations, and digital processing to analyze the resulting data.</p>
-<ul class="sphx-glr-horizontal">
-<li><img src="../../_images/sphx_glr_sec_results_001.png" srcset="../../_images/sphx_glr_sec_results_001.png" alt="EV Only, EV + LP, SEC @35nm, SEC @70nm" class = "sphx-glr-multi-img"/></li>
-<li><img src="../../_images/sphx_glr_sec_results_002.png" srcset="../../_images/sphx_glr_sec_results_002.png" alt="EV Only, EV + LP, SEC @35nm, SEC @70nm" class = "sphx-glr-multi-img"/></li>
-</ul>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>0 / 4
-1 / 4
-2 / 4
-3 / 4
-</pre></div>
-</div>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span><span class="w">
 </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span><span class="w">
 </span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="w">
@@ -603,8 +568,11 @@ to download the full example code.</p>
 </span><span class="c1"># ----------------------------</span><span class="w">
 </span><span class="c1"># Data geration flow cytometer</span><span class="w">
 </span><span class="c1"># ----------------------------</span><span class="w">
-</span><span class="w">
-</span><span class="k">def</span><span class="w"> </span><span class="nf">run_sec_swarm_demo</span><span class="p">(</span><span class="w">
+</span></pre></div></div>
+<section id="define-the-sec-simulation">
+<h2>Define the SEC simulation<a class="headerlink" href="#define-the-sec-simulation" title="Link to this heading">#</a></h2>
+<p>Build a reusable acquisition for a specified size cutoff and particle mixture.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">run_sec_swarm_demo</span><span class="p">(</span><span class="w">
 </span>    <span class="o">*</span><span class="p">,</span><span class="w">
 </span>    <span class="n">minimum_diameter_after_sec</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AnyUnit</span><span class="p">]</span><span class="p">,</span><span class="w">
 </span>    <span class="n">ev_spread</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span><span class="w">
@@ -817,7 +785,12 @@ to download the full example code.</p>
 </span><span class="c1"># 0 nm: EV Only, EV + LP</span><span class="w">
 </span><span class="c1"># 35 nm: SEC &#64;35nm</span><span class="w">
 </span><span class="c1"># 70 nm: SEC &#64;70nm</span><span class="w">
-</span><span class="n">sec_values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">70</span><span class="p">]</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="w">
+</span></pre></div></div>
+</section>
+<section id="run-the-separation-scenarios">
+<h2>Run the separation scenarios<a class="headerlink" href="#run-the-separation-scenarios" title="Link to this heading">#</a></h2>
+<p>Compare EVs alone, the EV and lipoprotein mixture, and two SEC size cutoffs.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">sec_values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">70</span><span class="p">]</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="w">
 </span><span class="n">ev_concentrations</span> <span class="o">=</span> <span class="p">[</span><span class="mf">5e15</span><span class="p">,</span> <span class="mf">5e15</span><span class="p">,</span> <span class="mf">5e15</span><span class="p">,</span> <span class="mf">5e15</span><span class="p">]</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span><span class="w">
 </span><span class="n">lp_concentrations</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">5e16</span><span class="p">,</span> <span class="mf">5e16</span><span class="p">,</span> <span class="mf">5e16</span><span class="p">]</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span><span class="w">
 </span><span class="w">
@@ -865,7 +838,18 @@ to download the full example code.</p>
 </span><span class="w">
 </span><span class="w">
 </span><span class="c1"># Define common variables</span><span class="w">
-</span><span class="n">x_detector</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s2">forward</span><span class="s2">&quot;</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>0 / 4
+1 / 4
+2 / 4
+3 / 4
+</pre></div>
+</div>
+</section>
+<section id="collect-peak-features">
+<h2>Collect peak features<a class="headerlink" href="#collect-peak-features" title="Link to this heading">#</a></h2>
+<p>Combine the detected peak heights and retain the scenario labels for comparison.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">x_detector</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s2">forward</span><span class="s2">&quot;</span><span class="w">
 </span><span class="n">y_detector</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s2">side</span><span class="s2">&quot;</span><span class="w">
 </span><span class="n">titles_map</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'</span><span class="s1">EV Only</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">EV + LP</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">SEC &#64;35nm</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">SEC &#64;70nm</span><span class="s1">'</span><span class="p">]</span><span class="w">
 </span><span class="w">
@@ -905,10 +889,15 @@ to download the full example code.</p>
 </span>    <span class="n">combined_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="p">)</span> <span class="c1"># Ensure combined_df is defined even if no peaks data</span><span class="w">
 </span><span class="w">
 </span><span class="c1"># Plotting part</span><span class="w">
-</span><span class="k">with</span> <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">scientific</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span></pre></div></div>
+</section>
+<section id="compare-forward-and-side-scatter">
+<h2>Compare forward and side scatter<a class="headerlink" href="#compare-forward-and-side-scatter" title="Link to this heading">#</a></h2>
+<p>Each panel shows the detected peak heights for one separation scenario.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="k">with</span> <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">scientific</span><span class="p">)</span><span class="p">:</span><span class="w">
 </span>    <span class="k">if</span> <span class="ow">not</span> <span class="n">combined_df</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span><span class="w">
-</span>        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span><span class="p">)</span> <span class="c1"># Adjust figure size for 1x4 grid</span><span class="w">
-</span>        <span class="n">gs_main</span> <span class="o">=</span> <span class="n">gridspec</span><span class="o">.</span><span class="n">GridSpec</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">wspace</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span> <span class="c1"># Main grid for the 4 scatter plots</span><span class="w">
+</span>        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">constrained</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span>        <span class="n">gs_main</span> <span class="o">=</span> <span class="n">gridspec</span><span class="o">.</span><span class="n">GridSpec</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="n">fig</span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span>        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">title</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">titles_map</span><span class="p">)</span><span class="p">:</span><span class="w">
 </span>            <span class="n">ax_scatter</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs_main</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="p">)</span> <span class="c1"># Main scatter plot</span><span class="w">
@@ -985,8 +974,12 @@ to download the full example code.</p>
 </span>    <span class="n">all_event_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><span class="n">combined_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">all_event_data</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="w">
-</span><span class="w">
-</span><span class="n">min_expected_diameter_nm</span> <span class="o">=</span> <span class="mf">1.0</span><span class="w">
+</span></pre></div></div>
+<img src="../../_images/sphx_glr_sec_results_001.png" srcset="../../_images/sphx_glr_sec_results_001.png" alt="EV Only, EV + LP, SEC @35nm, SEC @70nm" class = "sphx-glr-single-img"/></section>
+<section id="inspect-particle-size-and-scatter">
+<h2>Inspect particle size and scatter<a class="headerlink" href="#inspect-particle-size-and-scatter" title="Link to this heading">#</a></h2>
+<p>Filter the diameter range, then compare the joint distributions and their marginals.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">min_expected_diameter_nm</span> <span class="o">=</span> <span class="mf">1.0</span><span class="w">
 </span><span class="n">max_expected_diameter_nm</span> <span class="o">=</span> <span class="mf">1000.0</span><span class="w">
 </span><span class="w">
 </span><span class="n">combined_df</span><span class="p">[</span><span class="s1">'</span><span class="s1">Diameter_nm</span><span class="s1">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">[</span><span class="s1">'</span><span class="s1">Diameter</span><span class="s1">'</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">'</span><span class="s1">nanometer</span><span class="s1">'</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="w">
@@ -997,8 +990,8 @@ to download the full example code.</p>
 </span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><span class="k">with</span> <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">scientific</span><span class="p">)</span><span class="p">:</span><span class="w">
-</span>    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">24</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span><span class="p">)</span> <span class="c1"># Adjusted figure size for 1x4 grid to be more square</span><span class="w">
-</span>    <span class="n">gs_main</span> <span class="o">=</span> <span class="n">gridspec</span><span class="o">.</span><span class="n">GridSpec</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">wspace</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span> <span class="n">hspace</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span><span class="w">
+</span>    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">constrained</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span>    <span class="n">gs_main</span> <span class="o">=</span> <span class="n">gridspec</span><span class="o">.</span><span class="n">GridSpec</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="n">fig</span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span>    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">title</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">titles_map</span><span class="p">)</span><span class="p">:</span><span class="w">
 </span>        <span class="n">gs_inner</span> <span class="o">=</span> <span class="n">gridspec</span><span class="o">.</span><span class="n">GridSpecFromSubplotSpec</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">subplot_spec</span><span class="o">=</span><span class="n">gs_main</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="p">,</span><span class="w">
@@ -1099,7 +1092,7 @@ to download the full example code.</p>
 </span>    <span class="p">)</span><span class="w">
 </span>    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 37.473 seconds)</p>
+<img src="../../_images/sphx_glr_sec_results_002.png" srcset="../../_images/sphx_glr_sec_results_002.png" alt="EV Only, EV + LP, SEC @35nm, SEC @70nm" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 17.598 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-studies-sec-results-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/20b8e1b7bcebc6f5b54395d277dd2277/sec_results.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">sec_results.ipynb</span></code></a></p>
@@ -1112,6 +1105,7 @@ to download the full example code.</p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
 </section>
 
 
@@ -1138,7 +1132,7 @@ to download the full example code.</p>
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Signal Processing in Flow Cytometry</p>
+        <p class="prev-next-title">Signal processing</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -1152,6 +1146,22 @@ to download the full example code.</p>
                 <dialog id="pst-secondary-sidebar-modal"></dialog>
                 <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-the-sec-simulation">Define the SEC simulation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-the-separation-scenarios">Run the separation scenarios</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#collect-peak-features">Collect peak features</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compare-forward-and-side-scatter">Compare forward and side scatter</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inspect-particle-size-and-scatter">Inspect particle size and scatter</a></li>
+</ul>
+  </nav></div>
 
   <div class="sidebar-secondary-item">
 

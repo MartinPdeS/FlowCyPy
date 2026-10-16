@@ -18,8 +18,8 @@
 .. _sphx_glr_gallery_tutorials_workflow.py:
 
 
-Flow Cytometry Simulation: Full System Example
-==============================================
+Full system simulation
+======================
 
 This tutorial demonstrates a complete flow cytometry simulation using the FlowCyPy library.
 It models fluidics, optics, signal processing, and classification of multiple particle populations.
@@ -242,7 +242,7 @@ Step 3: Signal Processing Configuration
 Step 4: Run Simulation
 ----------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 186-201
+.. GENERATED FROM PYTHON SOURCE LINES 186-200
 
 .. code-block:: Python
 
@@ -259,6 +259,25 @@ Step 4: Run Simulation
         run_time=1 * ureg.millisecond,
     )
 
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 201-204
+
+Inspect particle sizes
+----------------------
+Check the sampled diameter distribution before examining the detector response.
+
+.. GENERATED FROM PYTHON SOURCE LINES 204-207
+
+.. code-block:: Python
+
+
     _ = run_record.event_collection.plot(x="Diameter")
 
 
@@ -273,12 +292,12 @@ Step 4: Run Simulation
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 202-204
+.. GENERATED FROM PYTHON SOURCE LINES 208-210
 
 Step 5: Plot Events and Raw Analog Signals
 ------------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 204-207
+.. GENERATED FROM PYTHON SOURCE LINES 210-213
 
 .. code-block:: Python
 
@@ -297,12 +316,12 @@ Step 5: Plot Events and Raw Analog Signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 208-210
+.. GENERATED FROM PYTHON SOURCE LINES 214-216
 
 Plot raw analog signals
 -----------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 210-213
+.. GENERATED FROM PYTHON SOURCE LINES 216-219
 
 .. code-block:: Python
 
@@ -331,12 +350,12 @@ Plot raw analog signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 214-216
+.. GENERATED FROM PYTHON SOURCE LINES 220-222
 
 Step 6: Plot Triggered Analog Segments
 --------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 216-219
+.. GENERATED FROM PYTHON SOURCE LINES 222-225
 
 .. code-block:: Python
 
@@ -355,12 +374,12 @@ Step 6: Plot Triggered Analog Segments
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 220-222
+.. GENERATED FROM PYTHON SOURCE LINES 226-228
 
 Step 7: Plot Peak Features
 --------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 222-223
+.. GENERATED FROM PYTHON SOURCE LINES 228-229
 
 .. code-block:: Python
 
@@ -380,7 +399,7 @@ Step 7: Plot Peak Features
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 4.569 seconds)
+   **Total running time of the script:** (0 minutes 5.481 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

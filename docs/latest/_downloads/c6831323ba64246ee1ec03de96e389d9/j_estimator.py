@@ -1,6 +1,6 @@
 """
-J Estimator Validation — Fixed Bead Size, Variable Illumination
-=================================================================
+J estimator validation
+======================
 
 This example estimates the J parameter, which quantifies how the
 robust coefficient of variation scales with signal strength under

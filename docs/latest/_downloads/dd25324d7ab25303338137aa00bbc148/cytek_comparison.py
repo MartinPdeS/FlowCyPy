@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Compare simulated and experimental flow cytometry bead distributions
-====================================================================
+Cytek bead comparison
+=====================
 
 This example compares simulated and experimental flow cytometry measurements
 for Rosetta bead populations.

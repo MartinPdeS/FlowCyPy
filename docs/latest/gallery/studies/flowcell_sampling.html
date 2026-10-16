@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Visualize particle sampling in a rectangular flow cell &#8212; FlowCyPy  documentation</title>
+    <title>Flow-cell sampling &#8212; FlowCyPy  documentation</title>
   
   
   
@@ -35,7 +35,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/default.css?v=02978338" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css?v=af6c6b24" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
@@ -52,7 +52,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.2.2';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.2.3';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
@@ -61,11 +61,11 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Limit of Detection" href="limit_of_detection.html" />
-    <link rel="prev" title="Compare simulated and experimental flow cytometry bead distributions" href="cytek_comparison.html" />
+    <link rel="prev" title="Cytek bead comparison" href="cytek_comparison.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.2.2" />
+  <meta name="docsearch:version" content="1.2.3" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -252,17 +252,6 @@
           
           
           
-          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          
-          
           <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -425,17 +414,6 @@
           
           
           
-          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          
-          
           <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -481,24 +459,24 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Examples: Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/facs_canto.html">Flow Cytometry Simulation: FacsCanto System</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow.html">Flow Cytometry Simulation: Full System Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow_1.html">Flow Cytometry Simulation: Full System Example with Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/facs_canto.html">FACSCanto simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow.html">Full system simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow_1.html">Workflow API</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: Studies</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="concentration_sweep.html">Concentration Sweep: From Isolated Events to Coincidence</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cytek_comparison.html">Compare simulated and experimental flow cytometry bead distributions</a></li>
-<li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">Visualize particle sampling in a rectangular flow cell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concentration_sweep.html">Concentration and coincidence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cytek_comparison.html">Cytek bead comparison</a></li>
+<li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">Flow-cell sampling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="limit_of_detection.html">Limit of Detection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sec_results.html">Example with SEC columns</a></li>
-<li class="toctree-l2"><a class="reference internal" href="signal_processing.html">Signal Processing in Flow Cytometry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="threshold_sensitivity.html">Threshold Sensitivity: Event Detection Near the Noise Floor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sec_results.html">Size-exclusion chromatography</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signal_processing.html">Signal processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="threshold_sensitivity.html">Threshold sensitivity</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../validation/index.html">Examples: Validation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../validation/j_estimator.html">J Estimator Validation — Fixed Bead Size, Variable Illumination</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../validation/k_estimator.html">K Estimator Validation — Variable Bead Size, Fixed Illumination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../validation/j_estimator.html">J estimator validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../validation/k_estimator.html">K estimator validation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -547,7 +525,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Examples: Studies</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Visualize particle sampling in a rectangular flow cell</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Flow-cell sampling</span></li>
   </ul>
 </nav>
 </div>
@@ -569,8 +547,8 @@
 <p><a class="reference internal" href="#sphx-glr-download-gallery-studies-flowcell-sampling-py"><span class="std std-ref">Go to the end</span></a>
 to download the full example code.</p>
 </div>
-<section class="sphx-glr-example-title" id="visualize-particle-sampling-in-a-rectangular-flow-cell">
-<span id="sphx-glr-gallery-studies-flowcell-sampling-py"></span><h1>Visualize particle sampling in a rectangular flow cell<a class="headerlink" href="#visualize-particle-sampling-in-a-rectangular-flow-cell" title="Link to this heading">#</a></h1>
+<section class="sphx-glr-example-title" id="flow-cell-sampling">
+<span id="sphx-glr-gallery-studies-flowcell-sampling-py"></span><h1>Flow-cell sampling<a class="headerlink" href="#flow-cell-sampling" title="Link to this heading">#</a></h1>
 <p>This example shows how to simulate particle trajectories in a rectangular
 flow cell and visualize their transverse positions.</p>
 <p>The figure highlights three pieces of information:</p>
@@ -804,7 +782,7 @@ Particle positions are colored by their local velocity.</p>
 </span><span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="p">)</span><span class="w">
 </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_flowcell_sampling_001.png" srcset="../../_images/sphx_glr_flowcell_sampling_001.png" alt="Q$_{sheath}$ / Q$_{sample}$ = 1.00" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.903 seconds)</p>
+<img src="../../_images/sphx_glr_flowcell_sampling_001.png" srcset="../../_images/sphx_glr_flowcell_sampling_001.png" alt="Q$_{sheath}$ / Q$_{sample}$ = 1.00" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.025 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-studies-flowcell-sampling-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/8d2dc1f5d670239af14f0bd0b030bf43/flowcell_sampling.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">flowcell_sampling.ipynb</span></code></a></p>
@@ -836,7 +814,7 @@ Particle positions are colored by their local velocity.</p>
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Compare simulated and experimental flow cytometry bead distributions</p>
+        <p class="prev-next-title">Cytek bead comparison</p>
       </div>
     </a>
     <a class="right-next"

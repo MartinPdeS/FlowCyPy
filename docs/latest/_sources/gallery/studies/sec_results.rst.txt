@@ -18,48 +18,12 @@
 .. _sphx_glr_gallery_studies_sec_results.py:
 
 
-Example with SEC columns
-========================
+Size-exclusion chromatography
+=============================
 
 This example demonstrates how to simulate flow cytometry data for extracellular vesicles (EVs) and lipoproteins (LPs) under different Size Exclusion Chromatography (SEC) scenarios. The simulation includes the generation of scatterer populations, opto-electronic configurations, and digital processing to analyze the resulting data.
 
-.. GENERATED FROM PYTHON SOURCE LINES 8-520
-
-
-
-.. rst-class:: sphx-glr-horizontal
-
-
-    *
-
-      .. image-sg:: /gallery/studies/images/sphx_glr_sec_results_001.png
-         :alt: EV Only, EV + LP, SEC @35nm, SEC @70nm
-         :srcset: /gallery/studies/images/sphx_glr_sec_results_001.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /gallery/studies/images/sphx_glr_sec_results_002.png
-         :alt: EV Only, EV + LP, SEC @35nm, SEC @70nm
-         :srcset: /gallery/studies/images/sphx_glr_sec_results_002.png
-         :class: sphx-glr-multi-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-    0 / 4
-    1 / 4
-    2 / 4
-    3 / 4
-
-
-
-
-
-
-|
+.. GENERATED FROM PYTHON SOURCE LINES 8-28
 
 .. code-block:: Python
 
@@ -81,6 +45,25 @@ This example demonstrates how to simulate flow cytometry data for extracellular 
     # ----------------------------
     # Data geration flow cytometer
     # ----------------------------
+
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 29-32
+
+Define the SEC simulation
+-------------------------
+Build a reusable acquisition for a specified size cutoff and particle mixture.
+
+.. GENERATED FROM PYTHON SOURCE LINES 32-247
+
+.. code-block:: Python
+
 
     def run_sec_swarm_demo(
         *,
@@ -295,6 +278,25 @@ This example demonstrates how to simulate flow cytometry data for extracellular 
     # 0 nm: EV Only, EV + LP
     # 35 nm: SEC @35nm
     # 70 nm: SEC @70nm
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 248-251
+
+Run the separation scenarios
+----------------------------
+Compare EVs alone, the EV and lipoprotein mixture, and two SEC size cutoffs.
+
+.. GENERATED FROM PYTHON SOURCE LINES 251-301
+
+.. code-block:: Python
+
+
     sec_values = [0, 0, 35, 70] * ureg.nanometer
     ev_concentrations = [5e15, 5e15, 5e15, 5e15] * ureg.particle / ureg.milliliter
     lp_concentrations = [0, 5e16, 5e16, 5e16] * ureg.particle / ureg.milliliter
@@ -343,6 +345,34 @@ This example demonstrates how to simulate flow cytometry data for extracellular 
 
 
     # Define common variables
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    0 / 4
+    1 / 4
+    2 / 4
+    3 / 4
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 302-305
+
+Collect peak features
+---------------------
+Combine the detected peak heights and retain the scenario labels for comparison.
+
+.. GENERATED FROM PYTHON SOURCE LINES 305-347
+
+.. code-block:: Python
+
+
     x_detector = "forward"
     y_detector = "side"
     titles_map = ['EV Only', 'EV + LP', 'SEC @35nm', 'SEC @70nm']
@@ -383,10 +413,29 @@ This example demonstrates how to simulate flow cytometry data for extracellular 
         combined_df = pd.DataFrame() # Ensure combined_df is defined even if no peaks data
 
     # Plotting part
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 348-351
+
+Compare forward and side scatter
+--------------------------------
+Each panel shows the detected peak heights for one separation scenario.
+
+.. GENERATED FROM PYTHON SOURCE LINES 351-434
+
+.. code-block:: Python
+
+
     with plt.style.context(scientific):
         if not combined_df.empty:
-            fig = plt.figure(figsize=(20, 5)) # Adjust figure size for 1x4 grid
-            gs_main = gridspec.GridSpec(1, 4, figure=fig, wspace=0.2) # Main grid for the 4 scatter plots
+            fig = plt.figure(figsize=(12, 10), layout="constrained")
+            gs_main = gridspec.GridSpec(2, 2, figure=fig)
 
             for i, title in enumerate(titles_map):
                 ax_scatter = fig.add_subplot(gs_main[i]) # Main scatter plot
@@ -464,6 +513,30 @@ This example demonstrates how to simulate flow cytometry data for extracellular 
 
     combined_df = pd.concat(all_event_data, ignore_index=True)
 
+
+
+
+
+.. image-sg:: /gallery/studies/images/sphx_glr_sec_results_001.png
+   :alt: EV Only, EV + LP, SEC @35nm, SEC @70nm
+   :srcset: /gallery/studies/images/sphx_glr_sec_results_001.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 435-438
+
+Inspect particle size and scatter
+---------------------------------
+Filter the diameter range, then compare the joint distributions and their marginals.
+
+.. GENERATED FROM PYTHON SOURCE LINES 438-551
+
+.. code-block:: Python
+
+
     min_expected_diameter_nm = 1.0
     max_expected_diameter_nm = 1000.0
 
@@ -475,8 +548,8 @@ This example demonstrates how to simulate flow cytometry data for extracellular 
     ].copy()
 
     with plt.style.context(scientific):
-        fig = plt.figure(figsize=(24, 6)) # Adjusted figure size for 1x4 grid to be more square
-        gs_main = gridspec.GridSpec(1, 4, figure=fig, wspace=0.15, hspace=0.15)
+        fig = plt.figure(figsize=(12, 12), layout="constrained")
+        gs_main = gridspec.GridSpec(2, 2, figure=fig)
 
         for i, title in enumerate(titles_map):
             gs_inner = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs_main[i],
@@ -577,9 +650,21 @@ This example demonstrates how to simulate flow cytometry data for extracellular 
         )
         plt.show()
 
+
+
+.. image-sg:: /gallery/studies/images/sphx_glr_sec_results_002.png
+   :alt: EV Only, EV + LP, SEC @35nm, SEC @70nm
+   :srcset: /gallery/studies/images/sphx_glr_sec_results_002.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 37.473 seconds)
+   **Total running time of the script:** (1 minutes 17.598 seconds)
 
 
 .. _sphx_glr_download_gallery_studies_sec_results.py:

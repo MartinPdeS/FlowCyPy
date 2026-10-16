@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>J Estimator Validation — Fixed Bead Size, Variable Illumination &#8212; FlowCyPy  documentation</title>
+    <title>J estimator validation &#8212; FlowCyPy  documentation</title>
   
   
   
@@ -35,7 +35,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/default.css?v=02978338" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css?v=af6c6b24" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
@@ -52,7 +52,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.2.2';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.2.3';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
@@ -60,12 +60,12 @@
     <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="K Estimator Validation — Variable Bead Size, Fixed Illumination" href="k_estimator.html" />
+    <link rel="next" title="K estimator validation" href="k_estimator.html" />
     <link rel="prev" title="Examples: Validation" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.2.2" />
+  <meta name="docsearch:version" content="1.2.3" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -252,17 +252,6 @@
           
           
           
-          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          
-          
           <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -425,17 +414,6 @@
           
           
           
-          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          
-          
           <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -481,24 +459,24 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Examples: Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/facs_canto.html">Flow Cytometry Simulation: FacsCanto System</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow.html">Flow Cytometry Simulation: Full System Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow_1.html">Flow Cytometry Simulation: Full System Example with Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/facs_canto.html">FACSCanto simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow.html">Full system simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow_1.html">Workflow API</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../studies/index.html">Examples: Studies</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../studies/concentration_sweep.html">Concentration Sweep: From Isolated Events to Coincidence</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../studies/cytek_comparison.html">Compare simulated and experimental flow cytometry bead distributions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../studies/flowcell_sampling.html">Visualize particle sampling in a rectangular flow cell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../studies/concentration_sweep.html">Concentration and coincidence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../studies/cytek_comparison.html">Cytek bead comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../studies/flowcell_sampling.html">Flow-cell sampling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../studies/limit_of_detection.html">Limit of Detection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../studies/sec_results.html">Example with SEC columns</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../studies/signal_processing.html">Signal Processing in Flow Cytometry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../studies/threshold_sensitivity.html">Threshold Sensitivity: Event Detection Near the Noise Floor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../studies/sec_results.html">Size-exclusion chromatography</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../studies/signal_processing.html">Signal processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../studies/threshold_sensitivity.html">Threshold sensitivity</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: Validation</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">J Estimator Validation — Fixed Bead Size, Variable Illumination</a></li>
-<li class="toctree-l2"><a class="reference internal" href="k_estimator.html">K Estimator Validation — Variable Bead Size, Fixed Illumination</a></li>
+<li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">J estimator validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="k_estimator.html">K estimator validation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -547,7 +525,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Examples: Validation</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">J Estimator Validation — Fixed Bead Size, Variable Illumination</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">J estimator validation</span></li>
   </ul>
 </nav>
 </div>
@@ -569,8 +547,8 @@
 <p><a class="reference internal" href="#sphx-glr-download-gallery-validation-j-estimator-py"><span class="std std-ref">Go to the end</span></a>
 to download the full example code.</p>
 </div>
-<section class="sphx-glr-example-title" id="j-estimator-validation-fixed-bead-size-variable-illumination">
-<span id="sphx-glr-gallery-validation-j-estimator-py"></span><h1>J Estimator Validation — Fixed Bead Size, Variable Illumination<a class="headerlink" href="#j-estimator-validation-fixed-bead-size-variable-illumination" title="Link to this heading">#</a></h1>
+<section class="sphx-glr-example-title" id="j-estimator-validation">
+<span id="sphx-glr-gallery-validation-j-estimator-py"></span><h1>J estimator validation<a class="headerlink" href="#j-estimator-validation" title="Link to this heading">#</a></h1>
 <p>This example estimates the J parameter, which quantifies how the
 robust coefficient of variation scales with signal strength under
 varying illumination power.</p>
@@ -937,8 +915,8 @@ vary illumination power across multiple runs.</p>
 </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Linear intercept: </span><span class="si">{</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute reference external" href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64"><span class="n">j_intercept</span></a><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>J estimation results
-Estimated J: 0.11885783366134005 dimensionless
-Linear intercept: 4.981062e-05
+Estimated J: 0.11714499610333379 dimensionless
+Linear intercept: 5.352569e-05
 </pre></div>
 </div>
 </section>
@@ -955,7 +933,7 @@ Linear intercept: 4.981062e-05
 </span><span class="w">
 </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_j_estimator_001.png" srcset="../../_images/sphx_glr_j_estimator_001.png" alt="J Parameter Estimation" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 41.230 seconds)</p>
+<img src="../../_images/sphx_glr_j_estimator_001.png" srcset="../../_images/sphx_glr_j_estimator_001.png" alt="J Parameter Estimation" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 26.802 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-validation-j-estimator-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/9af42e1b4e0c5302d9399c632be56448/j_estimator.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">j_estimator.ipynb</span></code></a></p>
@@ -995,7 +973,7 @@ Linear intercept: 4.981062e-05
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">K Estimator Validation — Variable Bead Size, Fixed Illumination</p>
+        <p class="prev-next-title">K estimator validation</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

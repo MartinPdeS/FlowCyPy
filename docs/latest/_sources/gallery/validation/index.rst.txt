@@ -28,7 +28,7 @@ Examples: Validation
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">J Estimator Validation — Fixed Bead Size, Variable Illumination</div>
+      <div class="sphx-glr-thumbnail-title">J estimator validation</div>
     </div>
 
 
@@ -45,7 +45,7 @@ Examples: Validation
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">K Estimator Validation — Variable Bead Size, Fixed Illumination</div>
+      <div class="sphx-glr-thumbnail-title">K estimator validation</div>
     </div>
 
 
