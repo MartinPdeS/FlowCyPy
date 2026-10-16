@@ -35,7 +35,7 @@
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="_static/default.css?v=af6c6b24" />
+    <link rel="stylesheet" type="text/css" href="_static/default.css?v=b5ae4d64" />
   
   <!-- So that users can add custom icons -->
   <script defer src="_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
@@ -53,7 +53,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.2.4';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.2.5';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
@@ -66,7 +66,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.2.4" />
+  <meta name="docsearch:version" content="1.2.5" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -119,7 +119,7 @@
   </button>
   
   
-  <div class=" navbar-header-items__start">
+  <div class="col-lg-3 navbar-header-items__start">
     
       <div class="navbar-item">
 
@@ -146,7 +146,7 @@
     
   </div>
   
-  <div class=" navbar-header-items">
+  <div class="col-lg-9 navbar-header-items">
     
     <div class="me-auto navbar-header-items__center">
       
@@ -549,15 +549,17 @@ The scattered light is detected by one or more photodetectors, allowing the user
 - <span class="math notranslate nohighlight">\(\lambda\)</span> is the wavelength of the laser beam.</p>
 <p>Mie theory also allows us to compute the <strong>extinction cross-section</strong> and <strong>backscatter cross-section</strong>,
 which are important for measuring attenuation and detecting backscatter signals in flow cytometry.</p>
-<p>### Phase Function</p>
+<section id="phase-function">
+<h3>Phase Function<a class="headerlink" href="#phase-function" title="Link to this heading">#</a></h3>
 <p>The phase function describes how light is scattered as a function of angle relative to the incident light. For spherical particles, the Mie phase function can be quite complex, but it generally shows more intense forward scattering than side or backward scattering. The intensity of scattered light at an angle <span class="math notranslate nohighlight">\(\theta\)</span> is:</p>
 <div class="math notranslate nohighlight">
-\[I(\theta) = \frac{I_0}{k^2 r^2} \left( |S_1(\theta)|^2 + |S_2(\theta)|^2 \right)\]</div>
+\[I(\theta, R) = \frac{I_0}{k^2 R^2} \left( |S_1(\theta)|^2 + |S_2(\theta)|^2 \right)\]</div>
 <p>Where:
 - <span class="math notranslate nohighlight">\(I_0\)</span> is the intensity of the incident light,
-- <span class="math notranslate nohighlight">\(r\)</span> is the radius of the particle,
+- <span class="math notranslate nohighlight">\(R\)</span> is the distance from the particle to the observation point,
 - <span class="math notranslate nohighlight">\(S_1(\theta)\)</span> and <span class="math notranslate nohighlight">\(S_2(\theta)\)</span> are the scattering amplitudes for perpendicular and parallel polarized components, respectively.</p>
 <p>The <strong>scattering amplitude functions</strong> are derived from Mie theory and involve sums over spherical harmonics and complex exponential terms. These terms account for the interaction of light with both the surface and the interior of the particle.</p>
+</section>
 </section>
 <section id="gaussian-illumination-source">
 <h2>Gaussian Illumination Source<a class="headerlink" href="#gaussian-illumination-source" title="Link to this heading">#</a></h2>
@@ -568,7 +570,8 @@ which are important for measuring attenuation and detecting backscatter signals 
 - <span class="math notranslate nohighlight">\(I_0\)</span> is the peak intensity at the center of the beam,
 - <span class="math notranslate nohighlight">\(r\)</span> is the radial distance from the beam center,
 - <span class="math notranslate nohighlight">\(w_0\)</span> is the waist radius of the beam.</p>
-<p>### Beam Waist and Numerical Aperture</p>
+<section id="beam-waist-and-numerical-aperture">
+<h3>Beam Waist and Numerical Aperture<a class="headerlink" href="#beam-waist-and-numerical-aperture" title="Link to this heading">#</a></h3>
 <p>The <strong>beam waist</strong> is determined by the focusing optics and is related to the <strong>numerical aperture (NA)</strong> of the system, which is defined by:</p>
 <div class="math notranslate nohighlight">
 \[\text{NA} = n \sin \theta\]</div>
@@ -579,24 +582,32 @@ which are important for measuring attenuation and detecting backscatter signals 
 <div class="math notranslate nohighlight">
 \[w_0 = \frac{\lambda}{\pi \text{NA}}\]</div>
 <p>For small numerical apertures, the beam waist is larger, and the focal spot of the laser is more diffuse. Conversely, for higher numerical apertures, the beam waist is smaller, resulting in a more tightly focused beam.</p>
-<p>### Power Density and Spot Size</p>
-<p>The power density of the Gaussian beam at the focal point (beam waist) is a critical parameter because it determines the amount of light that interacts with each particle. The power density is highest at the beam center and decreases exponentially with radial distance:</p>
+</section>
+<section id="power-density-and-spot-size">
+<h3>Power Density and Spot Size<a class="headerlink" href="#power-density-and-spot-size" title="Link to this heading">#</a></h3>
+<p>For a beam with total optical power <span class="math notranslate nohighlight">\(P_0\)</span>, the power density (intensity) at the focal plane is highest at the center and decreases with radial distance <span class="math notranslate nohighlight">\(r\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[P_{\text{density}} = \frac{2 P_0}{\pi w_0^2} \exp \left( - \frac{2 r^2}{w_0^2} \right)\]</div>
-<p>Where:
-- <span class="math notranslate nohighlight">\(P_0\)</span> is the total power of the laser.</p>
+<p>Here <span class="math notranslate nohighlight">\(w_0\)</span> is the beam-waist radius. At the center, the peak power density is <span class="math notranslate nohighlight">\(2P_0/(\pi w_0^2)\)</span>, so focusing the same laser power into a smaller waist increases the peak intensity. The spot diameter is often quoted as the <span class="math notranslate nohighlight">\(1/e^2\)</span> intensity diameter:</p>
+<div class="math notranslate nohighlight">
+\[d_{1/e^2} = 2 w_0\]</div>
+<p>At a radial distance <span class="math notranslate nohighlight">\(r = w_0\)</span>, the intensity has fallen to <span class="math notranslate nohighlight">\(e^{-2}\)</span> (about 13.5%) of its peak value. Stating the spot-size convention matters when comparing laser specifications, since some sources report a radius while others report a diameter.</p>
+</section>
 </section>
 <section id="detection-scheme">
 <h2>Detection Scheme<a class="headerlink" href="#detection-scheme" title="Link to this heading">#</a></h2>
 <p>In flow cytometry, detectors are placed at different angles relative to the incident laser beam to measure both <strong>forward scatter (FSC)</strong> and <strong>side scatter (SSC)</strong>. The <strong>forward scatter</strong> detector is typically aligned with the axis of the laser beam, while the <strong>side scatter</strong> detector is positioned at a 90-degree angle.</p>
-<p>### Forward Scatter (FSC)</p>
+<section id="forward-scatter-fsc">
+<h3>Forward Scatter (FSC)<a class="headerlink" href="#forward-scatter-fsc" title="Link to this heading">#</a></h3>
 <p><strong>Forward scatter (FSC)</strong> is primarily sensitive to particle size. When particles pass through the focused laser beam, light is scattered predominantly in the forward direction due to the larger phase shift and constructive interference of light waves. The intensity of the forward scatter signal is proportional to the particle’s cross-sectional area:</p>
 <div class="math notranslate nohighlight">
 \[I_{\text{FSC}} \propto r^2\]</div>
 <p>Where:
 - <span class="math notranslate nohighlight">\(r\)</span> is the radius of the particle.</p>
 <p>Thus, larger particles produce stronger forward scatter signals, allowing for size differentiation in flow cytometry.</p>
-<p>### Side Scatter (SSC)</p>
+</section>
+<section id="side-scatter-ssc">
+<h3>Side Scatter (SSC)<a class="headerlink" href="#side-scatter-ssc" title="Link to this heading">#</a></h3>
 <p><strong>Side scatter (SSC)</strong> is primarily sensitive to the internal complexity or granularity of the particle, such as cell granules or surface roughness. Side scatter arises from light being scattered at large angles (typically 90 degrees). The intensity of the side scatter signal depends on the <strong>granularity</strong> and refractive index mismatch between the particle and the surrounding medium. It can be empirically modeled as:</p>
 <div class="math notranslate nohighlight">
 \[I_{\text{SSC}} \propto \text{granularity} \cdot \sin^n(\theta)\]</div>
@@ -604,7 +615,9 @@ which are important for measuring attenuation and detecting backscatter signals 
 - <span class="math notranslate nohighlight">\(\theta\)</span> is the scattering angle (typically 90 degrees),
 - <span class="math notranslate nohighlight">\(n\)</span> is an empirical parameter controlling the angular dependence,
 - Granularity is a dimensionless measure of the particle’s internal complexity.</p>
-<p>### Detector Configuration</p>
+</section>
+<section id="detector-configuration">
+<h3>Detector Configuration<a class="headerlink" href="#detector-configuration" title="Link to this heading">#</a></h3>
 <p>Detectors in flow cytometry are characterized by several important parameters:
 - <strong>Acquisition Frequency</strong>: The rate at which the detector samples the scattered signal (e.g., 10,000 Hz).
 - <strong>Numerical Aperture (NA)</strong>: The detector’s ability to collect scattered light over a range of angles.
@@ -621,6 +634,7 @@ which are important for measuring attenuation and detecting backscatter signals 
 <span class="p">)</span>
 </pre></div>
 </div>
+</section>
 </section>
 <section id="simulating-and-analyzing-flow-cytometry-data">
 <h2>Simulating and Analyzing Flow Cytometry Data<a class="headerlink" href="#simulating-and-analyzing-flow-cytometry-data" title="Link to this heading">#</a></h2>
@@ -676,9 +690,21 @@ which are important for measuring attenuation and detecting backscatter signals 
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mie-scattering-theory">Mie Scattering Theory</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gaussian-illumination-source">Gaussian Illumination Source</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#detection-scheme">Detection Scheme</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mie-scattering-theory">Mie Scattering Theory</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#phase-function">Phase Function</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gaussian-illumination-source">Gaussian Illumination Source</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#beam-waist-and-numerical-aperture">Beam Waist and Numerical Aperture</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#power-density-and-spot-size">Power Density and Spot Size</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#detection-scheme">Detection Scheme</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forward-scatter-fsc">Forward Scatter (FSC)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#side-scatter-ssc">Side Scatter (SSC)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#detector-configuration">Detector Configuration</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simulating-and-analyzing-flow-cytometry-data">Simulating and Analyzing Flow Cytometry Data</a></li>
 </ul>
   </nav></div>
