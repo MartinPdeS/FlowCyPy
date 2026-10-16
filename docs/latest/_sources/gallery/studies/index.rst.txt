@@ -68,7 +68,7 @@ Examples: Studies
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This example simulates the detection of small nanoparticles (90-150 nm diameter) in a flow cytometry setup using a dual-detector configuration (side and forward scatter). The simulation includes noise models, realistic fluidics, analog signal conditioning, digitization, triggering, and peak detection.">
+    <div class="sphx-glr-thumbcontainer" tooltip="This example simulates the detection of small nanoparticles (50-150 nm diameter) in a flow cytometry setup using a dual-detector configuration (side and forward scatter). The simulation includes noise models, realistic fluidics, analog signal conditioning, digitization, triggering, and peak detection.">
 
 .. only:: html
 

@@ -52,7 +52,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.2.5';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.2.6';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
@@ -65,7 +65,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.2.5" />
+  <meta name="docsearch:version" content="1.2.6" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -709,56 +709,121 @@ resulting analog traces, trigger counts, and peak distributions.</p>
 </span>    <span class="p">)</span><span class="w">
 </span><span class="w">
 </span>    <span class="n">run_records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">run_record</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="w">
+</span><span class="k">def</span><span class="w"> </span><span class="nf">plot_analog_window</span><span class="p">(</span><span class="n">run_record</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>    <span class="n">figure</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">plot_analog</span><span class="p">(</span><span class="w">
+</span>        <span class="n">figure_size</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>        <span class="n">include_scatterer</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="w">
+</span>    <span class="p">)</span><span class="w">
+</span>    <span class="n">analog_signal</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">analog</span><span class="w">
+</span>    <span class="n">time_unit</span> <span class="o">=</span> <span class="n">analog_signal</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">units</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">Time</span><span class="s2">&quot;</span><span class="p">]</span><span class="w">
+</span>    <span class="n">window_end</span> <span class="o">=</span> <span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">microsecond</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">time_unit</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="w">
+</span>    <span class="n">detector_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">column</span> <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">analog_signal</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">column</span> <span class="o">!=</span> <span class="s2">&quot;</span><span class="s2">Time</span><span class="s2">&quot;</span><span class="p">]</span><span class="w">
+</span><span class="w">
+</span>    <span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">detector_name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">figure</span><span class="o">.</span><span class="n">axes</span><span class="p">,</span> <span class="n">detector_names</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>        <span class="n">detector_label</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;</span><span class="s2">side</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">SSC</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">forward</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">FSC</span><span class="s2">&quot;</span><span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="w">
+</span>            <span class="n">detector_name</span><span class="p">,</span> <span class="n">detector_name</span><span class="w">
+</span>        <span class="p">)</span><span class="w">
+</span>        <span class="n">voltage_unit</span> <span class="o">=</span> <span class="nb">format</span><span class="p">(</span><span class="n">analog_signal</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">units</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">[</span><span class="n">detector_name</span><span class="p">]</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">~</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span>        <span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">detector_label</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">voltage_unit</span><span class="si">}</span><span class="s2">]</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span><span class="w">
+</span>        <span class="n">axis</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_label_position</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">left</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span>        <span class="n">axis</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_ticks_position</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">left</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span>        <span class="n">axis</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">window_end</span><span class="p">)</span><span class="w">
+</span>        <span class="n">axis</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span><span class="w">
+</span>        <span class="n">axis</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span><span class="w">
+</span>        <span class="k">if</span> <span class="n">axis</span><span class="o">.</span><span class="n">lines</span><span class="p">:</span><span class="w">
+</span>            <span class="n">axis</span><span class="o">.</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_linewidth</span><span class="p">(</span><span class="mf">0.8</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span>    <span class="n">legend</span> <span class="o">=</span> <span class="n">figure</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_legend</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span>    <span class="k">if</span> <span class="n">legend</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span><span class="w">
+</span>        <span class="n">handles</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">figure</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_legend_handles_labels</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span>        <span class="n">legend</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span>        <span class="n">figure</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="w">
+</span>            <span class="n">handles</span><span class="p">,</span><span class="w">
+</span>            <span class="p">[</span><span class="w">
+</span>                <span class="s2">&quot;</span><span class="s2">Analog signal</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="s2">&quot;</span><span class="s2">analog</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="n">label</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;</span><span class="s2">Trigger threshold</span><span class="s2">&quot;</span><span class="w">
+</span>                <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="w">
+</span>            <span class="p">]</span><span class="p">,</span><span class="w">
+</span>            <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">upper center</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>            <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.94</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>            <span class="n">ncol</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">handles</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>            <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="w">
+</span>            <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span><span class="w">
+</span>        <span class="p">)</span><span class="w">
+</span><span class="w">
+</span>    <span class="n">figure</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">)</span><span class="w">
+</span>    <span class="n">figure</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Time [</span><span class="si">{</span><span class="nb">format</span><span class="p">(</span><span class="n">time_unit</span><span class="p">,</span><span class="w"> </span><span class="s1">'</span><span class="s1">~</span><span class="s1">'</span><span class="p">)</span><span class="si">}</span><span class="s2">]</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span><span class="w">
+</span>    <span class="n">figure</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">rect</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.86</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span>    <span class="k">return</span> <span class="n">figure</span><span class="w">
+</span><span class="w">
+</span><span class="w">
+</span><span class="k">def</span><span class="w"> </span><span class="nf">plot_peak_heights</span><span class="p">(</span><span class="n">run_record</span><span class="p">,</span> <span class="n">concentration_value</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>    <span class="n">figure</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">plot_peaks</span><span class="p">(</span><span class="w">
+</span>        <span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">side</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">Height</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>        <span class="n">figure_size</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>        <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Side-scatter peak heights at </span><span class="si">{</span><span class="n">concentration_value</span><span class="si">:</span><span class="s2">.0e</span><span class="si">}</span><span class="s2"> particles/mL</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="p">)</span><span class="w">
+</span>    <span class="n">figure</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span>    <span class="k">return</span> <span class="n">figure</span><span class="w">
 </span></pre></div></div>
 </section>
 <section id="analog-trace-at-1e8-particles-ml">
 <h2>Analog trace at 1e8 particles/mL<a class="headerlink" href="#analog-trace-at-1e8-particles-ml" title="Link to this heading">#</a></h2>
 <p>Inspect pulse overlap as concentration increases.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_</span> <span class="o">=</span> <span class="n">run_records</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_analog</span><span class="p">(</span><span class="n">figure_size</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="p">)</span><span class="w">
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_</span> <span class="o">=</span> <span class="n">plot_analog_window</span><span class="p">(</span><span class="w">
+</span>    <span class="n">run_records</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">Side-scatter signal at 1e8 particles/mL</span><span class="s2">&quot;</span><span class="w">
+</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_concentration_sweep_001.png" srcset="../../_images/sphx_glr_concentration_sweep_001.png" alt="concentration sweep" class = "sphx-glr-single-img"/></section>
+<img src="../../_images/sphx_glr_concentration_sweep_001.png" srcset="../../_images/sphx_glr_concentration_sweep_001.png" alt="Side-scatter signal at 1e8 particles/mL" class = "sphx-glr-single-img"/></section>
 <section id="peak-heights-at-1e8-particles-ml">
 <h2>Peak heights at 1e8 particles/mL<a class="headerlink" href="#peak-heights-at-1e8-particles-ml" title="Link to this heading">#</a></h2>
 <p>Compare the recovered side-scatter peak distribution with the corresponding trace.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_</span> <span class="o">=</span> <span class="n">run_records</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_peaks</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">side</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">Height</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">)</span><span class="w">
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_</span> <span class="o">=</span> <span class="n">plot_peak_heights</span><span class="p">(</span><span class="n">run_records</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="p">,</span> <span class="n">concentration_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_concentration_sweep_002.png" srcset="../../_images/sphx_glr_concentration_sweep_002.png" alt="Distribution of side | Height" class = "sphx-glr-single-img"/></section>
+<img src="../../_images/sphx_glr_concentration_sweep_002.png" srcset="../../_images/sphx_glr_concentration_sweep_002.png" alt="Side-scatter peak heights at 1e+08 particles/mL" class = "sphx-glr-single-img"/></section>
 <section id="analog-trace-at-5e8-particles-ml">
 <h2>Analog trace at 5e8 particles/mL<a class="headerlink" href="#analog-trace-at-5e8-particles-ml" title="Link to this heading">#</a></h2>
 <p>Inspect pulse overlap as concentration increases.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_</span> <span class="o">=</span> <span class="n">run_records</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot_analog</span><span class="p">(</span><span class="n">figure_size</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="p">)</span><span class="w">
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_</span> <span class="o">=</span> <span class="n">plot_analog_window</span><span class="p">(</span><span class="w">
+</span>    <span class="n">run_records</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">Side-scatter signal at 5e8 particles/mL</span><span class="s2">&quot;</span><span class="w">
+</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_concentration_sweep_003.png" srcset="../../_images/sphx_glr_concentration_sweep_003.png" alt="concentration sweep" class = "sphx-glr-single-img"/></section>
+<img src="../../_images/sphx_glr_concentration_sweep_003.png" srcset="../../_images/sphx_glr_concentration_sweep_003.png" alt="Side-scatter signal at 5e8 particles/mL" class = "sphx-glr-single-img"/></section>
 <section id="peak-heights-at-5e8-particles-ml">
 <h2>Peak heights at 5e8 particles/mL<a class="headerlink" href="#peak-heights-at-5e8-particles-ml" title="Link to this heading">#</a></h2>
 <p>Compare the recovered side-scatter peak distribution with the corresponding trace.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_</span> <span class="o">=</span> <span class="n">run_records</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot_peaks</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">side</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">Height</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">)</span><span class="w">
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_</span> <span class="o">=</span> <span class="n">plot_peak_heights</span><span class="p">(</span><span class="n">run_records</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="p">,</span> <span class="n">concentration_values</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_concentration_sweep_004.png" srcset="../../_images/sphx_glr_concentration_sweep_004.png" alt="Distribution of side | Height" class = "sphx-glr-single-img"/></section>
+<img src="../../_images/sphx_glr_concentration_sweep_004.png" srcset="../../_images/sphx_glr_concentration_sweep_004.png" alt="Side-scatter peak heights at 5e+08 particles/mL" class = "sphx-glr-single-img"/></section>
 <section id="analog-trace-at-1e9-particles-ml">
 <h2>Analog trace at 1e9 particles/mL<a class="headerlink" href="#analog-trace-at-1e9-particles-ml" title="Link to this heading">#</a></h2>
 <p>Inspect pulse overlap as concentration increases.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_</span> <span class="o">=</span> <span class="n">run_records</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot_analog</span><span class="p">(</span><span class="n">figure_size</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="p">)</span><span class="w">
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_</span> <span class="o">=</span> <span class="n">plot_analog_window</span><span class="p">(</span><span class="w">
+</span>    <span class="n">run_records</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">Side-scatter signal at 1e9 particles/mL</span><span class="s2">&quot;</span><span class="w">
+</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_concentration_sweep_005.png" srcset="../../_images/sphx_glr_concentration_sweep_005.png" alt="concentration sweep" class = "sphx-glr-single-img"/></section>
+<img src="../../_images/sphx_glr_concentration_sweep_005.png" srcset="../../_images/sphx_glr_concentration_sweep_005.png" alt="Side-scatter signal at 1e9 particles/mL" class = "sphx-glr-single-img"/></section>
 <section id="peak-heights-at-1e9-particles-ml">
 <h2>Peak heights at 1e9 particles/mL<a class="headerlink" href="#peak-heights-at-1e9-particles-ml" title="Link to this heading">#</a></h2>
 <p>Compare the recovered side-scatter peak distribution with the corresponding trace.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_</span> <span class="o">=</span> <span class="n">run_records</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot_peaks</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">side</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">Height</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">)</span><span class="w">
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_</span> <span class="o">=</span> <span class="n">plot_peak_heights</span><span class="p">(</span><span class="n">run_records</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="p">,</span> <span class="n">concentration_values</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_concentration_sweep_006.png" srcset="../../_images/sphx_glr_concentration_sweep_006.png" alt="Distribution of side | Height" class = "sphx-glr-single-img"/></section>
+<img src="../../_images/sphx_glr_concentration_sweep_006.png" srcset="../../_images/sphx_glr_concentration_sweep_006.png" alt="Side-scatter peak heights at 1e+09 particles/mL" class = "sphx-glr-single-img"/></section>
 <section id="analog-trace-at-5e9-particles-ml">
 <h2>Analog trace at 5e9 particles/mL<a class="headerlink" href="#analog-trace-at-5e9-particles-ml" title="Link to this heading">#</a></h2>
 <p>Inspect pulse overlap as concentration increases.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_</span> <span class="o">=</span> <span class="n">run_records</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">plot_analog</span><span class="p">(</span><span class="n">figure_size</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="p">)</span><span class="w">
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_</span> <span class="o">=</span> <span class="n">plot_analog_window</span><span class="p">(</span><span class="w">
+</span>    <span class="n">run_records</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">Side-scatter signal at 5e9 particles/mL</span><span class="s2">&quot;</span><span class="w">
+</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_concentration_sweep_007.png" srcset="../../_images/sphx_glr_concentration_sweep_007.png" alt="concentration sweep" class = "sphx-glr-single-img"/></section>
+<img src="../../_images/sphx_glr_concentration_sweep_007.png" srcset="../../_images/sphx_glr_concentration_sweep_007.png" alt="Side-scatter signal at 5e9 particles/mL" class = "sphx-glr-single-img"/></section>
 <section id="peak-heights-at-5e9-particles-ml">
 <h2>Peak heights at 5e9 particles/mL<a class="headerlink" href="#peak-heights-at-5e9-particles-ml" title="Link to this heading">#</a></h2>
 <p>Compare the recovered side-scatter peak distribution with the corresponding trace.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_</span> <span class="o">=</span> <span class="n">run_records</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">plot_peaks</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">side</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">Height</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">)</span><span class="w">
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_</span> <span class="o">=</span> <span class="n">plot_peak_heights</span><span class="p">(</span><span class="n">run_records</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="p">,</span> <span class="n">concentration_values</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_concentration_sweep_008.png" srcset="../../_images/sphx_glr_concentration_sweep_008.png" alt="Distribution of side | Height" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 13.328 seconds)</p>
+<img src="../../_images/sphx_glr_concentration_sweep_008.png" srcset="../../_images/sphx_glr_concentration_sweep_008.png" alt="Side-scatter peak heights at 5e+09 particles/mL" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 10.166 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-studies-concentration-sweep-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/6c2f44bdbe64e8b2fe58c75e0b2234f5/concentration_sweep.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">concentration_sweep.ipynb</span></code></a></p>

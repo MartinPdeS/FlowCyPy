@@ -52,7 +52,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.2.5';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.2.6';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
@@ -65,7 +65,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.2.5" />
+  <meta name="docsearch:version" content="1.2.6" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -549,7 +549,7 @@ to download the full example code.</p>
 </div>
 <section class="sphx-glr-example-title" id="limit-of-detection">
 <span id="sphx-glr-gallery-studies-limit-of-detection-py"></span><h1>Limit of Detection<a class="headerlink" href="#limit-of-detection" title="Link to this heading">#</a></h1>
-<p>This example simulates the detection of small nanoparticles (90-150 nm diameter)
+<p>This example simulates the detection of small nanoparticles (50-150 nm diameter)
 in a flow cytometry setup using a dual-detector configuration (side and forward scatter).
 The simulation includes noise models, realistic fluidics, analog signal conditioning,
 digitization, triggering, and peak detection.</p>
@@ -577,6 +577,7 @@ scatter signals in the presence of system noise and fluidic variability.</p>
 </span>    <span class="n">peak_locator</span><span class="p">,</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-FlowCyPy-digital_processing-discriminator sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.discriminator.FixedWindow" title="FlowCyPy.digital_processing.discriminator.FixedWindow"><span class="n">discriminator</span></a><span class="p">,</span><span class="w">
 </span><span class="p">)</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="nn">.</span><span class="nn">ticker</span><span class="w"> </span><span class="kn">import</span> <span class="n">FuncFormatter</span><span class="w">
 </span></pre></div></div>
 <p>Optical Source</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-FlowCyPy-opto_electronics-source sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.source.Gaussian" title="FlowCyPy.opto_electronics.source.Gaussian"><span class="n">source</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics-source sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.source.Gaussian" title="FlowCyPy.opto_electronics.source.Gaussian"><span class="n">source</span><span class="o">.</span><span class="n">Gaussian</span></a><span class="p">(</span><span class="w">
@@ -594,7 +595,7 @@ scatter signals in the presence of system noise and fluidic variability.</p>
 </span>    <span class="n">height</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<p>Define Scatterer Populations (90–150 nm spheres)</p>
+<p>Define Scatterer Populations (50–150 nm spheres)</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="FlowCyPy.fluidics.ScattererCollection"><span class="n">scatterer_collection</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="FlowCyPy.fluidics.ScattererCollection"><span class="n">ScattererCollection</span></a><span class="p">(</span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><span class="k">for</span> <span class="n">size</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">150</span><span class="p">,</span> <span class="mi">125</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">50</span><span class="p">]</span><span class="p">:</span><span class="w">
@@ -681,13 +682,86 @@ scatter signals in the presence of system noise and fluidic variability.</p>
 </section>
 <section id="plot-raw-analog-signal">
 <h2>Plot Raw Analog Signal<a class="headerlink" href="#plot-raw-analog-signal" title="Link to this heading">#</a></h2>
-<p>Compare particle pulses with the detector noise baseline.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">run_record</span><span class="o">.</span><span class="n">plot_analog</span><span class="p">(</span><span class="p">)</span><span class="w">
+<p>Zoom to the strongest triggered window so the pulse shape remains visible
+instead of compressing the entire 600,000-sample acquisition into a dense band.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">digital_signal</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">digital</span><span class="w">
+</span><span class="n">analog_signal</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">analog</span><span class="w">
+</span><span class="n">plot_time_unit</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">run_time</span><span class="o">.</span><span class="n">to_compact</span><span class="p">(</span><span class="p">)</span><span class="o">.</span><span class="n">units</span><span class="w">
+</span><span class="n">time_scale</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="n">plot_time_unit</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">microsecond</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="w">
+</span><span class="n">time_window</span> <span class="o">=</span> <span class="kc">None</span><span class="w">
+</span><span class="n">plot_title</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s2">Strongest signal (no triggered windows)</span><span class="s2">&quot;</span><span class="w">
+</span><span class="w">
+</span><span class="k">if</span> <span class="n">digital_signal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">digital_signal</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span><span class="w">
+</span>    <span class="n">strongest_segment</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="w">
+</span>        <span class="n">digital_signal</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">SegmentID</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>        <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">segment</span><span class="p">:</span> <span class="n">segment</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">side</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="p">)</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w">
+</span>    <span class="n">segment_time_unit</span> <span class="o">=</span> <span class="n">digital_signal</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">units</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">Time</span><span class="s2">&quot;</span><span class="p">]</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute reference external" href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64"><span class="n">segment_start</span></a> <span class="o">=</span> <span class="p">(</span><span class="w">
+</span>        <span class="n">strongest_segment</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">Time</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">segment_time_unit</span><span class="w">
+</span>    <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">plot_time_unit</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute reference external" href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64"><span class="n">segment_end</span></a> <span class="o">=</span> <span class="p">(</span><span class="w">
+</span>        <span class="n">strongest_segment</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">Time</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">segment_time_unit</span><span class="w">
+</span>    <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">plot_time_unit</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="w">
+</span>    <span class="n">padding</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">microsecond</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">plot_time_unit</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="w">
+</span>    <span class="n">run_end</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">run_time</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">plot_time_unit</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="w">
+</span><span class="w">
+</span>    <span class="n">time_window</span> <span class="o">=</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute reference external" href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64"><span class="n">segment_start</span></a> <span class="o">-</span> <span class="n">padding</span><span class="p">)</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">run_end</span><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute reference external" href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64"><span class="n">segment_end</span></a> <span class="o">+</span> <span class="n">padding</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span>    <span class="n">plot_title</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s2">Strongest triggered event and detector noise</span><span class="s2">&quot;</span><span class="w">
+</span><span class="k">else</span><span class="p">:</span><span class="w">
+</span>    <span class="n">strongest_sample</span> <span class="o">=</span> <span class="n">analog_signal</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">side</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="p">)</span><span class="o">.</span><span class="n">idxmax</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span>    <span class="n">signal_time_unit</span> <span class="o">=</span> <span class="n">analog_signal</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">units</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">Time</span><span class="s2">&quot;</span><span class="p">]</span><span class="w">
+</span>    <span class="n">peak_time</span> <span class="o">=</span> <span class="p">(</span><span class="w">
+</span>        <span class="n">analog_signal</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">strongest_sample</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">Time</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">signal_time_unit</span><span class="w">
+</span>    <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">plot_time_unit</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="w">
+</span>    <span class="n">padding</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">microsecond</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">plot_time_unit</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="w">
+</span>    <span class="n">run_end</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">run_time</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">plot_time_unit</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="w">
+</span><span class="w">
+</span>    <span class="n">time_window</span> <span class="o">=</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">peak_time</span> <span class="o">-</span> <span class="n">padding</span><span class="p">)</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">run_end</span><span class="p">,</span> <span class="n">peak_time</span> <span class="o">+</span> <span class="n">padding</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="n">figure</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">plot_analog</span><span class="p">(</span><span class="w">
+</span>    <span class="n">figure_size</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mf">6.5</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="n">xlim</span><span class="o">=</span><span class="n">time_window</span><span class="p">,</span><span class="w">
+</span>    <span class="n">include_scatterer</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="n">figure</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">plot_title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="n">voltage_unit</span> <span class="o">=</span> <span class="nb">format</span><span class="p">(</span><span class="n">run_record</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">analog</span><span class="o">.</span><span class="n">signal_units</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">~</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">figure</span><span class="o">.</span><span class="n">axes</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;</span><span class="s2">SSC</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">FSC</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>    <span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">voltage_unit</span><span class="si">}</span><span class="s2">]</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">labelpad</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span><span class="w">
+</span>    <span class="n">axis</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_label_position</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">left</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span>    <span class="n">axis</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_ticks_position</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">left</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span>    <span class="n">axis</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span><span class="w">
+</span>    <span class="n">axis</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span><span class="w">
+</span>    <span class="k">if</span> <span class="n">axis</span><span class="o">.</span><span class="n">lines</span><span class="p">:</span><span class="w">
+</span>        <span class="n">axis</span><span class="o">.</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_linewidth</span><span class="p">(</span><span class="mf">0.8</span><span class="p">)</span><span class="w">
+</span>        <span class="n">axis</span><span class="o">.</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="mf">0.85</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">figure</span><span class="o">.</span><span class="n">axes</span><span class="p">:</span><span class="w">
+</span>    <span class="n">axis</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="w">
+</span>        <span class="n">FuncFormatter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">value</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">time_scale</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span>    <span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="n">figure</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Time [µs]</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="n">legend</span> <span class="o">=</span> <span class="n">figure</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_legend</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span><span class="k">if</span> <span class="n">legend</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span><span class="w">
+</span>    <span class="n">handles</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">figure</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_legend_handles_labels</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span>    <span class="n">legend</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span>    <span class="n">figure</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="w">
+</span>        <span class="n">handles</span><span class="p">,</span><span class="w">
+</span>        <span class="p">[</span><span class="s2">&quot;</span><span class="s2">Analog signal</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">4-sigma trigger threshold</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>        <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">upper center</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.93</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>        <span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="w">
+</span>        <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="w">
+</span>        <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span><span class="w">
+</span>    <span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="n">figure</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">rect</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.88</span><span class="p">)</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_limit_of_detection_001.png" srcset="../../_images/sphx_glr_limit_of_detection_001.png" alt="limit of detection" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 640x480 with 3 Axes&gt;
-</pre></div>
-</div>
-</section>
+<img src="../../_images/sphx_glr_limit_of_detection_001.png" srcset="../../_images/sphx_glr_limit_of_detection_001.png" alt="Strongest triggered event and detector noise" class = "sphx-glr-single-img"/></section>
 <section id="plot-triggered-analog-signal-segments">
 <h2>Plot Triggered Analog Signal Segments<a class="headerlink" href="#plot-triggered-analog-signal-segments" title="Link to this heading">#</a></h2>
 <p>Inspect which weak pulses survived the discriminator threshold.</p>
@@ -696,7 +770,7 @@ scatter signals in the presence of system noise and fluidic variability.</p>
 <img src="../../_images/sphx_glr_limit_of_detection_002.png" srcset="../../_images/sphx_glr_limit_of_detection_002.png" alt="limit of detection" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 640x480 with 3 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.891 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.968 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-studies-limit-of-detection-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/be524809f26c23719161c1cb685afdb6/limit_of_detection.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">limit_of_detection.ipynb</span></code></a></p>

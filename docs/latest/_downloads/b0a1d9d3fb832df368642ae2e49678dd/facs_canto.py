@@ -71,4 +71,46 @@ run_record = facs_canto.run(run_time=0.2 * ureg.millisecond)
 # -------------------------
 # Look for individual pulses and the noise baseline in each detector channel.
 
-run_record.plot_analog()
+figure = run_record.plot_analog(
+    figure_size=(12, 6),
+    include_scatterer=False,
+)
+analog_signal = run_record.signal.analog
+time_unit = analog_signal.attrs["units"]["Time"]
+detector_names = [column for column in analog_signal.columns if column != "Time"]
+
+for axis, detector_name in zip(figure.axes, detector_names):
+    detector_label = {"side": "SSC", "forward": "FSC"}.get(
+        detector_name, detector_name
+    )
+    voltage_unit = format(analog_signal.attrs["units"][detector_name], "~")
+    axis.set_ylabel(f"{detector_label} [{voltage_unit}]", fontsize=11)
+    axis.yaxis.set_label_position("left")
+    axis.yaxis.set_ticks_position("left")
+    axis.tick_params(labelsize=9)
+    axis.grid(True, alpha=0.2)
+
+legend_axis = next(
+    (axis for axis in figure.axes if axis.get_legend() is not None),
+    None,
+)
+if legend_axis is not None:
+    legend = legend_axis.get_legend()
+    handles, labels = legend_axis.get_legend_handles_labels()
+    legend.remove()
+    figure.legend(
+        handles,
+        [
+            "Analog signal" if "analog" in label.lower() else "Trigger threshold"
+            for label in labels
+        ],
+        loc="upper center",
+        bbox_to_anchor=(0.5, 0.95),
+        ncol=len(handles),
+        frameon=False,
+        fontsize=9,
+    )
+
+figure.suptitle("FACSCanto analog detector signals", fontsize=13)
+figure.axes[-1].set_xlabel(f"Time [{format(time_unit, '~')}]", fontsize=11)
+figure.tight_layout(rect=(0, 0, 1, 0.88))

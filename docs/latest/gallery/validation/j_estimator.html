@@ -52,7 +52,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.2.5';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.2.6';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
@@ -65,7 +65,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.2.5" />
+  <meta name="docsearch:version" content="1.2.6" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -706,7 +706,7 @@ vary illumination power across multiple runs.</p>
 </span>    <span class="n">x_fit</span> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/devdocs/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/devdocs/reference/generated/numpy.min.html#numpy.min" title="numpy.min"><span class="n">np</span><span class="o">.</span><span class="n">min</span></a><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/devdocs/reference/generated/numpy.max.html#numpy.max" title="numpy.max"><span class="n">np</span><span class="o">.</span><span class="n">max</span></a><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span><span class="w">
 </span>    <span class="n">y_fit</span> <span class="o">=</span> <span class="n">slope</span> <span class="o">*</span> <span class="n">x_fit</span> <span class="o">+</span> <span class="n">intercept</span><span class="w">
 </span><span class="w">
-</span>    <span class="n">figure</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span>    <span class="n">figure</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span>    <span class="n">axes</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">Robust CV</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'</span><span class="s1">black</span><span class="s1">'</span><span class="p">)</span><span class="w">
 </span>    <span class="n">axes</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="w">
@@ -716,12 +716,13 @@ vary illumination power across multiple runs.</p>
 </span>        <span class="n">label</span><span class="o">=</span><span class="sa">rf</span><span class="s2">&quot;</span><span class="s2">$RCV = </span><span class="si">{</span><span class="n">slope</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2"> </span><span class="s2">\</span><span class="s2">cdot x + </span><span class="si">{</span><span class="n">intercept</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">$</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
 </span>        <span class="n">zorder</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="w">
 </span>    <span class="p">)</span><span class="w">
-</span>    <span class="n">axes</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="w">
-</span>        <span class="n">xlabel</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;</span><span class="s2">$1 / </span><span class="s2">\</span><span class="s2">sqrt</span><span class="s2">{</span><span class="s2">\</span><span class="s2">mathrm</span><span class="s2">{</span><span class="s2">Median</span><span class="s2">\</span><span class="s2"> Signal}}$</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
-</span>        <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">Robust CV</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
-</span>        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">J Parameter Estimation</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
-</span>    <span class="p">)</span><span class="w">
-</span>    <span class="n">axes</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span>    <span class="n">axes</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">J Parameter Estimation</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span>    <span class="n">axes</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="s2">$1 / </span><span class="s2">\</span><span class="s2">sqrt</span><span class="s2">{</span><span class="s2">\</span><span class="s2">mathrm</span><span class="s2">{</span><span class="s2">Median</span><span class="s2">\</span><span class="s2"> Signal}}$</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span><span class="w">
+</span>    <span class="n">axes</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Robust CV</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span><span class="w">
+</span>    <span class="n">axes</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">J Parameter Estimation</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span><span class="w">
+</span>    <span class="n">axes</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span><span class="w">
+</span>    <span class="n">axes</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span><span class="w">
+</span>    <span class="n">figure</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span>    <span class="k">return</span> <span class="n">figure</span><span class="p">,</span> <span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span><span class="w">
 </span></pre></div></div>
@@ -915,8 +916,8 @@ vary illumination power across multiple runs.</p>
 </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Linear intercept: </span><span class="si">{</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute reference external" href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64"><span class="n">j_intercept</span></a><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>J estimation results
-Estimated J: 0.11644476907011754 dimensionless
-Linear intercept: 4.961004e-05
+Estimated J: 0.1141450987275652 dimensionless
+Linear intercept: 6.316576e-05
 </pre></div>
 </div>
 </section>
@@ -933,7 +934,7 @@ Linear intercept: 4.961004e-05
 </span><span class="w">
 </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_j_estimator_001.png" srcset="../../_images/sphx_glr_j_estimator_001.png" alt="J Parameter Estimation" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 26.649 seconds)</p>
+<img src="../../_images/sphx_glr_j_estimator_001.png" srcset="../../_images/sphx_glr_j_estimator_001.png" alt="J Parameter Estimation" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 14.128 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-validation-j-estimator-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/9af42e1b4e0c5302d9399c632be56448/j_estimator.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">j_estimator.ipynb</span></code></a></p>

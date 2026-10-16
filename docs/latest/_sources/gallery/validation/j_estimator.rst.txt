@@ -84,7 +84,7 @@ Setup and configuration
 Helper functions
 ----------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 54-190
+.. GENERATED FROM PYTHON SOURCE LINES 54-191
 
 .. code-block:: Python
 
@@ -204,7 +204,7 @@ Helper functions
         x_fit = np.linspace(np.min(x), np.max(x), 200)
         y_fit = slope * x_fit + intercept
 
-        figure, axes = plt.subplots(figsize=(6, 4))
+        figure, axes = plt.subplots(figsize=(8, 5))
 
         axes.scatter(x, y, label="Robust CV", zorder=3, color='black')
         axes.plot(
@@ -214,12 +214,13 @@ Helper functions
             label=rf"$RCV = {slope:.3e} \cdot x + {intercept:.3e}$",
             zorder=2,
         )
-        axes.set(
-            xlabel=r"$1 / \sqrt{\mathrm{Median\ Signal}}$",
-            ylabel="Robust CV",
-            title="J Parameter Estimation",
-        )
-        axes.legend()
+        axes.set_title("J Parameter Estimation")
+        axes.set_xlabel(r"$1 / \sqrt{\mathrm{Median\ Signal}}$", fontsize=11)
+        axes.set_ylabel("Robust CV", fontsize=11)
+        axes.set_title("J Parameter Estimation", fontsize=14)
+        axes.tick_params(labelsize=9)
+        axes.legend(fontsize=9)
+        figure.tight_layout()
 
         return figure, slope, intercept
 
@@ -231,12 +232,12 @@ Helper functions
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 191-193
+.. GENERATED FROM PYTHON SOURCE LINES 192-194
 
 Construct simulation components
 -------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 193-276
+.. GENERATED FROM PYTHON SOURCE LINES 194-277
 
 .. code-block:: Python
 
@@ -330,12 +331,12 @@ Construct simulation components
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 277-279
+.. GENERATED FROM PYTHON SOURCE LINES 278-280
 
 Run J estimation simulation
 ---------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 279-341
+.. GENERATED FROM PYTHON SOURCE LINES 280-342
 
 .. code-block:: Python
 
@@ -438,12 +439,12 @@ Run J estimation simulation
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 342-344
+.. GENERATED FROM PYTHON SOURCE LINES 343-345
 
 Estimate J
 ----------
 
-.. GENERATED FROM PYTHON SOURCE LINES 344-358
+.. GENERATED FROM PYTHON SOURCE LINES 345-359
 
 .. code-block:: Python
 
@@ -471,18 +472,18 @@ Estimate J
 
 
     J estimation results
-    Estimated J: 0.11644476907011754 dimensionless
-    Linear intercept: 4.961004e-05
+    Estimated J: 0.1141450987275652 dimensionless
+    Linear intercept: 6.316576e-05
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 359-361
+.. GENERATED FROM PYTHON SOURCE LINES 360-362
 
 Plot estimation and diagnostics
 -------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 361-373
+.. GENERATED FROM PYTHON SOURCE LINES 362-374
 
 .. code-block:: Python
 
@@ -513,7 +514,7 @@ Plot estimation and diagnostics
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 26.649 seconds)
+   **Total running time of the script:** (1 minutes 14.128 seconds)
 
 
 .. _sphx_glr_download_gallery_validation_j_estimator.py:

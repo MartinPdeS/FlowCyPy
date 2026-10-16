@@ -157,7 +157,7 @@ Step 1: Build a reusable cytometer configuration
 Step 2: Sweep concentration
 ---------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 115-168
+.. GENERATED FROM PYTHON SOURCE LINES 115-225
 
 .. code-block:: Python
 
@@ -214,6 +214,61 @@ Step 2: Sweep concentration
         run_records.append(run_record)
 
 
+    def plot_analog_window(run_record, title):
+        figure = run_record.plot_analog(
+            figure_size=(12, 4.5),
+            include_scatterer=False,
+        )
+        analog_signal = run_record.signal.analog
+        time_unit = analog_signal.attrs["units"]["Time"]
+        window_end = (100 * ureg.microsecond).to(time_unit).magnitude
+        detector_names = [column for column in analog_signal.columns if column != "Time"]
+
+        for axis, detector_name in zip(figure.axes, detector_names):
+            detector_label = {"side": "SSC", "forward": "FSC"}.get(
+                detector_name, detector_name
+            )
+            voltage_unit = format(analog_signal.attrs["units"][detector_name], "~")
+            axis.set_ylabel(f"{detector_label} [{voltage_unit}]", fontsize=10)
+            axis.yaxis.set_label_position("left")
+            axis.yaxis.set_ticks_position("left")
+            axis.set_xlim(0, window_end)
+            axis.tick_params(labelsize=9)
+            axis.grid(True, alpha=0.2)
+            if axis.lines:
+                axis.lines[0].set_linewidth(0.8)
+
+        legend = figure.axes[0].get_legend()
+        if legend is not None:
+            handles, labels = figure.axes[0].get_legend_handles_labels()
+            legend.remove()
+            figure.legend(
+                handles,
+                [
+                    "Analog signal" if "analog" in label.lower() else "Trigger threshold"
+                    for label in labels
+                ],
+                loc="upper center",
+                bbox_to_anchor=(0.5, 0.94),
+                ncol=len(handles),
+                frameon=False,
+                fontsize=9,
+            )
+
+        figure.suptitle(title, fontsize=13)
+        figure.axes[-1].set_xlabel(f"Time [{format(time_unit, '~')}]", fontsize=10)
+        figure.tight_layout(rect=(0, 0, 1, 0.86))
+        return figure
+
+
+    def plot_peak_heights(run_record, concentration_value):
+        figure = run_record.plot_peaks(
+            x=("side", "Height"),
+            figure_size=(8, 5),
+            title=f"Side-scatter peak heights at {concentration_value:.0e} particles/mL",
+        )
+        figure.tight_layout()
+        return figure
 
 
 
@@ -221,23 +276,27 @@ Step 2: Sweep concentration
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 169-172
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 226-229
 
 Analog trace at 1e8 particles/mL
 --------------------------------
 Inspect pulse overlap as concentration increases.
 
-.. GENERATED FROM PYTHON SOURCE LINES 172-174
+.. GENERATED FROM PYTHON SOURCE LINES 229-233
 
 .. code-block:: Python
 
-    _ = run_records[0].plot_analog(figure_size=(12, 4))
+    _ = plot_analog_window(
+        run_records[0], "Side-scatter signal at 1e8 particles/mL"
+    )
 
 
 
 
 .. image-sg:: /gallery/studies/images/sphx_glr_concentration_sweep_001.png
-   :alt: concentration sweep
+   :alt: Side-scatter signal at 1e8 particles/mL
    :srcset: /gallery/studies/images/sphx_glr_concentration_sweep_001.png
    :class: sphx-glr-single-img
 
@@ -245,23 +304,23 @@ Inspect pulse overlap as concentration increases.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 175-178
+.. GENERATED FROM PYTHON SOURCE LINES 234-237
 
 Peak heights at 1e8 particles/mL
 --------------------------------
 Compare the recovered side-scatter peak distribution with the corresponding trace.
 
-.. GENERATED FROM PYTHON SOURCE LINES 178-180
+.. GENERATED FROM PYTHON SOURCE LINES 237-239
 
 .. code-block:: Python
 
-    _ = run_records[0].plot_peaks(x=("side", "Height"))
+    _ = plot_peak_heights(run_records[0], concentration_values[0])
 
 
 
 
 .. image-sg:: /gallery/studies/images/sphx_glr_concentration_sweep_002.png
-   :alt: Distribution of side | Height
+   :alt: Side-scatter peak heights at 1e+08 particles/mL
    :srcset: /gallery/studies/images/sphx_glr_concentration_sweep_002.png
    :class: sphx-glr-single-img
 
@@ -269,23 +328,25 @@ Compare the recovered side-scatter peak distribution with the corresponding trac
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 181-184
+.. GENERATED FROM PYTHON SOURCE LINES 240-243
 
 Analog trace at 5e8 particles/mL
 --------------------------------
 Inspect pulse overlap as concentration increases.
 
-.. GENERATED FROM PYTHON SOURCE LINES 184-186
+.. GENERATED FROM PYTHON SOURCE LINES 243-247
 
 .. code-block:: Python
 
-    _ = run_records[1].plot_analog(figure_size=(12, 4))
+    _ = plot_analog_window(
+        run_records[1], "Side-scatter signal at 5e8 particles/mL"
+    )
 
 
 
 
 .. image-sg:: /gallery/studies/images/sphx_glr_concentration_sweep_003.png
-   :alt: concentration sweep
+   :alt: Side-scatter signal at 5e8 particles/mL
    :srcset: /gallery/studies/images/sphx_glr_concentration_sweep_003.png
    :class: sphx-glr-single-img
 
@@ -293,23 +354,23 @@ Inspect pulse overlap as concentration increases.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 187-190
+.. GENERATED FROM PYTHON SOURCE LINES 248-251
 
 Peak heights at 5e8 particles/mL
 --------------------------------
 Compare the recovered side-scatter peak distribution with the corresponding trace.
 
-.. GENERATED FROM PYTHON SOURCE LINES 190-192
+.. GENERATED FROM PYTHON SOURCE LINES 251-253
 
 .. code-block:: Python
 
-    _ = run_records[1].plot_peaks(x=("side", "Height"))
+    _ = plot_peak_heights(run_records[1], concentration_values[1])
 
 
 
 
 .. image-sg:: /gallery/studies/images/sphx_glr_concentration_sweep_004.png
-   :alt: Distribution of side | Height
+   :alt: Side-scatter peak heights at 5e+08 particles/mL
    :srcset: /gallery/studies/images/sphx_glr_concentration_sweep_004.png
    :class: sphx-glr-single-img
 
@@ -317,23 +378,25 @@ Compare the recovered side-scatter peak distribution with the corresponding trac
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 193-196
+.. GENERATED FROM PYTHON SOURCE LINES 254-257
 
 Analog trace at 1e9 particles/mL
 --------------------------------
 Inspect pulse overlap as concentration increases.
 
-.. GENERATED FROM PYTHON SOURCE LINES 196-198
+.. GENERATED FROM PYTHON SOURCE LINES 257-261
 
 .. code-block:: Python
 
-    _ = run_records[2].plot_analog(figure_size=(12, 4))
+    _ = plot_analog_window(
+        run_records[2], "Side-scatter signal at 1e9 particles/mL"
+    )
 
 
 
 
 .. image-sg:: /gallery/studies/images/sphx_glr_concentration_sweep_005.png
-   :alt: concentration sweep
+   :alt: Side-scatter signal at 1e9 particles/mL
    :srcset: /gallery/studies/images/sphx_glr_concentration_sweep_005.png
    :class: sphx-glr-single-img
 
@@ -341,23 +404,23 @@ Inspect pulse overlap as concentration increases.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 199-202
+.. GENERATED FROM PYTHON SOURCE LINES 262-265
 
 Peak heights at 1e9 particles/mL
 --------------------------------
 Compare the recovered side-scatter peak distribution with the corresponding trace.
 
-.. GENERATED FROM PYTHON SOURCE LINES 202-204
+.. GENERATED FROM PYTHON SOURCE LINES 265-267
 
 .. code-block:: Python
 
-    _ = run_records[2].plot_peaks(x=("side", "Height"))
+    _ = plot_peak_heights(run_records[2], concentration_values[2])
 
 
 
 
 .. image-sg:: /gallery/studies/images/sphx_glr_concentration_sweep_006.png
-   :alt: Distribution of side | Height
+   :alt: Side-scatter peak heights at 1e+09 particles/mL
    :srcset: /gallery/studies/images/sphx_glr_concentration_sweep_006.png
    :class: sphx-glr-single-img
 
@@ -365,23 +428,25 @@ Compare the recovered side-scatter peak distribution with the corresponding trac
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 205-208
+.. GENERATED FROM PYTHON SOURCE LINES 268-271
 
 Analog trace at 5e9 particles/mL
 --------------------------------
 Inspect pulse overlap as concentration increases.
 
-.. GENERATED FROM PYTHON SOURCE LINES 208-210
+.. GENERATED FROM PYTHON SOURCE LINES 271-275
 
 .. code-block:: Python
 
-    _ = run_records[3].plot_analog(figure_size=(12, 4))
+    _ = plot_analog_window(
+        run_records[3], "Side-scatter signal at 5e9 particles/mL"
+    )
 
 
 
 
 .. image-sg:: /gallery/studies/images/sphx_glr_concentration_sweep_007.png
-   :alt: concentration sweep
+   :alt: Side-scatter signal at 5e9 particles/mL
    :srcset: /gallery/studies/images/sphx_glr_concentration_sweep_007.png
    :class: sphx-glr-single-img
 
@@ -389,22 +454,22 @@ Inspect pulse overlap as concentration increases.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 211-214
+.. GENERATED FROM PYTHON SOURCE LINES 276-279
 
 Peak heights at 5e9 particles/mL
 --------------------------------
 Compare the recovered side-scatter peak distribution with the corresponding trace.
 
-.. GENERATED FROM PYTHON SOURCE LINES 214-215
+.. GENERATED FROM PYTHON SOURCE LINES 279-280
 
 .. code-block:: Python
 
-    _ = run_records[3].plot_peaks(x=("side", "Height"))
+    _ = plot_peak_heights(run_records[3], concentration_values[3])
 
 
 
 .. image-sg:: /gallery/studies/images/sphx_glr_concentration_sweep_008.png
-   :alt: Distribution of side | Height
+   :alt: Side-scatter peak heights at 5e+09 particles/mL
    :srcset: /gallery/studies/images/sphx_glr_concentration_sweep_008.png
    :class: sphx-glr-single-img
 
@@ -415,7 +480,7 @@ Compare the recovered side-scatter peak distribution with the corresponding trac
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 13.328 seconds)
+   **Total running time of the script:** (0 minutes 10.166 seconds)
 
 
 .. _sphx_glr_download_gallery_studies_concentration_sweep.py:

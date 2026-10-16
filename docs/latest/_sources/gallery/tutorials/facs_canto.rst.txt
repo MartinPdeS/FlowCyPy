@@ -142,17 +142,59 @@ Inspect the analog signal
 -------------------------
 Look for individual pulses and the noise baseline in each detector channel.
 
-.. GENERATED FROM PYTHON SOURCE LINES 73-75
+.. GENERATED FROM PYTHON SOURCE LINES 73-117
 
 .. code-block:: Python
 
 
-    run_record.plot_analog()
+    figure = run_record.plot_analog(
+        figure_size=(12, 6),
+        include_scatterer=False,
+    )
+    analog_signal = run_record.signal.analog
+    time_unit = analog_signal.attrs["units"]["Time"]
+    detector_names = [column for column in analog_signal.columns if column != "Time"]
+
+    for axis, detector_name in zip(figure.axes, detector_names):
+        detector_label = {"side": "SSC", "forward": "FSC"}.get(
+            detector_name, detector_name
+        )
+        voltage_unit = format(analog_signal.attrs["units"][detector_name], "~")
+        axis.set_ylabel(f"{detector_label} [{voltage_unit}]", fontsize=11)
+        axis.yaxis.set_label_position("left")
+        axis.yaxis.set_ticks_position("left")
+        axis.tick_params(labelsize=9)
+        axis.grid(True, alpha=0.2)
+
+    legend_axis = next(
+        (axis for axis in figure.axes if axis.get_legend() is not None),
+        None,
+    )
+    if legend_axis is not None:
+        legend = legend_axis.get_legend()
+        handles, labels = legend_axis.get_legend_handles_labels()
+        legend.remove()
+        figure.legend(
+            handles,
+            [
+                "Analog signal" if "analog" in label.lower() else "Trigger threshold"
+                for label in labels
+            ],
+            loc="upper center",
+            bbox_to_anchor=(0.5, 0.95),
+            ncol=len(handles),
+            frameon=False,
+            fontsize=9,
+        )
+
+    figure.suptitle("FACSCanto analog detector signals", fontsize=13)
+    figure.axes[-1].set_xlabel(f"Time [{format(time_unit, '~')}]", fontsize=11)
+    figure.tight_layout(rect=(0, 0, 1, 0.88))
 
 
 
 .. image-sg:: /gallery/tutorials/images/sphx_glr_facs_canto_001.png
-   :alt: facs canto
+   :alt: FACSCanto analog detector signals
    :srcset: /gallery/tutorials/images/sphx_glr_facs_canto_001.png
    :class: sphx-glr-single-img
 
@@ -166,15 +208,16 @@ Look for individual pulses and the noise baseline in each detector channel.
     findfont: Font family ['Arial'] not found. Falling back to DejaVu Sans.
     findfont: Font family ['Arial'] not found. Falling back to DejaVu Sans.
     findfont: Font family ['Arial'] not found. Falling back to DejaVu Sans.
+    findfont: Font family ['cursive'] not found. Falling back to DejaVu Sans.
+    findfont: Generic family 'cursive' not found because none of the following families were found: Apple Chancery, Textile, Zapf Chancery, Sand, Script MT, Felipa, Comic Neue, Comic Sans MS, cursive
 
-    <Figure size 640x480 with 3 Axes>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.099 seconds)
+   **Total running time of the script:** (0 minutes 2.513 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_facs_canto.py:
