@@ -2,7 +2,7 @@
 Limit of Detection
 ==================
 
-This example simulates the detection of small nanoparticles (90-150 nm diameter)
+This example simulates the detection of small nanoparticles (50-150 nm diameter)
 in a flow cytometry setup using a dual-detector configuration (side and forward scatter).
 The simulation includes noise models, realistic fluidics, analog signal conditioning,
 digitization, triggering, and peak detection.
@@ -33,6 +33,7 @@ from FlowCyPy.digital_processing import (
     peak_locator,
     discriminator,
 )
+from matplotlib.ticker import FuncFormatter
 
 # %%
 # Optical Source
@@ -53,7 +54,7 @@ flow_cell = FlowCell(
 )
 
 # %%
-# Define Scatterer Populations (90–150 nm spheres)
+# Define Scatterer Populations (50–150 nm spheres)
 scatterer_collection = ScattererCollection()
 
 for size in [150, 125, 100, 75, 50]:
@@ -144,8 +145,84 @@ run_record = cytometer.run(
 # %%
 # Plot Raw Analog Signal
 # ----------------------
-# Compare particle pulses with the detector noise baseline.
-run_record.plot_analog()
+# Zoom to the strongest triggered window so the pulse shape remains visible
+# instead of compressing the entire 600,000-sample acquisition into a dense band.
+digital_signal = run_record.signal.digital
+analog_signal = run_record.signal.analog
+plot_time_unit = run_record.run_time.to_compact().units
+time_scale = (1 * plot_time_unit).to(ureg.microsecond).magnitude
+time_window = None
+plot_title = "Strongest signal (no triggered windows)"
+
+if digital_signal is not None and not digital_signal.empty:
+    strongest_segment = max(
+        digital_signal.groupby(level="SegmentID"),
+        key=lambda segment: segment[1]["side"].max(),
+    )[1]
+    segment_time_unit = digital_signal.attrs["units"]["Time"]
+    segment_start = (
+        strongest_segment["Time"].iloc[0] * segment_time_unit
+    ).to(plot_time_unit).magnitude
+    segment_end = (
+        strongest_segment["Time"].iloc[-1] * segment_time_unit
+    ).to(plot_time_unit).magnitude
+    padding = (5 * ureg.microsecond).to(plot_time_unit).magnitude
+    run_end = run_record.run_time.to(plot_time_unit).magnitude
+
+    time_window = (max(0.0, segment_start - padding), min(run_end, segment_end + padding))
+    plot_title = "Strongest triggered event and detector noise"
+else:
+    strongest_sample = analog_signal["side"].abs().idxmax()
+    signal_time_unit = analog_signal.attrs["units"]["Time"]
+    peak_time = (
+        analog_signal.loc[strongest_sample, "Time"] * signal_time_unit
+    ).to(plot_time_unit).magnitude
+    padding = (5 * ureg.microsecond).to(plot_time_unit).magnitude
+    run_end = run_record.run_time.to(plot_time_unit).magnitude
+
+    time_window = (max(0.0, peak_time - padding), min(run_end, peak_time + padding))
+
+figure = run_record.plot_analog(
+    figure_size=(11, 6.5),
+    xlim=time_window,
+    include_scatterer=False,
+)
+figure.suptitle(plot_title, fontsize=13)
+
+voltage_unit = format(run_record.signal.analog.signal_units, "~")
+
+for axis, label in zip(figure.axes, ("SSC", "FSC")):
+    axis.set_ylabel(f"{label} [{voltage_unit}]", fontsize=12, labelpad=8)
+    axis.yaxis.set_label_position("left")
+    axis.yaxis.set_ticks_position("left")
+    axis.tick_params(labelsize=9)
+    axis.grid(True, alpha=0.2)
+    if axis.lines:
+        axis.lines[0].set_linewidth(0.8)
+        axis.lines[0].set_alpha(0.85)
+
+for axis in figure.axes:
+    axis.xaxis.set_major_formatter(
+        FuncFormatter(lambda value, _: f"{value * time_scale:.1f}")
+    )
+
+figure.axes[-1].set_xlabel("Time [µs]", fontsize=12)
+
+legend = figure.axes[0].get_legend()
+if legend is not None:
+    handles, _ = figure.axes[0].get_legend_handles_labels()
+    legend.remove()
+    figure.legend(
+        handles,
+        ["Analog signal", "4-sigma trigger threshold"],
+        loc="upper center",
+        bbox_to_anchor=(0.5, 0.93),
+        ncol=2,
+        frameon=False,
+        fontsize=9,
+    )
+
+figure.tight_layout(rect=(0, 0, 1, 0.88))
 
 # %%
 # Plot Triggered Analog Signal Segments

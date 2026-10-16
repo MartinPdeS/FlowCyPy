@@ -167,7 +167,7 @@ def plot_j_estimation(medians: np.ndarray, robust_cvs: np.ndarray):
     x_fit = np.linspace(np.min(x), np.max(x), 200)
     y_fit = slope * x_fit + intercept
 
-    figure, axes = plt.subplots(figsize=(6, 4))
+    figure, axes = plt.subplots(figsize=(8, 5))
 
     axes.scatter(x, y, label="Robust CV", zorder=3, color='black')
     axes.plot(
@@ -177,12 +177,13 @@ def plot_j_estimation(medians: np.ndarray, robust_cvs: np.ndarray):
         label=rf"$RCV = {slope:.3e} \cdot x + {intercept:.3e}$",
         zorder=2,
     )
-    axes.set(
-        xlabel=r"$1 / \sqrt{\mathrm{Median\ Signal}}$",
-        ylabel="Robust CV",
-        title="J Parameter Estimation",
-    )
-    axes.legend()
+    axes.set_title("J Parameter Estimation")
+    axes.set_xlabel(r"$1 / \sqrt{\mathrm{Median\ Signal}}$", fontsize=11)
+    axes.set_ylabel("Robust CV", fontsize=11)
+    axes.set_title("J Parameter Estimation", fontsize=14)
+    axes.tick_params(labelsize=9)
+    axes.legend(fontsize=9)
+    figure.tight_layout()
 
     return figure, slope, intercept
 

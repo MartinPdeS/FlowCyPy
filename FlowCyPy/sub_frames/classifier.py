@@ -55,5 +55,25 @@ class ClassifierDataFrame(pd.DataFrame):
             hue=label,
         )
 
-        grid.figure.suptitle("Event classification")
+        grid.set_axis_labels(
+            f"{x_detector}: {x_feature}",
+            f"{y_detector}: {y_feature}",
+        )
+        grid.figure.suptitle("Event classification", fontsize=14)
+        for axis in grid.figure.axes:
+            axis.tick_params(labelsize=9)
+        legend = grid.ax_joint.get_legend()
+        if legend is not None:
+            legend.set_title("Population")
+            legend.get_title().set_fontsize(9)
+            for text in legend.get_texts():
+                text.set_fontsize(9)
+        grid.ax_joint.xaxis.label.set_size(11)
+        grid.ax_joint.yaxis.label.set_size(11)
+        grid.figure.subplots_adjust(
+            top=0.92,
+            bottom=0.18,
+            left=0.18,
+            right=0.9,
+        )
         return grid.figure

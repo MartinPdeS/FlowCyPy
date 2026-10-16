@@ -8,7 +8,8 @@ This section explains the theoretical foundation behind the main components of t
 
 - **Mie Scattering** and its phase function
 - **Gaussian Illumination Source** and beam properties
-- **Detection Scheme**, including forward and side scatter, and angular dependence.
+- **Detection Scheme**, including forward and side scatter, and angular dependence
+- **Acquisition**, including population sampling, waveform digitization, triggering, and event analysis.
 
 Mie Scattering Theory
 ---------------------
@@ -109,7 +110,7 @@ In flow cytometry, detectors are placed at different angles relative to the inci
 Forward Scatter (FSC)
 ^^^^^^^^^^^^^^^^^^^^^
 
-**Forward scatter (FSC)** is primarily sensitive to particle size. When particles pass through the focused laser beam, light is scattered predominantly in the forward direction due to the larger phase shift and constructive interference of light waves. The intensity of the forward scatter signal is proportional to the particle's cross-sectional area:
+**Forward scatter (FSC)** is primarily sensitive to particle size. When particles pass through the focused laser beam, light is scattered predominantly in the forward direction due to the larger phase shift and constructive interference of light waves. As a rough geometric intuition, the forward scatter signal can increase with the particle's cross-sectional area:
 
 .. math::
     I_{\text{FSC}} \propto r^2
@@ -117,47 +118,81 @@ Forward Scatter (FSC)
 Where:
 - :math:`r` is the radius of the particle.
 
-Thus, larger particles produce stronger forward scatter signals, allowing for size differentiation in flow cytometry.
+Thus, larger particles often produce stronger forward scatter signals, which can help distinguish particle sizes. This is a qualitative trend rather than a universal :math:`r^2` law: the response also depends on the Mie size parameter, refractive indices, wavelength, and detector collection geometry.
 
 Side Scatter (SSC)
 ^^^^^^^^^^^^^^^^^^
 
-**Side scatter (SSC)** is primarily sensitive to the internal complexity or granularity of the particle, such as cell granules or surface roughness. Side scatter arises from light being scattered at large angles (typically 90 degrees). The intensity of the side scatter signal depends on the **granularity** and refractive index mismatch between the particle and the surrounding medium. It can be empirically modeled as:
-
-.. math::
-    I_{\text{SSC}} \propto \text{granularity} \cdot \sin^n(\theta)
-
-Where:
-- :math:`\theta` is the scattering angle (typically 90 degrees),
-- :math:`n` is an empirical parameter controlling the angular dependence,
-- Granularity is a dimensionless measure of the particle's internal complexity.
+**Side scatter (SSC)** measures light collected at larger angles, commonly near 90 degrees. It can be sensitive to internal structure, surface features, and refractive-index contrast, but its response is not a universal measure of granularity; it also depends on particle size, wavelength, polarization, and collection geometry.
 
 Detector Configuration
 ^^^^^^^^^^^^^^^^^^^^^^
 
-Detectors in flow cytometry are characterized by several important parameters:
-- **Acquisition Frequency**: The rate at which the detector samples the scattered signal (e.g., 10,000 Hz).
-- **Numerical Aperture (NA)**: The detector's ability to collect scattered light over a range of angles.
-- **Responsitivity**: The efficiency with which the detector converts scattered light into an electrical signal.
-- **Baseline Shift**: The baseline output of the detector when no particles are present.
-
-In the **FlowCyPy** simulation, detectors can be configured to model realistic scattering detection schemes, including noise levels, saturation limits, and angular dependencies. This allows users to simulate complex experimental setups with multiple detectors at various angles.
-
-Example Detector Configuration:
+The detector's numerical aperture and angular position set the collected portion of the scattered field. Responsivity converts optical power to photocurrent; dark current and amplifier noise contribute to the baseline fluctuations. The amplifier and any analog processing circuits then shape the voltage waveform before it reaches the digitizer.
 
 .. code-block:: python
 
-    detector_0 = Detector(
-        theta_angle=90,              # Side scatter detector
-        numerical_aperture=0.4,      # Numerical aperture of the detector optics
-        responsitivity=1,            # Responsitivity of the detector (efficiency)
-        acquisition_frequency=1e4,   # Sampling frequency: 10,000 Hz
-        noise_level=0.01,            # Noise level: 0.01 millivolts
-    )
+   from FlowCyPy.units import ureg
+   from FlowCyPy.opto_electronics import Detector, Digitizer
 
-Simulating and Analyzing Flow Cytometry Data
---------------------------------------------
+   side_detector = Detector(
+       name="side",
+       phi_angle=90 * ureg.degree,
+       numerical_aperture=0.2,
+       responsivity=1 * ureg.ampere / ureg.watt,
+       dark_current=0.1 * ureg.nanoampere,
+   )
 
-In the **FlowCyPy** library, the full flow cytometry experiment is simulated by configuring a `FlowCytometer` object that combines the laser source, particle distribution, and detectors. After running the simulation, the **PulseAnalyzer** can be used to extract pulse features such as peak height, width, and area, allowing for further analysis of the flow cytometry data.
+   digitizer = Digitizer(
+       sampling_rate=60 * ureg.megahertz,
+       bit_depth=14,
+       use_auto_range=True,
+   )
 
-Refer to the "Examples" section for complete examples of how to configure a flow cytometry experiment and analyze the resulting data.
+Particle Sampling and Waveform Sampling
+---------------------------------------
+
+The word *sampling* refers to two different stages in a simulation. A population's sampling method decides how particle events are represented; the digitizer's sampling rate decides how often the resulting voltage waveform is measured in time.
+
+The default ``ExplicitModel`` estimates the number of particles passing through the sample during a run from their effective concentration, the sample flow, and the run duration. It then samples each event's particle properties, flow position, velocity, and arrival time. This is useful when individual event times and pulses matter.
+
+For large particle counts, ``GammaModel(number_of_samples=...)`` instead draws a finite set of representative particle properties and estimates the expected occupancy of each time bin. In the current model, the expected particles per bin are:
+
+.. math::
+
+   \lambda_{\mathrm{bin}} =
+   C_{\mathrm{eff}} \frac{\bar{v} A_{\mathrm{sample}}}{f_s}
+
+where :math:`C_{\mathrm{eff}}` is the concentration after dilution, :math:`\bar{v}` is mean flow velocity, :math:`A_{\mathrm{sample}}` is the sample-channel cross-sectional area, and :math:`f_s` is the digitizer sampling rate. This occupancy-based model is a computationally efficient approximation; it does not represent every particle as a separate arrival-time pulse.
+
+For a digitizer sampling rate :math:`f_s`, the time between adjacent waveform samples is:
+
+.. math::
+
+   \Delta t = \frac{1}{f_s}
+
+The sampling rate should exceed twice the highest frequency retained by the analog front end (the Nyquist limit), with practical margin to preserve pulse shape. Analog filtering limits out-of-band noise and helps prevent aliasing. The digitizer's bit depth determines the number of available amplitude codes (:math:`2^b` for :math:`b` bits); its voltage range trades quantization resolution against clipping. Automatic range selection can use more of the available codes, while a fixed range is useful when comparing runs on a consistent scale.
+
+Triggering and Event Segmentation
+---------------------------------
+
+A discriminator watches a selected detector channel for a trigger condition. For a numeric threshold, a rising crossing starts an event. A symbolic threshold such as ``"4sigma"`` is estimated from the trigger-channel trace using its median and a robust median-absolute-deviation estimate of noise:
+
+.. math::
+
+   V_{\mathrm{threshold}} =
+   \operatorname{median}(V) +
+   N \frac{\operatorname{median}(|V-\operatorname{median}(V)|)}{0.6745}
+
+The factor :math:`0.6745` makes the median absolute deviation a robust estimate of the standard deviation for approximately Gaussian noise. In a ``FixedWindow`` discriminator, ``pre_buffer`` and ``post_buffer`` specify how many samples to keep before and after a crossing. The same time window is extracted from every detector channel, even though only the configured trigger channel decides when it starts. Dynamic-window and double-threshold discriminators provide alternatives when pulse duration or separate start/stop levels need to be modeled.
+
+A lower threshold can capture weaker pulses but also admit more noise triggers; a higher threshold suppresses noise events but can miss faint particles. The threshold is therefore a detection-policy choice, not a universal property of the particle.
+
+Peak Analysis and Limit of Detection
+------------------------------------
+
+Triggering isolates candidate windows; it does not by itself prove that a particle was detected. A peak locator then measures features within each digitized segment, such as peak height or position. These features can be compared across detector channels, particle sizes, and blank runs.
+
+A formal limit of detection depends on both the signal distribution and the noise-only distribution, together with an explicit false-positive rate and detection-probability criterion. A single run at one concentration illustrates signal visibility and threshold behavior, but does not by itself establish a general limit of detection. In practice, evaluate replicate blanks and a dilution series, and report the trigger settings and sampling configuration used.
+
+In FlowCyPy, the resulting run record keeps the analog traces, triggered digital segments, and extracted peak data together. The **Limit of Detection** example shows this sequence with a side-scatter trigger and a global peak locator.
