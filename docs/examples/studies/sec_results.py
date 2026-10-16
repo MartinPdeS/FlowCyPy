@@ -1,6 +1,6 @@
 """
-Example with SEC columns
-========================
+Size-exclusion chromatography
+=============================
 
 This example demonstrates how to simulate flow cytometry data for extracellular vesicles (EVs) and lipoproteins (LPs) under different Size Exclusion Chromatography (SEC) scenarios. The simulation includes the generation of scatterer populations, opto-electronic configurations, and digital processing to analyze the resulting data.
 
@@ -23,6 +23,12 @@ import matplotlib.gridspec as gridspec
 # ----------------------------
 # Data geration flow cytometer
 # ----------------------------
+
+
+# %%
+# Define the SEC simulation
+# -------------------------
+# Build a reusable acquisition for a specified size cutoff and particle mixture.
 
 def run_sec_swarm_demo(
     *,
@@ -237,6 +243,12 @@ def run_sec_swarm_demo(
 # 0 nm: EV Only, EV + LP
 # 35 nm: SEC @35nm
 # 70 nm: SEC @70nm
+
+# %%
+# Run the separation scenarios
+# ----------------------------
+# Compare EVs alone, the EV and lipoprotein mixture, and two SEC size cutoffs.
+
 sec_values = [0, 0, 35, 70] * ureg.nanometer
 ev_concentrations = [5e15, 5e15, 5e15, 5e15] * ureg.particle / ureg.milliliter
 lp_concentrations = [0, 5e16, 5e16, 5e16] * ureg.particle / ureg.milliliter
@@ -285,6 +297,12 @@ for index, (sec, lp_concentration, ev_concentration) in enumerate(zip(sec_values
 
 
 # Define common variables
+
+# %%
+# Collect peak features
+# ---------------------
+# Combine the detected peak heights and retain the scenario labels for comparison.
+
 x_detector = "forward"
 y_detector = "side"
 titles_map = ['EV Only', 'EV + LP', 'SEC @35nm', 'SEC @70nm']
@@ -325,10 +343,16 @@ else:
     combined_df = pd.DataFrame() # Ensure combined_df is defined even if no peaks data
 
 # Plotting part
+
+# %%
+# Compare forward and side scatter
+# --------------------------------
+# Each panel shows the detected peak heights for one separation scenario.
+
 with plt.style.context(scientific):
     if not combined_df.empty:
-        fig = plt.figure(figsize=(20, 5)) # Adjust figure size for 1x4 grid
-        gs_main = gridspec.GridSpec(1, 4, figure=fig, wspace=0.2) # Main grid for the 4 scatter plots
+        fig = plt.figure(figsize=(12, 10), layout="constrained")
+        gs_main = gridspec.GridSpec(2, 2, figure=fig)
 
         for i, title in enumerate(titles_map):
             ax_scatter = fig.add_subplot(gs_main[i]) # Main scatter plot
@@ -406,6 +430,12 @@ for i, record in enumerate(run_records):
 
 combined_df = pd.concat(all_event_data, ignore_index=True)
 
+
+# %%
+# Inspect particle size and scatter
+# ---------------------------------
+# Filter the diameter range, then compare the joint distributions and their marginals.
+
 min_expected_diameter_nm = 1.0
 max_expected_diameter_nm = 1000.0
 
@@ -417,8 +447,8 @@ combined_df = combined_df[
 ].copy()
 
 with plt.style.context(scientific):
-    fig = plt.figure(figsize=(24, 6)) # Adjusted figure size for 1x4 grid to be more square
-    gs_main = gridspec.GridSpec(1, 4, figure=fig, wspace=0.15, hspace=0.15)
+    fig = plt.figure(figsize=(12, 12), layout="constrained")
+    gs_main = gridspec.GridSpec(2, 2, figure=fig)
 
     for i, title in enumerate(titles_map):
         gs_inner = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs_main[i],

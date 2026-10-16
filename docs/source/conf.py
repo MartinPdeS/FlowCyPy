@@ -71,7 +71,7 @@ sphinx_gallery_conf = {
     "ignore_pattern": "/__",
     "filename_pattern": r".*\.py",
     "plot_gallery": True,
-    "thumbnail_size": [600, 600],
+    "thumbnail_size": [480, 320],
     "default_thumb_file": str(Path(__file__).resolve().parent / "_static" / "gallery-default.png"),
     "download_all_examples": False,
     "reset_modules": "conf.reset_mpl",
@@ -130,7 +130,6 @@ html_theme_options["logo"] = dict(text=package_name, image="_static/logo.svg", a
 
 html_theme_options.update(
     {
-        "github_url": "https://github.com/MartinPdeS/FlowCyPy",
         "icon_links": [
             {
                 "name": "GitHub",

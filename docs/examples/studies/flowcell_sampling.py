@@ -1,7 +1,6 @@
 """
-=========================================================
-Visualize particle sampling in a rectangular flow cell
-=========================================================
+Flow-cell sampling
+==================
 
 This example shows how to simulate particle trajectories in a rectangular
 flow cell and visualize their transverse positions.

@@ -126,7 +126,10 @@ digital_processing = DigitalProcessing(
     peak_algorithm=peak_locator.GlobalPeakLocator(),
 )
 
-# %% Create and Run the Cytometer Simulation
+# %%
+# Run the acquisition
+# -------------------
+# Simulate the nanoparticle mixture with the configured noise and processing.
 cytometer = FlowCytometer(
     fluidics=fluidics,
     background_power=0.1 * ureg.nanowatt,
@@ -140,8 +143,12 @@ run_record = cytometer.run(
 
 # %%
 # Plot Raw Analog Signal
+# ----------------------
+# Compare particle pulses with the detector noise baseline.
 run_record.plot_analog()
 
 # %%
 # Plot Triggered Analog Signal Segments
+# -------------------------------------
+# Inspect which weak pulses survived the discriminator threshold.
 run_record.plot_digital()

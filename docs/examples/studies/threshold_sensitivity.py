@@ -1,6 +1,6 @@
 """
-Threshold Sensitivity: Event Detection Near the Noise Floor
-===========================================================
+Threshold sensitivity
+=====================
 
 This tutorial investigates how discriminator threshold affects event recovery
 for weak signals close to baseline noise.
@@ -144,11 +144,79 @@ for threshold_value in threshold_values:
 
     run_records.append((threshold_value, run_record))
 
+
 # %%
-# Step 3: Compare recovered events
-# --------------------------------
-for threshold_value, run_record in run_records:
-    print(f"Threshold: {threshold_value}")
-    _ = run_record.plot_analog(figure_size=(12, 4))
-    _ = run_record.plot_digital(figure_size=(12, 4), xlim=(0, 0.1 * ureg.millisecond))
-    _ = run_record.plot_peaks(x=("side", "Height"))
+# Analog signal at 2sigma
+# -----------------------
+# Inspect the signal and baseline before reviewing the recovered events.
+threshold_value, run_record = run_records[0]
+_ = run_record.plot_analog(figure_size=(12, 4))
+
+# %%
+# Triggered segments at 2sigma
+# ----------------------------
+# Inspect the first 0.1 milliseconds of triggered signal segments.
+_ = run_record.plot_digital(figure_size=(12, 4), xlim=(0, 0.1 * ureg.millisecond))
+
+# %%
+# Peak heights at 2sigma
+# ----------------------
+# Compare the recovered weak-event distribution as the threshold rises.
+_ = run_record.plot_peaks(x=("side", "Height"))
+
+# %%
+# Analog signal at 3sigma
+# -----------------------
+# Inspect the signal and baseline before reviewing the recovered events.
+threshold_value, run_record = run_records[1]
+_ = run_record.plot_analog(figure_size=(12, 4))
+
+# %%
+# Triggered segments at 3sigma
+# ----------------------------
+# Inspect the first 0.1 milliseconds of triggered signal segments.
+_ = run_record.plot_digital(figure_size=(12, 4), xlim=(0, 0.1 * ureg.millisecond))
+
+# %%
+# Peak heights at 3sigma
+# ----------------------
+# Compare the recovered weak-event distribution as the threshold rises.
+_ = run_record.plot_peaks(x=("side", "Height"))
+
+# %%
+# Analog signal at 4sigma
+# -----------------------
+# Inspect the signal and baseline before reviewing the recovered events.
+threshold_value, run_record = run_records[2]
+_ = run_record.plot_analog(figure_size=(12, 4))
+
+# %%
+# Triggered segments at 4sigma
+# ----------------------------
+# Inspect the first 0.1 milliseconds of triggered signal segments.
+_ = run_record.plot_digital(figure_size=(12, 4), xlim=(0, 0.1 * ureg.millisecond))
+
+# %%
+# Peak heights at 4sigma
+# ----------------------
+# Compare the recovered weak-event distribution as the threshold rises.
+_ = run_record.plot_peaks(x=("side", "Height"))
+
+# %%
+# Analog signal at 5sigma
+# -----------------------
+# Inspect the signal and baseline before reviewing the recovered events.
+threshold_value, run_record = run_records[3]
+_ = run_record.plot_analog(figure_size=(12, 4))
+
+# %%
+# Triggered segments at 5sigma
+# ----------------------------
+# Inspect the first 0.1 milliseconds of triggered signal segments.
+_ = run_record.plot_digital(figure_size=(12, 4), xlim=(0, 0.1 * ureg.millisecond))
+
+# %%
+# Peak heights at 5sigma
+# ----------------------
+# Compare the recovered weak-event distribution as the threshold rises.
+_ = run_record.plot_peaks(x=("side", "Height"))
