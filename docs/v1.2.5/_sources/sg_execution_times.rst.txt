@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**05:02.315** total execution time for 12 files **from all galleries**:
+**05:01.736** total execution time for 12 files **from all galleries**:
 
 .. container::
 
@@ -33,37 +33,37 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_gallery_validation_k_estimator.py` (``../examples/validation/k_estimator.py``)
-     - 01:26.942
+     - 01:26.700
      - 0.0
    * - :ref:`sphx_glr_gallery_validation_j_estimator.py` (``../examples/validation/j_estimator.py``)
-     - 01:26.916
+     - 01:26.649
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_sec_results.py` (``../examples/studies/sec_results.py``)
-     - 01:17.253
+     - 01:17.034
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_concentration_sweep.py` (``../examples/studies/concentration_sweep.py``)
-     - 00:13.144
+     - 00:13.328
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_cytek_comparison.py` (``../examples/studies/cytek_comparison.py``)
-     - 00:08.961
+     - 00:08.985
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_threshold_sensitivity.py` (``../examples/studies/threshold_sensitivity.py``)
-     - 00:06.180
+     - 00:06.186
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_limit_of_detection.py` (``../examples/studies/limit_of_detection.py``)
      - 00:05.891
      - 0.0
    * - :ref:`sphx_glr_gallery_tutorials_workflow.py` (``../examples/tutorials/workflow.py``)
-     - 00:05.456
+     - 00:05.424
      - 0.0
    * - :ref:`sphx_glr_gallery_tutorials_workflow_1.py` (``../examples/tutorials/workflow_1.py``)
-     - 00:04.283
+     - 00:04.399
      - 0.0
    * - :ref:`sphx_glr_gallery_tutorials_facs_canto.py` (``../examples/tutorials/facs_canto.py``)
-     - 00:03.240
+     - 00:03.099
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_signal_processing.py` (``../examples/studies/signal_processing.py``)
-     - 00:02.048
+     - 00:02.040
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_flowcell_sampling.py` (``../examples/studies/flowcell_sampling.py``)
      - 00:02.001
