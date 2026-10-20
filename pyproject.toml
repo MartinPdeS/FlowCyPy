@@ -83,7 +83,7 @@ testing = [
 ]
 documentation = [
     "MartinPdeS-docs>=0.1.4,<0.2",
-    "numpydoc==1.10.0",
+    "numpydoc==1.11.0",
     "pyvista",
 ]
 dev = [
