@@ -50,7 +50,7 @@ requirements:
     - martinpdes::pymiesim ==5.2.0  # [py<314]
     - martinpdes::pymiesim >=5.8.0,<5.9  # [py>=314]
     - martinpdes::mpsplots >=1.8.9
-    - martinpdes::typedunit
+    - martinpdes::typedunit >=0.2.9
 
 about:
   home: https://github.com/MartinPdeS/FlowCyPy

@@ -61,7 +61,7 @@ dependencies = [
     "PyMieSim ==5.2.0; python_version < '3.14'",
     "PyMieSim >=5.8.0,<5.9; python_version >= '3.14'",
     'MPSPlots >=1.8.9',
-    "TypedUnit"
+    "TypedUnit>=0.2.9"
 ]
 
 keywords = [
