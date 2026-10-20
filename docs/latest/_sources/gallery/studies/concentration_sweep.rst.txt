@@ -301,6 +301,13 @@ Inspect pulse overlap as concentration increases.
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/matplotlib/cbook.py:1355: UnitStrippedWarning: The unit of the quantity is stripped when downcasting to ndarray.
+      return np.asarray(x, float)
+
 
 
 
@@ -350,6 +357,13 @@ Inspect pulse overlap as concentration increases.
    :srcset: /gallery/studies/images/sphx_glr_concentration_sweep_003.png
    :class: sphx-glr-single-img
 
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/matplotlib/cbook.py:1355: UnitStrippedWarning: The unit of the quantity is stripped when downcasting to ndarray.
+      return np.asarray(x, float)
 
 
 
@@ -401,6 +415,13 @@ Inspect pulse overlap as concentration increases.
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/matplotlib/cbook.py:1355: UnitStrippedWarning: The unit of the quantity is stripped when downcasting to ndarray.
+      return np.asarray(x, float)
+
 
 
 
@@ -451,6 +472,13 @@ Inspect pulse overlap as concentration increases.
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/matplotlib/cbook.py:1355: UnitStrippedWarning: The unit of the quantity is stripped when downcasting to ndarray.
+      return np.asarray(x, float)
+
 
 
 
@@ -480,7 +508,7 @@ Compare the recovered side-scatter peak distribution with the corresponding trac
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 12.681 seconds)
+   **Total running time of the script:** (0 minutes 7.120 seconds)
 
 
 .. _sphx_glr_download_gallery_studies_concentration_sweep.py:

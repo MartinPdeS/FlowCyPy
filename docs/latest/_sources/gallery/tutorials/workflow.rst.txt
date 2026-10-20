@@ -369,13 +369,6 @@ Check the sampled diameter distribution before examining the detector response.
    :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-    findfont: Font family ['cursive'] not found. Falling back to DejaVu Sans.
-    findfont: Generic family 'cursive' not found because none of the following families were found: Apple Chancery, Textile, Zapf Chancery, Sand, Script MT, Felipa, Comic Neue, Comic Sans MS, cursive
-
 
 
 
@@ -438,11 +431,8 @@ Plot raw analog signals
 
  .. code-block:: none
 
-    findfont: Font family ['cursive'] not found. Falling back to DejaVu Sans.
-    findfont: Generic family 'cursive' not found because none of the following families were found: Apple Chancery, Textile, Zapf Chancery, Sand, Script MT, Felipa, Comic Neue, Comic Sans MS, cursive
-    findfont: Font family ['Arial'] not found. Falling back to DejaVu Sans.
-    findfont: Font family ['Arial'] not found. Falling back to DejaVu Sans.
-    findfont: Font family ['Arial'] not found. Falling back to DejaVu Sans.
+    /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/matplotlib/cbook.py:1355: UnitStrippedWarning: The unit of the quantity is stripped when downcasting to ndarray.
+      return np.asarray(x, float)
 
 
 
@@ -506,7 +496,7 @@ Step 7: Plot Peak Features
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 4.988 seconds)
+   **Total running time of the script:** (0 minutes 4.407 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

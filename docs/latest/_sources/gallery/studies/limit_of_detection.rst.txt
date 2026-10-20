@@ -360,6 +360,13 @@ instead of compressing the entire 600,000-sample acquisition into a dense band.
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/matplotlib/cbook.py:1355: UnitStrippedWarning: The unit of the quantity is stripped when downcasting to ndarray.
+      return np.asarray(x, float)
+
 
 
 
@@ -387,6 +394,8 @@ Inspect which weak pulses survived the discriminator threshold.
 
  .. code-block:: none
 
+    /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/matplotlib/cbook.py:1044: UnitStrippedWarning: The unit of the quantity is stripped when downcasting to ndarray.
+      x = np.asanyarray(x)
 
     <Figure size 640x480 with 3 Axes>
 
@@ -395,7 +404,7 @@ Inspect which weak pulses survived the discriminator threshold.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.078 seconds)
+   **Total running time of the script:** (0 minutes 3.990 seconds)
 
 
 .. _sphx_glr_download_gallery_studies_limit_of_detection.py:

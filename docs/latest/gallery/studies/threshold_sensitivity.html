@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="../../" data-theme="dark">
+<html lang="en" data-content_root="../../" >
 
   <head>
     <meta charset="utf-8" />
@@ -12,8 +12,8 @@
   
   
   <script data-cfasync="false">
-    document.documentElement.dataset.mode = localStorage.getItem("mode") || "dark";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
   <!--
     this give us a css class that will be invisible only if js is disabled
@@ -36,6 +36,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/default.css?v=b5ae4d64" />
+    <link rel="stylesheet" type="text/css" href="../../_static/martinpdes_layout.css?v=a8cc01cd" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
@@ -43,7 +44,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
 
-    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/documentation_options.js?v=8a448e45"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -52,7 +53,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.2.6';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
@@ -65,7 +66,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.2.6" />
+  <meta name="docsearch:version" content="" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -73,7 +74,7 @@
     <script src="../../searchindex.js"></script>
   
   </head>
-  <body data-default-mode="dark">
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
@@ -134,12 +135,12 @@
   
     
     
+      
     
-    <img src="../../_static/logo.svg" class="logo__image only-dark" alt="FlowCyPy logo"/>
-    <img src="../../_static/logo.svg" class="logo__image only-light pst-js-only" alt="FlowCyPy logo"/>
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="FlowCyPy logo"/>
+    <img src="../../_static/logo.png" class="logo__image only-dark pst-js-only" alt="FlowCyPy logo"/>
   
-  
-    <p class="title logo__title">FlowCyPy</p>
   
 </a></div>
     
@@ -224,21 +225,6 @@
     role="listbox" aria-labelledby="pst-version-switcher-button-2">
     <!-- dropdown will be populated by javascript on page load -->
   </div>
-</div></div>
-      
-        <div class="navbar-item">
-
-<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
-  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
-    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
-  </button>
-  <ul class="dropdown-menu dropdown-menu-end">
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
-  </ul>
 </div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
@@ -386,21 +372,6 @@
     role="listbox" aria-labelledby="pst-version-switcher-button-3">
     <!-- dropdown will be populated by javascript on page load -->
   </div>
-</div></div>
-        
-          <div class="navbar-item">
-
-<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
-  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
-    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
-  </button>
-  <ul class="dropdown-menu dropdown-menu-end">
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
-  </ul>
 </div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
@@ -603,9 +574,9 @@ for weak signals close to baseline noise.</p>
 </span>    <span class="n">sampling_method</span><span class="o">=</span><span class="n">populations</span><span class="o">.</span><span class="n">ExplicitModel</span><span class="p">(</span><span class="p">)</span><span class="p">,</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span><span class="w">
-</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-method reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.add_population" title="FlowCyPy.fluidics.ScattererCollection.add_population"><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span></a><span class="p">(</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics-populations sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.populations.SpherePopulation" title="FlowCyPy.fluidics.populations.SpherePopulation"><span class="n">population</span></a><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="FlowCyPy.fluidics.ScattererCollection"><span class="n">scatterer_collection</span></a><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics-populations sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.populations.SpherePopulation" title="FlowCyPy.fluidics.populations.SpherePopulation"><span class="n">population</span></a><span class="p">)</span><span class="w">
 </span><span class="w">
-</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-method reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.dilute" title="FlowCyPy.fluidics.ScattererCollection.dilute"><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dilute</span></a><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="FlowCyPy.fluidics.ScattererCollection"><span class="n">scatterer_collection</span></a><span class="o">.</span><span class="n">dilute</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.system.Fluidics" title="FlowCyPy.Fluidics"><span class="n">fluidics</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.system.Fluidics" title="FlowCyPy.Fluidics"><span class="n">Fluidics</span></a><span class="p">(</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="FlowCyPy.fluidics.ScattererCollection"><span class="n">scatterer_collection</span></a><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="FlowCyPy.fluidics.ScattererCollection"><span class="n">scatterer_collection</span></a><span class="p">,</span><span class="w">
@@ -613,8 +584,8 @@ for weak signals close to baseline noise.</p>
 </span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><span class="n">analog_processing</span> <span class="o">=</span> <span class="p">[</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics-circuits sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.circuits.BaselineRestorationServo" title="FlowCyPy.opto_electronics.circuits.BaselineRestorationServo"><span class="n">circuits</span><span class="o">.</span><span class="n">BaselineRestorationServo</span></a><span class="p">(</span><span class="n">time_constant</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">microsecond</span><span class="p">)</span><span class="p">,</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics-circuits sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.circuits.BesselLowPass" title="FlowCyPy.opto_electronics.circuits.BesselLowPass"><span class="n">circuits</span><span class="o">.</span><span class="n">BesselLowPass</span></a><span class="p">(</span><span class="n">cutoff_frequency</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="n">circuits</span><span class="o">.</span><span class="n">BaselineRestorationServo</span><span class="p">(</span><span class="n">time_constant</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">microsecond</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="n">circuits</span><span class="o">.</span><span class="n">BesselLowPass</span><span class="p">(</span><span class="n">cutoff_frequency</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="p">,</span><span class="w">
 </span><span class="p">]</span><span class="w">
 </span><span class="w">
 </span><a class="sphx-glr-backref-module-FlowCyPy-opto_electronics-source sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.source.Gaussian" title="FlowCyPy.opto_electronics.source.Gaussian"><span class="n">excitation_source</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics-source sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.source.Gaussian" title="FlowCyPy.opto_electronics.source.Gaussian"><span class="n">source</span><span class="o">.</span><span class="n">Gaussian</span></a><span class="p">(</span><span class="w">
@@ -680,7 +651,7 @@ for weak signals close to baseline noise.</p>
 </span>        <span class="n">peak_algorithm</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-digital_processing-peak_locator sphx-glr-backref-type-py-class reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator" title="FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator"><span class="n">peak_locator</span><span class="o">.</span><span class="n">GlobalPeakLocator</span></a><span class="p">(</span><span class="p">)</span><span class="p">,</span><span class="w">
 </span>    <span class="p">)</span><span class="w">
 </span><span class="w">
-</span>    <span class="n">run_record</span> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-method reference internal" href="../../code/flow_cytometer.html#FlowCyPy.flow_cytometer.FlowCytometer.run" title="FlowCyPy.FlowCytometer.run"><span class="n">cytometer</span><span class="o">.</span><span class="n">run</span></a><span class="p">(</span><span class="w">
+</span>    <span class="n">run_record</span> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/flow_cytometer.html#FlowCyPy.flow_cytometer.FlowCytometer" title="FlowCyPy.FlowCytometer"><span class="n">cytometer</span></a><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="w">
 </span>        <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics" title="FlowCyPy.OptoElectronics"><span class="n">opto_electronics</span></a><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics" title="FlowCyPy.OptoElectronics"><span class="n">opto_electronics</span></a><span class="p">,</span><span class="w">
 </span>        <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.DigitalProcessing" title="FlowCyPy.DigitalProcessing"><span class="n">digital_processing</span></a><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.DigitalProcessing" title="FlowCyPy.DigitalProcessing"><span class="n">digital_processing</span></a><span class="p">,</span><span class="w">
 </span>        <span class="n">run_time</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">millisecond</span><span class="p">,</span><span class="w">
@@ -775,7 +746,11 @@ for weak signals close to baseline noise.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">threshold_value</span><span class="p">,</span> <span class="n">run_record</span> <span class="o">=</span> <span class="n">run_records</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w">
 </span><span class="n">_</span> <span class="o">=</span> <span class="n">plot_analog_window</span><span class="p">(</span><span class="n">run_record</span><span class="p">,</span> <span class="n">threshold_value</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_threshold_sensitivity_001.png" srcset="../../_images/sphx_glr_threshold_sensitivity_001.png" alt="Analog signal at 2sigma threshold" class = "sphx-glr-single-img"/></section>
+<img src="../../_images/sphx_glr_threshold_sensitivity_001.png" srcset="../../_images/sphx_glr_threshold_sensitivity_001.png" alt="Analog signal at 2sigma threshold" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/matplotlib/cbook.py:1355: UnitStrippedWarning: The unit of the quantity is stripped when downcasting to ndarray.
+  return np.asarray(x, float)
+</pre></div>
+</div>
+</section>
 <section id="triggered-segments-at-2sigma">
 <h2>Triggered segments at 2sigma<a class="headerlink" href="#triggered-segments-at-2sigma" title="Link to this heading">#</a></h2>
 <p>Inspect the first 0.1 milliseconds of triggered signal segments.</p>
@@ -794,7 +769,11 @@ for weak signals close to baseline noise.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">threshold_value</span><span class="p">,</span> <span class="n">run_record</span> <span class="o">=</span> <span class="n">run_records</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w">
 </span><span class="n">_</span> <span class="o">=</span> <span class="n">plot_analog_window</span><span class="p">(</span><span class="n">run_record</span><span class="p">,</span> <span class="n">threshold_value</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_threshold_sensitivity_004.png" srcset="../../_images/sphx_glr_threshold_sensitivity_004.png" alt="Analog signal at 3sigma threshold" class = "sphx-glr-single-img"/></section>
+<img src="../../_images/sphx_glr_threshold_sensitivity_004.png" srcset="../../_images/sphx_glr_threshold_sensitivity_004.png" alt="Analog signal at 3sigma threshold" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/matplotlib/cbook.py:1355: UnitStrippedWarning: The unit of the quantity is stripped when downcasting to ndarray.
+  return np.asarray(x, float)
+</pre></div>
+</div>
+</section>
 <section id="triggered-segments-at-3sigma">
 <h2>Triggered segments at 3sigma<a class="headerlink" href="#triggered-segments-at-3sigma" title="Link to this heading">#</a></h2>
 <p>Inspect the first 0.1 milliseconds of triggered signal segments.</p>
@@ -813,7 +792,11 @@ for weak signals close to baseline noise.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">threshold_value</span><span class="p">,</span> <span class="n">run_record</span> <span class="o">=</span> <span class="n">run_records</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w">
 </span><span class="n">_</span> <span class="o">=</span> <span class="n">plot_analog_window</span><span class="p">(</span><span class="n">run_record</span><span class="p">,</span> <span class="n">threshold_value</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_threshold_sensitivity_007.png" srcset="../../_images/sphx_glr_threshold_sensitivity_007.png" alt="Analog signal at 4sigma threshold" class = "sphx-glr-single-img"/></section>
+<img src="../../_images/sphx_glr_threshold_sensitivity_007.png" srcset="../../_images/sphx_glr_threshold_sensitivity_007.png" alt="Analog signal at 4sigma threshold" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/matplotlib/cbook.py:1355: UnitStrippedWarning: The unit of the quantity is stripped when downcasting to ndarray.
+  return np.asarray(x, float)
+</pre></div>
+</div>
+</section>
 <section id="triggered-segments-at-4sigma">
 <h2>Triggered segments at 4sigma<a class="headerlink" href="#triggered-segments-at-4sigma" title="Link to this heading">#</a></h2>
 <p>Inspect the first 0.1 milliseconds of triggered signal segments.</p>
@@ -832,7 +815,11 @@ for weak signals close to baseline noise.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">threshold_value</span><span class="p">,</span> <span class="n">run_record</span> <span class="o">=</span> <span class="n">run_records</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="w">
 </span><span class="n">_</span> <span class="o">=</span> <span class="n">plot_analog_window</span><span class="p">(</span><span class="n">run_record</span><span class="p">,</span> <span class="n">threshold_value</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_threshold_sensitivity_010.png" srcset="../../_images/sphx_glr_threshold_sensitivity_010.png" alt="Analog signal at 5sigma threshold" class = "sphx-glr-single-img"/></section>
+<img src="../../_images/sphx_glr_threshold_sensitivity_010.png" srcset="../../_images/sphx_glr_threshold_sensitivity_010.png" alt="Analog signal at 5sigma threshold" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/matplotlib/cbook.py:1355: UnitStrippedWarning: The unit of the quantity is stripped when downcasting to ndarray.
+  return np.asarray(x, float)
+</pre></div>
+</div>
+</section>
 <section id="triggered-segments-at-5sigma">
 <h2>Triggered segments at 5sigma<a class="headerlink" href="#triggered-segments-at-5sigma" title="Link to this heading">#</a></h2>
 <p>Inspect the first 0.1 milliseconds of triggered signal segments.</p>
@@ -844,7 +831,7 @@ for weak signals close to baseline noise.</p>
 <p>Compare the recovered weak-event distribution as the threshold rises.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_</span> <span class="o">=</span> <span class="n">plot_peak_heights</span><span class="p">(</span><span class="n">run_record</span><span class="p">,</span> <span class="n">threshold_value</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_threshold_sensitivity_012.png" srcset="../../_images/sphx_glr_threshold_sensitivity_012.png" alt="Side-scatter peak heights at 5sigma" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.319 seconds)</p>
+<img src="../../_images/sphx_glr_threshold_sensitivity_012.png" srcset="../../_images/sphx_glr_threshold_sensitivity_012.png" alt="Side-scatter peak heights at 5sigma" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.521 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-studies-threshold-sensitivity-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/3aa2e6853cfe0f8eaf11069b88b104e8/threshold_sensitivity.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">threshold_sensitivity.ipynb</span></code></a></p>
@@ -866,30 +853,6 @@ for weak signals close to baseline noise.</p>
               
               
               
-              
-                <footer class="prev-next-footer d-print-none">
-                  
-<div class="prev-next-area">
-    <a class="left-prev"
-       href="signal_processing.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Signal processing</p>
-      </div>
-    </a>
-    <a class="right-next"
-       href="../validation/index.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Examples: Validation</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
-    </a>
-</div>
-                </footer>
               
             </div>
             
@@ -926,6 +889,22 @@ for weak signals close to baseline noise.</p>
 
   <div class="sidebar-secondary-item">
 
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/master/gallery/studies/threshold_sensitivity.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+
   <div class="tocsection sourcelink">
     <a href="../../_sources/gallery/studies/threshold_sensitivity.rst.txt">
       <i class="fa-solid fa-file-lines"></i> Show Source
@@ -958,7 +937,7 @@ for weak signals close to baseline noise.</p>
 
   <p class="copyright">
     
-      © Copyright 2024-2026, Martin Poinsinet de Sivry-Houle.
+      © Copyright Martin Poinsinet de Sivry-Houle.
       <br/>
     
   </p>
