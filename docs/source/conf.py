@@ -39,6 +39,7 @@ globals().update(
             "image_scrapers": ("matplotlib",),
             "default_thumb_file": str(DOCS_SOURCE / "_static" / "gallery-default.png"),
             "reset_modules": reset_mpl,
+            "reset_modules_order": "after",
             "within_subsection_order": "FileNameSortKey",
         },
     )
