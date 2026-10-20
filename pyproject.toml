@@ -58,8 +58,7 @@ dependencies = [
     "pydantic ~=2.9",
     "numpy >=2.0",
     'pint >=0.24,<0.26',
-    "PyMieSim ==5.2.0; python_version < '3.14'",
-    "PyMieSim >=5.8.0,<5.9; python_version >= '3.14'",
+    "PyMieSim>=6.0.4,<6.1",
     'MPSPlots >=1.8.9',
     "TypedUnit>=0.2.9"
 ]
