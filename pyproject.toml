@@ -57,7 +57,7 @@ dependencies = [
     'seaborn ~=0.13',
     "pydantic ~=2.9",
     "numpy >=2.0",
-    'pint ~=0.24',
+    'pint >=0.24,<0.26',
     "PyMieSim ==5.2.0; python_version < '3.14'",
     "PyMieSim >=5.8.0,<5.9; python_version >= '3.14'",
     'MPSPlots >=1.8.9',
