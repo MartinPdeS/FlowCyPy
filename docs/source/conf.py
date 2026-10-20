@@ -2,12 +2,18 @@
 
 import os
 from pathlib import Path
+import sys
+from importlib.metadata import distribution as package_distribution
 
 from martinpdes_docs import configure
 
 
 DOCS_SOURCE = Path(__file__).resolve().parent
 examples_sections = ["tutorials", "studies", "validation"]
+installed_site = str(package_distribution("FlowCyPy").locate_file(""))
+if installed_site in sys.path:
+    sys.path.remove(installed_site)
+sys.path.insert(0, installed_site)
 
 
 globals().update(
