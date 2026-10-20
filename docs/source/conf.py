@@ -1,215 +1,60 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+"""Sphinx configuration for FlowCyPy documentation."""
 
-import datetime
 import os
-import sys
 from pathlib import Path
 
 from MPSPlots.styles import use_mpsplots_style
-
-import FlowCyPy
-
-package_name = "FlowCyPy"
-version = FlowCyPy.__version__
-
-# Keep gallery reset hooks importable so Sphinx can cache its configuration.
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-
-current_dir = Path("../")
-
-sys.path.append(str(current_dir.resolve()))
+from martinpdes_docs import configure
 
 
-
-
-
-project = package_name
-copyright = f"2024-{datetime.date.today().year}, Martin Poinsinet de Sivry-Houle"
-author = "Martin Poinsinet de Sivry-Houle"
-
-extensions = [
-    "sphinx.ext.mathjax",
-    "sphinx_design",
-    "pyvista.ext.plot_directive",
-    "sphinx_gallery.gen_gallery",
-    "sphinx.ext.autosummary",
-    "sphinx.ext.autodoc",
-    "sphinx.ext.napoleon",
-    "sphinx.ext.viewcode",
-    "sphinx.ext.autosectionlabel",
-    "sphinx.ext.intersphinx",
-]
-
-autodoc_typehints = "description"
-autosummary_generate = True
-
-# Napoleon settings for docstrings
-napoleon_google_docstring = False
-napoleon_numpy_docstring = True
-
-html_logo = "_static/logo.svg"
-html_favicon = "_static/favicon.ico"
+DOCS_SOURCE = Path(__file__).resolve().parent
+examples_sections = ["tutorials", "studies", "validation"]
 
 
 def reset_mpl(gallery_conf, fname):
+    """Restore the project's plotting style before each gallery example."""
     use_mpsplots_style()
 
 
-examples_files = [
-    "tutorials",
-    "studies",
-    "validation",
-
-]
-
-sphinx_gallery_conf = {
-    "reset_modules_order": "after",
-    "examples_dirs": ["../examples/" + f for f in examples_files],
-    "gallery_dirs": ["gallery/" + f for f in examples_files],
-    "image_scrapers": ("matplotlib"),
-    "ignore_pattern": "/__",
-    "filename_pattern": r".*\.py",
-    "plot_gallery": True,
-    "thumbnail_size": [480, 320],
-    "default_thumb_file": str(Path(__file__).resolve().parent / "_static" / "gallery-default.png"),
-    "download_all_examples": False,
-    "reset_modules": "conf.reset_mpl",
-    "line_numbers": False,
-    "remove_config_comments": True,
-    "capture_repr": ("_repr_html_", "__repr__"),
-    "nested_sections": True,
-    "within_subsection_order": "FileNameSortKey",
-}
-
-
-autodoc_default_options = {
-    "members": True,
-    "undoc-members": False,
-    "show-inheritance": True,
-    "exclude-members": "__annotations__",
-    "member-order": "bysource",
-}
-
-autosectionlabel_prefix_document = True
-numpydoc_show_class_members = False
-add_module_names = False
-
-source_suffix = ".rst"
-master_doc = "index"
-language = "en"
-highlight_language = "python3"
-html_theme = "pydata_sphinx_theme"
-
-# -- Options for HTML output -------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
-
-exclude_trees = []
-# default_role = "autolink"
-show_authors = True
-pygments_style = "sphinx"
-
-# -- Sphinx-gallery configuration --------------------------------------------
-major, minor = version.split(".")[:2]
-binder_branch = f"v{major}.{minor}.x"
-
-html_context = {
-    "github_url": "https://github.com",  # or your GitHub Enterprise site
-    "github_user": "MartinPdeS",
-    "github_repo": "FlowCyPy",
-    "github_version": "master",
-    "doc_path": "docs/source",
-    "default_mode": "dark",
-}
-
-html_theme_options = dict()
-
-html_theme_options["logo"] = dict(text=package_name, image="_static/logo.svg", alt_text="FlowCyPy logo")
-# html_theme_options["show_nav_level"] = 1
-
-
-html_theme_options.update(
-    {
-        "icon_links": [
-            {
-                "name": "GitHub",
-                "url": f"https://github.com/MartinPdeS/{package_name}",
-                "icon": "fa-brands fa-github",
+globals().update(
+    configure(
+        project="FlowCyPy",
+        package="FlowCyPy",
+        repository="MartinPdeS/FlowCyPy",
+        logo="_static/logo.png",
+        favicon="_static/favicon.ico",
+        version=os.getenv("tag", "latest"),
+        html_theme_options={
+            "logo": {
+                "text": "",
+                "image": "_static/logo.png",
+                "alt_text": "FlowCyPy logo",
             },
-            {
-                "name": "PyPI",
-                "url": f"https://pypi.org/project/{package_name}/",
-                "icon": "fa-solid fa-box",
-            },
-            {
-                "name": "Anaconda",
-                "url": f"https://anaconda.org/MartinPdeS/{package_name}",
-                "icon": "fa-brands fa-python",
-            },
-        ],
-        "navbar_align": "content",
-        "navbar_end": ["version-switcher", "theme-switcher", "navbar-icon-links"],
-        "show_prev_next": True,
-        "show_version_warning_banner": True,
-        # Footer
-        "footer_start": ["copyright"],
-        "footer_end": ["sphinx-version", "theme-version"],
-        # Other
-        "pygments_light_style": "default",
-        "pygments_dark_style": "github-dark",
-        "show_nav_level": 1,
-        "collapse_navigation": False,
-    }
+            "show_nav_level": 1,
+            "collapse_navigation": False,
+        },
+        sphinx_gallery_conf={
+            "examples_dirs": [f"../examples/{name}" for name in examples_sections],
+            "gallery_dirs": [f"gallery/{name}" for name in examples_sections],
+            "image_scrapers": ("matplotlib",),
+            "default_thumb_file": str(DOCS_SOURCE / "_static" / "gallery-default.png"),
+            "reset_modules": reset_mpl,
+            "within_subsection_order": "FileNameSortKey",
+        },
+    )
 )
 
-current_version = os.getenv("tag", "latest")
+extensions += [
+    "sphinx.ext.mathjax",
+    "pyvista.ext.plot_directive",
+    "sphinx.ext.autosectionlabel",
+]
 
-html_theme_options["switcher"] = dict(
-    json_url=f"https://raw.githubusercontent.com/MartinPdeS/{package_name}/documentation_page/version_switcher.json",
-    version_match=current_version,
+autodoc_default_options.update(
+    {"members": True, "exclude-members": "__annotations__", "member-order": "bysource"}
 )
-
-htmlhelp_basename = f"{package_name}doc"
-
-latex_elements = {}
-
-
-latex_documents = [
-    (
-        master_doc,
-        f"{package_name}.tex",
-        "",
-        "Martin Poinsinet de Sivry-Houle",
-        "manual",
-    ),
-]
-
-man_pages = [(master_doc, "FlowCyPy", "", [author], 1)]
-
-texinfo_documents = [
-    (
-        master_doc,
-        package_name,
-        "",
-        author,
-        package_name,
-        "One line description of project.",
-        "Miscellaneous",
-    ),
-]
-
-epub_title = project
-
-html_static_path = ["_static"]
-templates_path = ["_templates"]
-html_css_files = ["default.css"]
-epub_exclude_files = ["search.html"]
-
-
-# Intersphinx to get NumPy, SciPy, and other targets
+autosectionlabel_maxdepth = 1
 intersphinx_mapping = {
     "numpy": ("https://numpy.org/devdocs", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/", None),
 }
-
-# -

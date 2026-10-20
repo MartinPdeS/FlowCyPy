@@ -2,11 +2,13 @@
 
 PYTHON ?= python3.13
 BUILD_DIR ?= build
+DOCS_BUILD_DIR ?= docs/build
+SPHINXOPTS ?=
 ROOT_DIR := $(CURDIR)
 PYBIND11_DIR = $(shell $(PYTHON) -m pybind11 --cmakedir)
 RELEASE_KIND := $(filter major minor patch,$(MAKECMDGOALS))
 
-.PHONY: help configure build install quick rebuild editable clean quality test check release-check tag release major minor patch
+.PHONY: help docs docs-install configure build install quick rebuild editable clean quality test check release-check tag release major minor patch
 
 help:
 	@echo "FlowCyPy development commands"
@@ -20,6 +22,14 @@ help:
 	@echo "  make release patch         Create and push the next patch release"
 	@echo "  make release minor         Create and push the next minor release"
 	@echo "  make release major         Create and push the next major release"
+	@echo "  make docs                  Build the HTML documentation"
+	@echo "  make docs-install          Install documentation dependencies"
+
+docs-install:
+	$(PYTHON) -m pip install -e ".[documentation]"
+
+docs:
+	MPLBACKEND=Agg $(PYTHON) -m sphinx -M html docs/source $(DOCS_BUILD_DIR) $(SPHINXOPTS)
 
 quality:
 	$(PYTHON) -m ruff check FlowCyPy tests
