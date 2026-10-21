@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**04:59.245** total execution time for 12 files **from all galleries**:
+**02:23.378** total execution time for 12 files **from all galleries**:
 
 .. container::
 
@@ -32,39 +32,39 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_gallery_validation_j_estimator.py` (``../examples/validation/j_estimator.py``)
-     - 01:26.919
-     - 0.0
    * - :ref:`sphx_glr_gallery_validation_k_estimator.py` (``../examples/validation/k_estimator.py``)
-     - 01:26.693
+     - 00:36.641
+     - 0.0
+   * - :ref:`sphx_glr_gallery_validation_j_estimator.py` (``../examples/validation/j_estimator.py``)
+     - 00:36.620
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_sec_results.py` (``../examples/studies/sec_results.py``)
-     - 01:16.914
+     - 00:35.822
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_concentration_sweep.py` (``../examples/studies/concentration_sweep.py``)
-     - 00:12.631
+     - 00:06.568
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_cytek_comparison.py` (``../examples/studies/cytek_comparison.py``)
-     - 00:09.061
+     - 00:05.779
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_threshold_sensitivity.py` (``../examples/studies/threshold_sensitivity.py``)
-     - 00:06.162
-     - 0.0
-   * - :ref:`sphx_glr_gallery_studies_limit_of_detection.py` (``../examples/studies/limit_of_detection.py``)
-     - 00:05.076
+     - 00:05.024
      - 0.0
    * - :ref:`sphx_glr_gallery_tutorials_workflow.py` (``../examples/tutorials/workflow.py``)
-     - 00:05.012
+     - 00:03.873
      - 0.0
    * - :ref:`sphx_glr_gallery_tutorials_workflow_1.py` (``../examples/tutorials/workflow_1.py``)
-     - 00:04.477
+     - 00:03.736
+     - 0.0
+   * - :ref:`sphx_glr_gallery_studies_limit_of_detection.py` (``../examples/studies/limit_of_detection.py``)
+     - 00:03.696
      - 0.0
    * - :ref:`sphx_glr_gallery_tutorials_facs_canto.py` (``../examples/tutorials/facs_canto.py``)
-     - 00:02.501
+     - 00:02.186
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_signal_processing.py` (``../examples/studies/signal_processing.py``)
-     - 00:01.964
+     - 00:01.731
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_flowcell_sampling.py` (``../examples/studies/flowcell_sampling.py``)
-     - 00:01.834
+     - 00:01.702
      - 0.0
