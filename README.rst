@@ -1,205 +1,418 @@
 |logo|
 
-FlowCyPy
-========
+FlowCyPy: Flow Cytometer Simulation Tool
+========================================
 
-**Simulate a flow-cytometry experiment from particle populations to measured
-signals.**
+.. list-table::
+   :widths: 10 25 25 25
+   :header-rows: 0
 
-|python| |pypi| |docs| |ci| |license|
+   * - Meta
+     - |python|
+     - |docs|
+     - |zenodo|
+   * - Testing
+     - |ci/cd|
+     - |coverage|
+     - |colab|
+   * - PyPi
+     - |PyPi|
+     - |PyPi_download|
+     -
+   * - Anaconda
+     - |anaconda|
+     - |anaconda_download|
+     - |anaconda_date|
 
-FlowCyPy is a Python toolkit for building physically motivated flow-cytometer
-simulations. Define particles and fluidics, illuminate them with a configurable
-source, model detector and electronics, then inspect analog and digital
-acquisition as one reproducible workflow.
+Overview
+--------
 
-Why FlowCyPy?
--------------
+**FlowCyPy** is a cutting-edge Python library designed to simulate flow cytometer experiments. By generating realistic Forward Scatter (FSC) and Side Scatter (SSC) signals, FlowCyPy enables detailed modeling of flow cytometry setups, making it ideal for researchers and engineers working with extracellular vesicles (EVs) or other scatterers.
 
-* **Particle-aware fluidics** — model flow cells, sample and sheath flow, and
-  configurable particle populations.
-* **Optical scattering** — calculate detector signals from particle size,
-  refractive index, wavelength and collection geometry.
-* **Instrument realism** — add detectors, amplifiers, analog circuits,
-  digitization, shot noise and laser noise.
-* **Event-level results** — trigger, locate peaks, classify events and plot
-  measurements with pandas-friendly result frames.
-* **Units by default** — express physical parameters with explicit units.
+Key Features
+------------
+
+- **Particle Event Simulation**: Create detailed FSC/SSC signals with customizable particle size and refractive index distributions.
+- **Noise and Signal Modeling**: Incorporate realistic noise sources (thermal, shot, dark current) and baseline shifts.
+- **Detector Configurations**: Simulate real-world detector behaviors, including saturation and responsivity.
+- **Fluorescence Modeling**: Simulate fluorescence signals for labeled particles (e.g., EV surface markers).
+- **Visualization Tools**: Generate advanced plots, including density maps and signal traces.
+
+For full documentation and examples, visit the `FlowCyPy Documentation <https://martinpdes.github.io/FlowCyPy/docs/latest/index.html>`_.
 
 Installation
 ------------
 
-.. code-block:: console
+Install FlowCyPy via `pip` or `conda``:
 
-   $ python -m pip install FlowCyPy
+.. code-block:: bash
 
-FlowCyPy requires Python 3.11 or newer. Pre-built wheels are available for
-Linux x86_64 and macOS arm64. To install from source with development tools:
+    pip install FlowCyPy
+    conda install FlowCyPy --channels MartinPdeS
 
-.. code-block:: console
+**Requirements**: Python 3.11 or higher with dependencies:
+`numpy`, `pint`, `tabulate`, `seaborn`, `MPSPlots`, `PyMieSim`, `pydantic>=2.6.3`
 
-   $ git clone https://github.com/MartinPdeS/FlowCyPy.git
-   $ cd FlowCyPy
-   $ python -m pip install -e ".[testing,documentation]"
+Prebuilt wheels are published for Linux x86_64 and macOS ARM64. Other platforms
+require building from source with FFTW and OpenMP available.
 
-Quick start
+Quick Start
 -----------
 
-The example below builds a small two-channel simulation. Each stage is
-independent, so you can replace a population model, detector, circuit or
-processing algorithm without rewriting the rest of the experiment.
+Simulate a simple flow cytometer experiment:
 
-.. code-block:: python
+..  code-block:: python
 
-   from FlowCyPy import FlowCytometer
-   from FlowCyPy.units import ureg
-   from FlowCyPy.fluidics import (
-       FlowCell, Fluidics, SampleFlowRate, ScattererCollection,
-       SheathFlowRate, distributions, populations,
-   )
-   from FlowCyPy.opto_electronics import (
-       Amplifier, Detector, Digitizer, OptoElectronics, circuits, source,
-   )
-   from FlowCyPy.digital_processing import (
-       DigitalProcessing, discriminator, peak_locator,
-   )
+    from FlowCyPy.units import ureg
+    from FlowCyPy.fluidics import (
+        Fluidics,
+        FlowCell,
+        ScattererCollection,
+        populations,
+        SampleFlowRate,
+        SheathFlowRate,
+    )
 
-   # 1. Fluidics and particles
-   flow_cell = FlowCell(
-       sample_volume_flow=SampleFlowRate.MEDIUM.value,
-       sheath_volume_flow=SheathFlowRate.MEDIUM.value,
-       width=400 * ureg.micrometer,
-       height=150 * ureg.micrometer,
-   )
-   population = populations.SpherePopulation(
-       name="beads",
-       medium_refractive_index=distributions.Delta(1.33),
-       concentration=1e10 * ureg.particle / ureg.milliliter,
-       diameter=distributions.RosinRammler(
-           scale=200 * ureg.nanometer, shape=10,
-       ),
-       refractive_index=distributions.Normal(
-           mean=1.44, standard_deviation=0.002, low_cutoff=1.33,
-       ),
-       sampling_method=populations.GammaModel(number_of_samples=2_000),
-   )
-   fluidics = Fluidics(
-       scatterer_collection=ScattererCollection(populations=[population]),
-       flow_cell=flow_cell,
-   )
+    # from FlowCyPy.sampling_method import GammaModel, ExplicitModel
+    from FlowCyPy.fluidics import distributions
 
-   # 2. Optics, detectors and acquisition electronics
-   optics = OptoElectronics(
-       source=source.Gaussian(
-           waist_z=10 * ureg.micrometer,
-           waist_y=60 * ureg.micrometer,
-           wavelength=405 * ureg.nanometer,
-           optical_power=200 * ureg.milliwatt,
-       ),
-       detectors=[
-           Detector(name="forward", phi_angle=0 * ureg.degree,
-                    numerical_aperture=0.3,
-                    responsivity=1 * ureg.ampere / ureg.watt),
-           Detector(name="side", phi_angle=90 * ureg.degree,
-                    numerical_aperture=1.1,
-                    responsivity=1 * ureg.ampere / ureg.watt),
-       ],
-       amplifier=Amplifier(
-           gain=10 * ureg.volt / ureg.ampere,
-           bandwidth=10 * ureg.megahertz,
-       ),
-       digitizer=Digitizer(
-           sampling_rate=60 * ureg.megahertz,
-           bit_depth=14,
-           use_auto_range=True,
-       ),
-       analog_processing=[
-           circuits.BesselLowPass(
-               cutoff_frequency=2 * ureg.megahertz, order=4, gain=2,
-           ),
-       ],
-   )
+    flow_cell = FlowCell(
+        sample_volume_flow=SampleFlowRate.MEDIUM.value,
+        sheath_volume_flow=SheathFlowRate.MEDIUM.value,
+        width=400 * ureg.micrometer,
+        height=150 * ureg.micrometer,
+    )
 
-   # 3. Triggering and peak extraction
-   processing = DigitalProcessing(
-       discriminator=discriminator.FixedWindow(
-           trigger_channel="side", threshold="4sigma",
-           pre_buffer=40, post_buffer=40, max_triggers=-1,
-       ),
-       peak_algorithm=peak_locator.GlobalPeakLocator(),
-   )
+    scatterer_collection = ScattererCollection()
 
-   # 4. Run and inspect the acquisition
-   cytometer = FlowCytometer(
-       fluidics=fluidics,
-       background_power=0.001 * ureg.milliwatt,
-   )
-   record = cytometer.run(
-       opto_electronics=optics,
-       digital_processing=processing,
-       run_time=1 * ureg.millisecond,
-   )
-   record.event_collection.plot(x="Diameter")
-   record.plot_analog()
-   record.plot_digital()
+    medium_refractive_index = distributions.Delta(1.33)
 
-For a guided version with more realistic instrument settings, see the
-`complete workflow tutorial <https://martinpdes.github.io/FlowCyPy/gallery/tutorials/workflow_1.html>`_.
+    diameter_dist = distributions.RosinRammler(
+        scale=200 * ureg.nanometer,
+        shape=10,
+    )
 
-How the model fits together
----------------------------
+    ri_dist = distributions.Normal(
+        mean=1.44,
+        standard_deviation=0.002,
+        low_cutoff=1.33,
+    )
 
-.. image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/architecture.png
-   :alt: FlowCyPy simulation architecture
-   :align: center
+    sampling_method = populations.ExplicitModel()
 
-The simulation follows the measurement chain:
+    population_0 = populations.SpherePopulation(
+        name="Pop 0",
+        medium_refractive_index=medium_refractive_index,
+        concentration=1e10 * ureg.particle / ureg.milliliter,
+        diameter=diameter_dist,
+        refractive_index=ri_dist,
+        sampling_method=sampling_method,
+    )
 
-``fluidics → scattering → detectors → analog electronics → digitizer → digital processing``
 
-This separation makes it straightforward to compare populations, instrument
-configurations and signal-processing choices independently.
+    diameter_dist = distributions.RosinRammler(
+        scale=30 * ureg.nanometer,
+        shape=50,
+    )
 
-Documentation and examples
----------------------------
+    ri_dist = distributions.Normal(
+        mean=1.44,
+        standard_deviation=0.002,
+        low_cutoff=1.33,
+    )
 
-* `Documentation <https://martinpdes.github.io/FlowCyPy/>`_ — getting started,
-  model assumptions and API reference.
-* `Examples <https://martinpdes.github.io/FlowCyPy/gallery/index.html>`_ —
-  tutorials, validation notebooks and parameter studies.
-* `Source code <https://github.com/MartinPdeS/FlowCyPy>`_ — issues,
-  discussions and contributions.
+    population_1 = populations.SpherePopulation(
+        name="Pop 1",
+        medium_refractive_index=medium_refractive_index,
+        concentration=5e11 * ureg.particle / ureg.milliliter,
+        diameter=diameter_dist,
+        refractive_index=ri_dist,
+        sampling_method=populations.GammaModel(number_of_samples=5_000),
+    )
 
-Development
------------
+    scatterer_collection.add_population(population_0, population_1)
 
-.. code-block:: console
+    scatterer_collection.dilute(factor=80)
 
-   $ python -m pip install -e ".[testing]"
-   $ python -m pytest
+    fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
 
-Build the documentation locally with ``cd docs && make html``. Contributions,
-bug reports and ideas are welcome through GitHub Issues and pull requests.
+    # %%
+    # Step 2: Define Optical Subsystem
+    # --------------------------------
+    from FlowCyPy.opto_electronics import (
+        Detector,
+        Digitizer,
+        OptoElectronics,
+        Amplifier,
+        source,
+        circuits,
+    )
 
-License
+    analog_processing = [
+        circuits.BaselineRestorationServo(time_constant=100 * ureg.microsecond),
+        circuits.BesselLowPass(cutoff_frequency=2 * ureg.megahertz, order=4, gain=2),
+    ]
+
+    source = source.Gaussian(
+        waist_z=10e-6 * ureg.meter,  # Beam waist along flow direction (z-axis)
+        waist_y=60e-6 * ureg.meter,
+        wavelength=405 * ureg.nanometer,
+        optical_power=200 * ureg.milliwatt,
+        rin=-140 * ureg.dB_per_Hz,
+        bandwidth=10 * ureg.megahertz,
+    )
+
+    detectors = [
+        Detector(
+            name="side",
+            phi_angle=90 * ureg.degree,
+            numerical_aperture=1.1,
+            responsivity=1 * ureg.ampere / ureg.watt,
+        ),
+        Detector(
+            name="forward",
+            phi_angle=0 * ureg.degree,
+            numerical_aperture=0.3,
+            cache_numerical_aperture=0.1,
+            responsivity=1 * ureg.ampere / ureg.watt,
+        ),
+    ]
+
+    digitizer = Digitizer(
+        sampling_rate=60 * ureg.megahertz,
+        bit_depth=14,
+        use_auto_range=True,
+        channel_range_mode="shared",
+    )
+
+    amplifier = Amplifier(
+        gain=10 * ureg.volt / ureg.ampere,
+        bandwidth=10 * ureg.megahertz,
+        voltage_noise_density=0.0 * ureg.nanovolt / ureg.sqrt_hertz,
+        current_noise_density=0.0 * ureg.femtoampere / ureg.sqrt_hertz,
+    )
+
+    opto_electronics = OptoElectronics(
+        digitizer=digitizer,
+        detectors=detectors,
+        source=source,
+        amplifier=amplifier,
+        analog_processing=analog_processing,
+    )
+
+
+    # %%
+    # Step 3: Signal Processing Configuration
+    # ---------------------------------------
+    from FlowCyPy.digital_processing import (
+        DigitalProcessing,
+        peak_locator,
+        discriminator,
+    )
+
+    triggering = discriminator.FixedWindow(
+        trigger_channel="side",
+        threshold="4sigma",
+        pre_buffer=40,
+        post_buffer=40,
+        max_triggers=-1,
+    )
+
+    peak_algo = peak_locator.GlobalPeakLocator()
+
+    digital_processing = DigitalProcessing(
+        discriminator=triggering,
+        peak_algorithm=peak_algo,
+    )
+
+    # %%
+    # Step 4: Run Simulation
+    # ----------------------
+    from FlowCyPy import FlowCytometer
+
+    cytometer = FlowCytometer(
+        fluidics=fluidics,
+        background_power=0.001 * ureg.milliwatt,
+    )
+
+    run_record = cytometer.run(
+        opto_electronics=opto_electronics,
+        digital_processing=digital_processing,
+        run_time=1 * ureg.millisecond,
+    )
+
+    run_record.event_collection.plot(x="Diameter")
+
+    run_record.event_collection.plot(x="forward")
+
+    run_record.plot_analog()
+
+    run_record.plot_digital()
+
+
+    run_record.peaks.plot(x=("forward", "Height"))
+
+
+
+|readme_events|
+
+
+..  code-block:: python
+
+    _ = run_record.plot_analog(
+        figure_size=(12, 8),
+        show=False,
+        save_as=f"{dir_path}/../images/readme_analog.png",
+    )
+
+|readme_analog|
+
+
+..  code-block:: python
+
+    _ = run_record.plot_digital(
+        figure_size=(12, 8),
+        show=False,
+        save_as=f"{dir_path}/../images/readme_digital.png",
+    )
+
+|readme_digital|
+
+Explore more examples in the `FlowCyPy Examples <https://martinpdes.github.io/FlowCyPy/gallery/index.html>`_.
+
+
+
+Code structure
+--------------
+
+Here is the architecture for a standard workflow using FlowCyPy:
+
+
+|arch|
+
+
+
+Development and Contribution
+-----------------------------
+
+Clone the Repository
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+    git clone https://github.com/MartinPdeS/FlowCyPy.git
+    cd FlowCyPy
+
+Install Locally
+~~~~~~~~~~~~~~~
+
+Install in editable mode with testing and documentation dependencies:
+
+.. code-block:: bash
+
+    pip install -e .[testing,documentation] (on linux system)
+    pip install -e ".[testing,documentation]" (on macOS system)
+
+Run Tests
+~~~~~~~~~
+
+Use `pytest` to validate functionality:
+
+.. code-block:: bash
+
+    pytest
+
+Build Documentation
+~~~~~~~~~~~~~~~~~~~
+
+Build the documentation locally:
+
+.. code-block:: bash
+
+    cd docs
+    make html
+
+Find the documentation in `docs/_build/html`.
+
+Additional Resources
+--------------------
+
+    - **Documentation**: Full guide and API reference at `FlowCyPy Documentation <https://martinpdes.github.io/FlowCyPy/docs/latest/index.html>`_
+    - **Examples**: Explore use cases in the `Examples Section <https://martinpdes.github.io/FlowCyPy/gallery/index.html>`_
+    - **GitHub Repository**: Access the source code and contribute at `FlowCyPy GitHub <https://martinpdes.github.io/FlowCyPy/>`_
+
+Contributions
+-------------
+
+Contributions are welcome! If you have suggestions, issues, or would like to collaborate, visit the `GitHub repository <https://github.com/MartinPdeS/FlowCyPy>`_.
+
+Contact
 -------
 
-FlowCyPy is released under the MIT License. See `LICENSE <https://github.com/MartinPdeS/FlowCyPy/blob/master/LICENSE>`_.
+For inquiries or collaboration, contact `Martin Poinsinet de Sivry-Houle <mailto:martin.poinsinet.de.sivry@gmail.com>`_.
 
 .. |logo| image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/logo.png
-   :alt: FlowCyPy
-   :width: 280px
-.. |python| image:: https://img.shields.io/pypi/pyversions/FlowCyPy.svg
-   :alt: Python versions
-   :target: https://pypi.org/project/FlowCyPy/
-.. |pypi| image:: https://img.shields.io/pypi/v/FlowCyPy.svg
-   :alt: PyPI
-   :target: https://pypi.org/project/FlowCyPy/
+    :align: middle
+    :alt: FlowCyPy Logo
+
+.. |arch| image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/architecture.png
+    :align: middle
+    :alt: FlowCyPy Logo
+
+.. |python| image:: https://img.shields.io/pypi/pyversions/flowcypy.svg
+    :alt: Python
+    :target: https://www.python.org/
+
 .. |docs| image:: https://github.com/martinpdes/flowcypy/actions/workflows/deploy_documentation.yml/badge.svg
-   :alt: Documentation status
-   :target: https://martinpdes.github.io/FlowCyPy/
-.. |ci| image:: https://github.com/martinpdes/flowcypy/actions/workflows/deploy_coverage.yml/badge.svg
-   :alt: Test status
-.. |license| image:: https://img.shields.io/github/license/MartinPdeS/FlowCyPy.svg
-   :alt: MIT License
-   :target: https://github.com/MartinPdeS/FlowCyPy/blob/master/LICENSE
+    :target: https://martinpdes.github.io/FlowCyPy/
+    :alt: Documentation Status
+
+.. |PyPi| image:: https://badge.fury.io/py/FlowCyPy.svg
+    :alt: PyPi version
+    :target: https://badge.fury.io/py/FlowCyPy
+
+.. |PyPi_download| image:: https://img.shields.io/pypi/dm/FlowCyPy?style=plastic&label=PyPi%20downloads&labelColor=hex&color=hex
+   :alt: PyPI - Downloads
+   :target: https://pypistats.org/packages/flowcypy
+
+.. |coverage| image:: https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/python-coverage-comment-action-data/badge.svg
+    :alt: Unittest coverage
+    :target: https://htmlpreview.github.io/?https://github.com/MartinPdeS/FlowCyPy/blob/python-coverage-comment-action-data/htmlcov/index.html
+
+.. |ci/cd| image:: https://github.com/martinpdes/flowcypy/actions/workflows/deploy_coverage.yml/badge.svg
+    :alt: Unittest Status
+
+.. |anaconda| image:: https://anaconda.org/martinpdes/flowcypy/badges/version.svg
+   :alt: Anaconda version
+   :target: https://anaconda.org/martinpdes/flowcypy
+
+.. |anaconda_download| image:: https://anaconda.org/martinpdes/flowcypy/badges/downloads.svg
+   :alt: Anaconda downloads
+   :target: https://anaconda.org/martinpdes/flowcypy
+
+.. |anaconda_date| image:: https://anaconda.org/martinpdes/flowcypy/badges/latest_release_relative_date.svg
+    :alt: Latest release date
+    :target: https://anaconda.org/martinpdes/flowcypy
+
+.. |colab| image:: https://colab.research.google.com/assets/colab-badge.svg
+    :alt: Google Colab
+    :target: https://colab.research.google.com/github/MartinPdeS/FlowCyPy/blob/master/notebook.ipynb
+
+.. |readme_events| image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/readme_events.png
+    :width: 600px
+    :align: middle
+    :alt: Readme Events
+
+.. |readme_analog| image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/readme_analog.png
+    :width: 800px
+    :align: middle
+    :alt: Readme Analog
+
+.. |readme_digital| image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/readme_digital.png
+    :width: 800px
+    :align: middle
+    :alt: Readme Digital
+
+.. |zenodo| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.19097313.svg
+    :alt: Release
+    :target: https://doi.org/10.5281/zenodo.19097313
