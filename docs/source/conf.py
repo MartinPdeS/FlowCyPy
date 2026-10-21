@@ -16,12 +16,9 @@ globals().update(
         gallery_sections=gallery_sections,
         gallery_default_thumb="_static/gallery-default.png",
         prefer_installed_package=True,
+        logo_text="",
+        logo_alt_text="FlowCyPy logo",
         html_theme_options={
-            "logo": {
-                "text": "",
-                "image": "_static/logo.png",
-                "alt_text": "FlowCyPy logo",
-            },
             "show_nav_level": 1,
             "collapse_navigation": False,
         },
