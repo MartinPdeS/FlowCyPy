@@ -80,7 +80,7 @@ testing = [
     "coverage==7.16.0"
 ]
 documentation = [
-    "MartinPdeS-docs>=0.2.3,<0.3",
+    "MartinPdeS-docs>=0.2.4,<0.3",
     "numpydoc==1.11.0",
     "pyvista",
 ]
