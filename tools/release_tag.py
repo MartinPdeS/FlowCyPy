@@ -37,7 +37,17 @@ def main() -> int:
             raise RuntimeError(f"tag {arguments.tag} already exists")
         environment = os.environ.copy()
         environment["SETUPTOOLS_SCM_PRETEND_VERSION"] = match.group("version")
-        run(sys.executable, "-m", "vcs_versioning", "--force-write-version-files", env=environment)
+        run(
+            sys.executable,
+            "-c",
+            (
+                "import setuptools_scm; "
+                f"setuptools_scm.get_version(root={str(ROOT)!r}, "
+                f"write_to={str(VERSION_FILE.relative_to(ROOT))!r}, "
+                "version_scheme='only-version', local_scheme='no-local-version')"
+            ),
+            env=environment,
+        )
         if not VERSION_FILE.exists():
             raise RuntimeError("SCM versioning did not generate FlowCyPy/_version.py")
         run("git", "add", "FlowCyPy/_version.py")
