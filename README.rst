@@ -146,6 +146,31 @@ processing algorithm without rewriting the rest of the experiment.
 For a guided version with more realistic instrument settings, see the
 `complete workflow tutorial <https://martinpdes.github.io/FlowCyPy/gallery/tutorials/workflow_1.html>`_.
 
+What the simulation produces
+-----------------------------
+
+The same scattering calculation can be viewed in two complementary ways:
+
+.. list-table::
+   :widths: 50 50
+   :class: image-table
+
+   * - **Medium opacity**
+     - **SPF surface**
+   * - |medium_opacity|
+     - |spf_surface|
+
+The first view keeps the geometry spherical and uses opacity to reveal the
+angular intensity pattern. The second makes the intensity part of the 3D
+surface radius, showing the shape of the scattering phase function (SPF).
+
+.. |medium_opacity| image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/medium_opacity_3d.png
+   :alt: 3D scattering phase function shown on a semi-transparent sphere
+   :width: 100%
+.. |spf_surface| image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/spf_surface_3d.png
+   :alt: 3D scattering phase function represented as a radial surface
+   :width: 100%
+
 How the model fits together
 ---------------------------
 
@@ -188,7 +213,7 @@ FlowCyPy is released under the MIT License. See `LICENSE <https://github.com/Mar
 
 .. |logo| image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/logo.png
    :alt: FlowCyPy
-   :width: 280px
+   :width: 100%
 .. |python| image:: https://img.shields.io/pypi/pyversions/FlowCyPy.svg
    :alt: Python versions
    :target: https://pypi.org/project/FlowCyPy/
