@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="FlowCyPy particle scatter logo">
-  <g fill="#6335c4">
-    <path d="M6 34V21L21 6H43L37 12H24L12 24V28Z"/>
-    <path d="M58 30V43L43 58H21L27 52H40L52 40V36Z"/>
-    <circle cx="19" cy="45" r="11"/>
-  </g>
-  <circle cx="37" cy="28" r="8" fill="#ff5264"/>
-  <circle cx="51" cy="13" r="6" fill="#00a6aa"/>
-</svg>
