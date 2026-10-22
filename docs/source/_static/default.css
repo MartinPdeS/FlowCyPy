@@ -199,11 +199,12 @@ div.math mjx-mtr + mjx-mtr mjx-mtd {
     }
 }
 
-/* Keep the flow-cell mark crisp and consistently sized beside the wordmark. */
+/* Fit the complete project wordmark in the navigation header. */
 .navbar-brand img.logo__image {
-    width: 2.5rem;
-    height: 2.5rem;
-    max-height: none;
+    width: 14rem;
+    max-width: 100%;
+    height: auto;
+    max-height: 5.5rem;
 }
 
 @media (min-width: 768px) {
@@ -256,4 +257,10 @@ div.math mjx-mtr + mjx-mtr mjx-mtd {
     max-width: 64rem;
     height: auto;
     margin: 1.5rem auto;
+}
+
+/* Preserve the project artwork instead of whitening the logo in the shared theme. */
+.bd-header .navbar-brand img.logo__image,
+#pst-header .navbar-brand img.logo__image {
+    filter: none !important;
 }

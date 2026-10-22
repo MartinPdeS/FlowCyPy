@@ -351,7 +351,7 @@ Contact
 
 For inquiries or collaboration, contact `Martin Poinsinet de Sivry-Houle <mailto:martin.poinsinet.de.sivry@gmail.com>`_.
 
-.. |logo| image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/logo.png
+.. |logo| image:: https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/master/docs/source/_static/logo.png
     :align: middle
     :alt: FlowCyPy Logo
 
