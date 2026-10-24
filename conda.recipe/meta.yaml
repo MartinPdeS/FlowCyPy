@@ -1,6 +1,6 @@
 package:
   name: flowcypy
-  version: {{ GIT_DESCRIBE_TAG | replace("v", "") }}
+  version: 1.2.11
 
 source:
   # Build the checked-out revision selected by the reusable workflow.
@@ -32,7 +32,6 @@ requirements:
     - pybind11 ~=2.13  # [py<314]
     - pybind11 >=3.0.1,<4  # [py>=314]
     - python-build ~=1.2
-    - setuptools_scm[toml] ~=8.0
     - numpy >=2.0,<3  # [py<314]
     - numpy >=2.3.3,<3  # [py>=314]
     - fftw

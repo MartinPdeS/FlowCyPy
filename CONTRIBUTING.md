@@ -16,7 +16,8 @@ make test
 ```
 
 Rebuild the editable installation after changing native sources. Do not
-hand-edit `FlowCyPy/_version.py`; SCM versioning generates it for releases.
+hand-edit `FlowCyPy/_version.py`; the release helper updates it alongside
+`pyproject.toml` and the Conda recipe.
 
 ## Contribution expectations
 
@@ -57,7 +58,7 @@ Install the pinned release tool in the interpreter used by Make, without
 rebuilding this package:
 
 ```sh
-python -m pip install "martinpdes-maintenance[scm]==0.2.1"
+python -m pip install "martinpdes-maintenance==0.2.1"
 make release-check PYTHON=python
 ```
 
@@ -78,3 +79,7 @@ commands keep their local-tag and push behavior respectively. The shared tool
 requires an unused stable tag and a clean working tree. It stages only configured
 release metadata and never pushes itself. If committing or tagging fails,
 inspect `git status` and `git log -1` before recovering or retrying.
+
+Package versions are explicit in `[project].version`. Builds do not derive
+versions from Git tags or require setuptools-scm. Release commands update the
+project version, package version file, and Conda recipe together.

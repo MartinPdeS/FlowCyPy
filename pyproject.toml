@@ -1,10 +1,9 @@
 [build-system]
-requires = ["scikit-build-core>=0.3.3", "pybind11==3.1.0", "setuptools_scm[toml]>=8.0"]
+requires = ["scikit-build-core>=0.3.3", "pybind11==3.1.0"]
 build-backend = "scikit_build_core.build"
 
 [tool.scikit-build]
 build-dir = ".skbuild/{wheel_tag}"
-metadata.version.provider = "scikit_build_core.metadata.setuptools_scm"
 logging.level = "INFO"
 wheel.exclude = ["FlowCyPy/cpp"]
 install.strip = false
@@ -15,13 +14,9 @@ sdist.exclude = [
     "developments",
 ]
 
-[tool.setuptools_scm]
-version_scheme = "only-version"
-local_scheme = "no-local-version"
-
 [project]
 name = "FlowCyPy"
-dynamic = ["version"]
+version = "1.2.11"
 description = "A package for light scattering computation."
 license = {file = "LICENSE"}
 readme = "README.rst"
@@ -51,7 +46,6 @@ classifiers = [
 ]
 
 dependencies = [
-    "setuptools_scm[toml] >=8,<11",
     'pandas >=2.2,<4.0',
     'seaborn ~=0.13',
     "pydantic ~=2.9",
@@ -73,7 +67,7 @@ keywords = [
 
 
 [project.optional-dependencies]
-release = ["martinpdes-maintenance[scm]==0.2.1"]
+release = ["martinpdes-maintenance==0.2.1"]
 testing = [
     "pytest>=7",
     "pytest-cov>=2.0",
@@ -117,7 +111,7 @@ test-command = 'cd /d %TEMP% && python -m pytest --import-mode=importlib {projec
 
 [tool.ruff]
 target-version = "py311"
-# setuptools-scm regenerates this file during every build.
+# The release helper maintains this file.
 extend-exclude = ["FlowCyPy/_version.py"]
 
 [tool.ruff.lint]
@@ -126,4 +120,5 @@ ignore = ["N999"]
 
 [tool.mps-maintenance]
 version-file = "FlowCyPy/_version.py"
-version-method = "setuptools-scm"
+version-method = "literal"
+conda-recipe = "conda.recipe/meta.yaml"
