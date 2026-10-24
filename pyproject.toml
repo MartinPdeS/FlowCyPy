@@ -67,7 +67,7 @@ keywords = [
 
 
 [project.optional-dependencies]
-release = ["martinpdes-maintenance==0.2.1"]
+release = ["martinpdes-maintenance==0.2.2"]
 testing = [
     "pytest>=7",
     "pytest-cov>=2.0",
