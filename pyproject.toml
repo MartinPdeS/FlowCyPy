@@ -73,6 +73,7 @@ keywords = [
 
 
 [project.optional-dependencies]
+release = ["martinpdes-maintenance[scm]==0.2.1"]
 testing = [
     "pytest>=7",
     "pytest-cov>=2.0",
@@ -122,3 +123,7 @@ extend-exclude = ["FlowCyPy/_version.py"]
 [tool.ruff.lint]
 # FlowCyPy is the established public import name.
 ignore = ["N999"]
+
+[tool.mps-maintenance]
+version-file = "FlowCyPy/_version.py"
+version-method = "setuptools-scm"
