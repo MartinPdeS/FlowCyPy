@@ -10,6 +10,7 @@ globals().update(
     configure(
         project="FlowCyPy",
         package="FlowCyPy",
+        version="auto",
         repository="MartinPdeS/FlowCyPy",
         logo="_static/logo.png",
         favicon="_static/favicon.ico",
