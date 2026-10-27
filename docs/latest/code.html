@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>API reference &#8212; FlowCyPy 1.2.13 documentation</title>
+    <title>API reference &#8212; FlowCyPy 1.2.14 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
 
-    <script src="_static/documentation_options.js?v=75d3028b"></script>
+    <script src="_static/documentation_options.js?v=9df0433b"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
@@ -53,7 +53,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.2.13';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.2.14';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
@@ -66,7 +66,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.2.13" />
+  <meta name="docsearch:version" content="1.2.14" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -524,39 +524,47 @@
 the flow of particles through a flow cytometer and generates particle arrival times based on a
 Poisson process. The classes and functions documented here are automatically generated from the
 codebase using Sphinx <cite>autoclass</cite> directives.</p>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-2 sd-g-xs-2 sd-g-sm-2 sd-g-md-2 sd-g-lg-2 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Flow cytometer</div>
+<p class="sd-card-text">Configure and run a flow cytometry simulation.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="code/flow_cytometer.html"><span class="doc">Flow cytometer</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Fluidics</div>
+<p class="sd-card-text">Model particle flow and event generation.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="code/fluidics.html"><span class="doc">Fluidics</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Optoelectronics</div>
+<p class="sd-card-text">Explore sources, detectors, and signal acquisition.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="code/opto_electronics.html"><span class="doc">Opto-electronics</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Digital processing</div>
+<p class="sd-card-text">Process and analyse acquired signals.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="code/digital_processing.html"><span class="doc">Digital processing</span></a></div>
+</div>
+</div>
+</div>
 <div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="code/flow_cytometer.html">Flow cytometer</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="code/flow_cytometer.html#FlowCyPy.flow_cytometer.FlowCytometer"><code class="docutils literal notranslate"><span class="pre">FlowCytometer</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="code/fluidics.html">Fluidics</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="code/fluidics.html#flow-cell">Flow cell</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/fluidics.html#fluidics-system">Fluidics system</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/fluidics.html#scatterer-collection">Scatterer collection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/fluidics.html#population-models">Population models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/fluidics.html#distribution-models">Distribution models</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="code/opto_electronics.html">Opto-electronics</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="code/opto_electronics.html#opto-electronic-configuration">Opto-electronic configuration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/opto_electronics.html#scattering-model">Scattering model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/opto_electronics.html#light-sources">Light sources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/opto_electronics.html#detectors">Detectors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/opto_electronics.html#amplification">Amplification</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/opto_electronics.html#digitization">Digitization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/opto_electronics.html#analog-processing-circuits">Analog processing circuits</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/opto_electronics.html#example">Example</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="code/digital_processing.html">Digital processing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="code/digital_processing.html#digital-processing-configuration">Digital processing configuration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/digital_processing.html#discriminators">Discriminators</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/digital_processing.html#peak-locators">Peak locators</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code/digital_processing.html#example">Example</a></li>
-</ul>
-</li>
-</ul>
 </div>
 </section>
 
@@ -603,7 +611,7 @@ codebase using Sphinx <cite>autoclass</cite> directives.</p>
 
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.2.13/docs/source/code.rst">
+    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.2.14/docs/source/code.rst">
       <i class="fa-solid fa-pencil"></i>
       
       
