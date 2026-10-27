@@ -1,6 +1,6 @@
 package:
   name: flowcypy
-  version: "1.2.13"
+  version: "1.2.14"
 
 source:
   # Build the checked-out revision selected by the reusable workflow.
