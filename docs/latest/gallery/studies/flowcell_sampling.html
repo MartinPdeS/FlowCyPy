@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Flow-cell sampling &#8212; FlowCyPy  documentation</title>
+    <title>Flow-cell sampling &#8212; FlowCyPy 1.2.13 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
 
-    <script src="../../_static/documentation_options.js?v=8a448e45"></script>
+    <script src="../../_static/documentation_options.js?v=75d3028b"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -53,7 +53,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.2.11';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.2.13';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
@@ -66,7 +66,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="" />
+  <meta name="docsearch:version" content="1.2.13" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -225,6 +225,21 @@
   </div>
 </div></div>
       
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
@@ -370,6 +385,21 @@
     role="listbox" aria-labelledby="pst-version-switcher-button-3">
     <!-- dropdown will be populated by javascript on page load -->
   </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
 </div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
@@ -623,10 +653,10 @@ distributions for particle diameter and refractive index.</p>
 </span>    <span class="n">sampling_method</span><span class="o">=</span><span class="n">sampling_method</span><span class="p">,</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span><span class="w">
-</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="FlowCyPy.fluidics.ScattererCollection"><span class="n">scatterer_collection</span></a><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics-populations sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.populations.SpherePopulation" title="FlowCyPy.fluidics.populations.SpherePopulation"><span class="n">population_0</span></a><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-method reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.add_population" title="FlowCyPy.fluidics.ScattererCollection.add_population"><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span></a><span class="p">(</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics-populations sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.populations.SpherePopulation" title="FlowCyPy.fluidics.populations.SpherePopulation"><span class="n">population_0</span></a><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><span class="c1"># Dilute the initial collection to reduce the number of sampled particles.</span><span class="w">
-</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="FlowCyPy.fluidics.ScattererCollection"><span class="n">scatterer_collection</span></a><span class="o">.</span><span class="n">dilute</span><span class="p">(</span><span class="n">factor</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-method reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.dilute" title="FlowCyPy.fluidics.ScattererCollection.dilute"><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dilute</span></a><span class="p">(</span><span class="n">factor</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
 </section>
 <section id="generate-particle-events">
@@ -638,7 +668,7 @@ generate particle events over the requested run time.</p>
 </span>    <a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.flow_cell.FlowCell" title="FlowCyPy.fluidics.FlowCell"><span class="n">flow_cell</span></a><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.flow_cell.FlowCell" title="FlowCyPy.fluidics.FlowCell"><span class="n">flow_cell</span></a><span class="p">,</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span><span class="w">
-</span><span class="n">event_collection</span> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.system.Fluidics" title="FlowCyPy.Fluidics"><span class="n">fluidics</span></a><span class="o">.</span><span class="n">generate_event_collection</span><span class="p">(</span><span class="w">
+</span><span class="n">event_collection</span> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-method reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.system.Fluidics.generate_event_collection" title="FlowCyPy.Fluidics.generate_event_collection"><span class="n">fluidics</span><span class="o">.</span><span class="n">generate_event_collection</span></a><span class="p">(</span><span class="w">
 </span>    <span class="n">run_time</span><span class="o">=</span><span class="mi">5</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">millisecond</span><span class="p">,</span><span class="w">
 </span>    <span class="n">sampling_rate</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span><span class="w">
 </span><span class="p">)</span><span class="w">
@@ -655,7 +685,7 @@ Particle positions are colored by their local velocity.</p>
 </span><span class="w">
 </span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">top</span><span class="p">,</span> <span class="n">bottom</span> <span class="o">=</span> <span class="n">add_region_to_ax</span><span class="p">(</span><span class="w">
 </span>    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span><span class="w">
-</span>    <span class="n">region</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.flow_cell.FlowCell" title="FlowCyPy.fluidics.FlowCell"><span class="n">flow_cell</span></a><span class="o">.</span><span class="n">sheath</span><span class="p">,</span><span class="w">
+</span>    <span class="n">region</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-property reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.flow_cell.FlowCell.sheath" title="FlowCyPy.fluidics.FlowCell.sheath"><span class="n">flow_cell</span><span class="o">.</span><span class="n">sheath</span></a><span class="p">,</span><span class="w">
 </span>    <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">lightskyblue</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
 </span>    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span><span class="w">
 </span>    <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">black</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
@@ -664,7 +694,7 @@ Particle positions are colored by their local velocity.</p>
 </span><span class="w">
 </span><span class="n">sample_left</span><span class="p">,</span> <span class="n">sample_right</span><span class="p">,</span> <span class="n">sample_top</span><span class="p">,</span> <span class="n">sample_bottom</span> <span class="o">=</span> <span class="n">add_region_to_ax</span><span class="p">(</span><span class="w">
 </span>    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span><span class="w">
-</span>    <span class="n">region</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.flow_cell.FlowCell" title="FlowCyPy.fluidics.FlowCell"><span class="n">flow_cell</span></a><span class="o">.</span><span class="n">sample</span><span class="p">,</span><span class="w">
+</span>    <span class="n">region</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-property reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.flow_cell.FlowCell.sample" title="FlowCyPy.fluidics.FlowCell.sample"><span class="n">flow_cell</span><span class="o">.</span><span class="n">sample</span></a><span class="p">,</span><span class="w">
 </span>    <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">lightgreen</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
 </span>    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.45</span><span class="p">,</span><span class="w">
 </span>    <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">black</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
@@ -683,7 +713,7 @@ Particle positions are colored by their local velocity.</p>
 </span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><span class="n">sheath_to_sample_ratio</span> <span class="o">=</span> <span class="p">(</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.flow_cell.FlowCell" title="FlowCyPy.fluidics.FlowCell"><span class="n">flow_cell</span></a><span class="o">.</span><span class="n">sheath</span><span class="o">.</span><span class="n">volume_flow</span> <span class="o">/</span> <a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.flow_cell.FlowCell" title="FlowCyPy.fluidics.FlowCell"><span class="n">flow_cell</span></a><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">volume_flow</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-property reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.flow_cell.FlowCell.sheath" title="FlowCyPy.fluidics.FlowCell.sheath"><span class="n">flow_cell</span><span class="o">.</span><span class="n">sheath</span><span class="o">.</span><span class="n">volume_flow</span></a> <span class="o">/</span> <a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-property reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.flow_cell.FlowCell.sample" title="FlowCyPy.fluidics.FlowCell.sample"><span class="n">flow_cell</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">volume_flow</span></a><span class="w">
 </span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="w">
 </span><span class="w">
 </span><span class="n">x_margin</span> <span class="o">=</span> <span class="mf">0.08</span> <span class="o">*</span> <span class="p">(</span><span class="n">right</span> <span class="o">-</span> <span class="n">left</span><span class="p">)</span><span class="w">
@@ -751,7 +781,7 @@ Particle positions are colored by their local velocity.</p>
 </span><span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="p">)</span><span class="w">
 </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_flowcell_sampling_001.png" srcset="../../_images/sphx_glr_flowcell_sampling_001.png" alt="Q$_{sheath}$ / Q$_{sample}$ = 1.00" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.824 seconds)</p>
+<img src="../../_images/sphx_glr_flowcell_sampling_001.png" srcset="../../_images/sphx_glr_flowcell_sampling_001.png" alt="Q$_{sheath}$ / Q$_{sample}$ = 1.00" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.828 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-studies-flowcell-sampling-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/8d2dc1f5d670239af14f0bd0b030bf43/flowcell_sampling.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">flowcell_sampling.ipynb</span></code></a></p>
@@ -773,6 +803,30 @@ Particle positions are colored by their local velocity.</p>
               
               
               
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="cytek_comparison.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Cytek bead comparison</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="limit_of_detection.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Limit of Detection</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
               
             </div>
             
@@ -803,7 +857,7 @@ Particle positions are colored by their local velocity.</p>
 
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.2.11/docs/source/gallery/studies/flowcell_sampling.rst">
+    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.2.13/docs/source/gallery/studies/flowcell_sampling.rst">
       <i class="fa-solid fa-pencil"></i>
       
       
@@ -858,23 +912,6 @@ Particle positions are colored by their local velocity.</p>
     </div>
   
   
-  
-    <div class="footer-items__end">
-      
-        <div class="footer-item">
-
-  <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
-  </p>
-</div>
-      
-        <div class="footer-item">
-<p class="theme-version">
-  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
-</p></div>
-      
-    </div>
   
 </div>
 
