@@ -16,7 +16,7 @@ sdist.exclude = [
 
 [project]
 name = "FlowCyPy"
-version = "1.2.12"
+version = "1.2.13"
 description = "A package for light scattering computation."
 license = {file = "LICENSE"}
 readme = "README.rst"
