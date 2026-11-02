@@ -67,20 +67,12 @@ keywords = [
 
 
 [project.optional-dependencies]
-release = ["martinpdes-maintenance==0.2.2"]
-testing = [
-    "pytest>=7",
-    "pytest-cov>=2.0",
-    "pytest-json-report ==1.5.0",
-    "coverage==7.16.0"
-]
+release = ["martinpdes-maintenance==0.2.3"]
+testing = ["martinpdes-maintenance[testing]==0.2.3", "pytest-json-report ==1.5.0", "coverage==7.16.0"]
 documentation = [
     "MartinPdeS-docs>=0.4.0,<0.5",
 ]
-dev = [
-    "flake8 ==7.4.1",
-    "ruff >=0.6",
-]
+dev = ["martinpdes-maintenance[quality]==0.2.3", "flake8 ==7.4.1"]
 
 [tool.cibuildwheel]
 build-frontend = "build"
