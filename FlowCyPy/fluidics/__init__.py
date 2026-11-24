@@ -1,5 +1,7 @@
 from enum import Enum
+
 from FlowCyPy.units import ureg
+
 from . import distributions, populations
 from .flow_cell import FlowCell
 from .population_events import PopulationEvents
