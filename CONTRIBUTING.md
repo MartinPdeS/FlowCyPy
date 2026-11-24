@@ -19,6 +19,18 @@ Rebuild the editable installation after changing native sources. Do not
 hand-edit `FlowCyPy/_version.py`; the release helper updates it alongside
 `pyproject.toml` and the Conda recipe.
 
+### macOS source builds and OpenMP
+
+If acquisition aborts with `OMP: Error #15`, check whether the PyMieSim wheel
+bundles a second copy of `libomp.dylib`. Build the same PyMieSim release
+against the Homebrew OpenMP runtime used for FlowCyPy. For example, in an
+environment with PyMieSim 6.0.4 and its dependencies already installed:
+
+```bash
+python -m pip install --force-reinstall --no-deps "PyMieSim @ git+https://github.com/MartinPdeS/PyMieSim.git@v6.0.4"
+python -m pytest tests/workflow/workflow.py::test_flow_cytometer_acquisition
+```
+
 ## Contribution expectations
 
 - Add tests for each behaviour change and use documented analytical,
