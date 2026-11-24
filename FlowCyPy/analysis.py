@@ -49,6 +49,14 @@ class DetectionAnalyzer:
             .reset_index()
         )
 
+    @staticmethod
+    def _segment_column(*, digital: pd.DataFrame) -> str | None:
+        """Return the label used for trigger segment identifiers."""
+        for label in ("SegmentID", "segment_id"):
+            if label in digital.columns or label in digital.index.names:
+                return label
+        return None
+
     def annotate(self, run_record) -> pd.DataFrame:
         """Annotate events with ``Detected`` and ``TriggerID`` columns.
 
@@ -70,13 +78,11 @@ class DetectionAnalyzer:
         if digital is None or "Time" not in events or len(events) == 0:
             return events
 
-        digital_table = digital.reset_index()
-        segment_column = (
-            "SegmentID" if "SegmentID" in digital_table else "segment_id"
-        )
-        if segment_column not in digital_table:
+        segment_column = self._segment_column(digital=digital)
+        if segment_column is None:
             return events
 
+        digital_table = digital.reset_index()
         digital_unit = digital.attrs.get("units", {}).get("Time", "second")
         digital_table["_time_s"] = self._to_seconds(
             digital_table["Time"], unit=digital_unit
@@ -85,7 +91,7 @@ class DetectionAnalyzer:
         detected = np.zeros(len(events), dtype=bool)
         trigger_ids = np.full(len(events), -1, dtype=int)
 
-        for segment_id, segment in digital_table.groupby(segment_column):
+        for segment_id, segment in digital_table.groupby(segment_column, observed=True):
             start = segment["_time_s"].min()
             stop = segment["_time_s"].max()
             matches = (
@@ -133,25 +139,29 @@ class DetectionAnalyzer:
         return pd.DataFrame(rows)
 
     def coincidence_statistics(self, run_record) -> dict:
-        """Summarize multiple simulated events sharing one trigger segment.
+        """Count trigger segments by the number of assigned simulated arrivals.
 
-        A segment is coincident when at least two events are assigned to it by
-        :meth:`annotate`. Population-combination counts distinguish, for
-        example, EV--EV from EV--LP coincidences.
+        Parameters
+        ----------
+        run_record : RunRecord
+            Acquisition containing simulated arrivals and digital segments.
+
+        Returns
+        -------
+        dict
+            Segment counts, assigned arrival counts, coincidence rate among
+            occupied segments, and population combinations.
+
+        Notes
+        -----
+        Counts follow :meth:`annotate`, including its first-match rule for
+        overlapping windows. They describe window occupancy. Peak
+        localization is evaluated separately.
         """
         events = self.annotate(run_record)
         detected = events[
             events["Detected"] & events["TriggerID"].notna()
         ]
-
-        if detected.empty:
-            return {
-                "TriggerSegments": 0,
-                "DetectedEvents": 0,
-                "CoincidentSegments": 0,
-                "CoincidenceRate": np.nan,
-                "PopulationCombinations": {},
-            }
 
         by_segment = detected.groupby("TriggerID", dropna=True)
         segment_sizes = by_segment.size()
@@ -164,9 +174,21 @@ class DetectionAnalyzer:
             populations = "+".join(sorted(segment["Population"].astype(str)))
             combinations[populations] = combinations.get(populations, 0) + 1
 
+        digital = run_record.signal.digital
+        total_trigger_segments = 0
+        if digital is not None:
+            segment_column = self._segment_column(digital=digital)
+            if segment_column is not None:
+                total_trigger_segments = digital.groupby(
+                    segment_column, observed=True
+                ).ngroups
+
         trigger_segments = len(segment_sizes)
         return {
             "TriggerSegments": trigger_segments,
+            "TotalTriggerSegments": total_trigger_segments,
+            "EmptySegments": total_trigger_segments - trigger_segments,
+            "SingleEventSegments": int((segment_sizes == 1).sum()),
             "DetectedEvents": len(detected),
             "CoincidentSegments": len(coincident_segments),
             "CoincidenceRate": (

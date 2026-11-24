@@ -1,6 +1,7 @@
 
 import numpy as np
 import pandas as pd
+import pytest
 from TypedUnit import ureg
 
 from FlowCyPy.analysis import DetectionAnalyzer
@@ -112,3 +113,49 @@ def test_run_record_computes_multi_coincidence_statistics():
     ev_statistics = record.detection_statistics("EVs")
     assert ev_statistics["CoincidentDetectedEvents"] == 1
     assert ev_statistics["CoincidencePartners"] == {"LPs": 1}
+
+
+def test_coincidence_statistics_counts_all_trigger_segments():
+    """Count empty, single-event, and coincident windows in one acquisition."""
+    record = make_run_record(
+        event_times=[0.1, 0.15, 0.5, 0.95],
+        populations=["EVs", "LPs", "EVs", "LPs"],
+    )
+    record.signal.digital = pd.DataFrame(
+        {
+            "segment_id": [10, 10, 20, 20, 30, 30],
+            "Time": [0.0, 0.2, 0.4, 0.6, 0.7, 0.9],
+        }
+    )
+
+    statistics = record.coincidence_statistics()
+
+    assert statistics["TotalTriggerSegments"] == 3
+    assert statistics["EmptySegments"] == 1
+    assert statistics["SingleEventSegments"] == 1
+    assert statistics["CoincidentSegments"] == 1
+    assert statistics["DetectedEvents"] == 3
+    assert statistics["TriggerSegments"] == 2
+    assert statistics["CoincidenceRate"] == 0.5
+
+
+@pytest.mark.parametrize(
+    ("trigger_times", "expected_segment_count"),
+    [(None, 0), ([], 0), ([0.0, 0.2], 1)],
+)
+def test_coincidence_statistics_handles_no_simulated_arrivals(
+    trigger_times, expected_segment_count
+):
+    """Keep any trigger windows in acquisitions without simulated events."""
+    record = make_run_record(
+        event_times=[], populations=[], trigger_times=trigger_times
+    )
+
+    statistics = record.coincidence_statistics()
+
+    assert statistics["TotalTriggerSegments"] == expected_segment_count
+    assert statistics["EmptySegments"] == expected_segment_count
+    assert statistics["SingleEventSegments"] == 0
+    assert statistics["CoincidentSegments"] == 0
+    assert statistics["DetectedEvents"] == 0
+    assert np.isnan(statistics["CoincidenceRate"])

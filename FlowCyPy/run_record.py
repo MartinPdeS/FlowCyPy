@@ -221,12 +221,17 @@ class RunRecord:
         }
 
     def coincidence_statistics(self) -> dict[str, Any]:
-        """Compute statistics for multiple events in one trigger segment.
+        """Count trigger segments by the number of assigned simulated arrivals.
 
-        A multi-coincidence is a digital trigger segment containing at least
-        two simulated events. Population labels are retained in the returned
-        combination counts, so EV--EV and EV--LP coincidences can be
-        distinguished.
+        Returns
+        -------
+        dict[str, Any]
+            TotalTriggerSegments counts all digital segments. EmptySegments,
+            SingleEventSegments, and CoincidentSegments count segments with
+            zero, one, and at least two assigned arrivals, respectively.
+            TriggerSegments counts occupied segments and is the denominator
+            of CoincidenceRate. PopulationCombinations records which
+            populations share coincident segments.
         """
         from .analysis import DetectionAnalyzer
 

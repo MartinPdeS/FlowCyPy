@@ -20,7 +20,6 @@ globals().update(
         logo_text="",
         logo_alt_text="FlowCyPy logo",
         html_theme_options={
-            "show_nav_level": 1,
             "collapse_navigation": False,
         },
     )
