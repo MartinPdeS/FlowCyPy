@@ -74,7 +74,7 @@ quick: configure build install
 rebuild: configure build install
 
 editable:
-	$(PYTHON) -m pip install --no-build-isolation -Cbuild-dir=build -Ceditable.rebuild=false -Ceditable.mode=inplace -e .
+	$(PYTHON) -m pip install -e .
 
 clean:
 	rm -rf $(BUILD_DIR)
