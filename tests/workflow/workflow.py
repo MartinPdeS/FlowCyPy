@@ -31,7 +31,7 @@ from FlowCyPy.run_record import RunRecord
 from FlowCyPy.sub_frames.peaks import PeakDataFrame
 from FlowCyPy.units import ureg
 from FlowCyPy.workflow import Workflow
-from tests.python_api.event_collection import make_population_events
+from tests.api.event_collection import make_population_events
 
 # ----------------- FIXTURES -----------------
 
