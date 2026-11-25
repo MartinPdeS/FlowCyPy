@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for FlowCyPy/sub_frames/peaks.py: 52.09%</title>
+    <title>Coverage for FlowCyPy/sub_frames/peaks.py: 54.59%</title>
     <link rel="icon" sizes="32x32" href="favicon_32_cb_c827f16f.png">
     <link rel="stylesheet" href="style_cb_4667309f.css" type="text/css">
     <script src="coverage_html_cb_54cfdca1.js" defer></script>
@@ -12,7 +12,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>FlowCyPy<span class="sep">/</span>sub_frames<span class="sep">/</span>peaks.py</b>:
-            <span class="pc_cov">52.09%</span>
+            <span class="pc_cov">54.59%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -55,11 +55,11 @@
             </div>
         </aside>
         <h2>
-            <span class="text">281 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">160<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">121<span class="text"> missing</span></button>
+            <span class="text">279 statements &nbsp;</span>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">165<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">114<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">1<span class="text"> excluded</span></button>
-            <button type="button" class="par run show_par button_toggle_par" value="par" data-shortcut="p" title="Toggle lines partially run">40<span class="text"> partial</span></button>
+            <button type="button" class="par run show_par button_toggle_par" value="par" data-shortcut="p" title="Toggle lines partially run">39<span class="text"> partial</span></button>
         </h2>
         <p class="text">
             <a id="prevFileLink" class="nav" href="z_64ecc9cd9f1c6130_peak_metrics_py.html">&#xab; prev</a> &nbsp; &nbsp;
@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_64ecc9cd9f1c6130_triggered_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.17.3">coverage.py v7.17.3</a>,
-            created at 2026-11-25 10:08 +0000
+            created at 2026-11-25 10:57 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -925,62 +925,55 @@
     <p class="pln"><span class="n"><a id="t841" href="#t841">841</a></span><span class="t"><span class="str">        pint_pandas.PintArray</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t842" href="#t842">842</a></span><span class="t"><span class="str">            Filtered signal containing only values at or below the threshold.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t843" href="#t843">843</a></span><span class="t"><span class="str">        &quot;&quot;&quot;</span>&nbsp;</span><span class="r"></span></p>
-    <p class="par run show_par"><span class="n"><a id="t844" href="#t844">844</a></span><span class="t">        <span class="key">if</span> <span class="nam">clip_value</span> <span class="key">is</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">844&#x202F;&#x219B;&#x202F;849</span><span class="annotate long">line 844 didn't jump to line 849 because the condition on line 844 was always true</span></span></p>
-    <p class="pln"><span class="n"><a id="t845" href="#t845">845</a></span><span class="t">            <span class="com"># If no clip value is provided, return the original signal.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t846" href="#t846">846</a></span><span class="t">            <span class="key">return</span> <span class="nam">signal</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t847" href="#t847">847</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t848" href="#t848">848</a></span><span class="t">        <span class="com"># Remove data above the clip threshold if clip_value is provided.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t849" href="#t849">849</a></span><span class="t">        <span class="key">if</span> <span class="nam">clip_value</span> <span class="key">is</span> <span class="key">not</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t850" href="#t850">850</a></span><span class="t">            <span class="key">if</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">clip_value</span><span class="op">,</span> <span class="nam">str</span><span class="op">)</span> <span class="key">and</span> <span class="nam">clip_value</span><span class="op">.</span><span class="nam">endswith</span><span class="op">(</span><span class="str">&quot;%&quot;</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t851" href="#t851">851</a></span><span class="t">                <span class="com"># For a percentage clip, compute the threshold quantile.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t852" href="#t852">852</a></span><span class="t">                <span class="nam">percent</span> <span class="op">=</span> <span class="nam">float</span><span class="op">(</span><span class="nam">clip_value</span><span class="op">.</span><span class="nam">rstrip</span><span class="op">(</span><span class="str">&quot;%&quot;</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t853" href="#t853">853</a></span><span class="t">                <span class="nam">clip_value</span> <span class="op">=</span> <span class="nam">np</span><span class="op">.</span><span class="nam">percentile</span><span class="op">(</span><span class="nam">signal</span><span class="op">,</span> <span class="num">100</span> <span class="op">-</span> <span class="nam">percent</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t854" href="#t854">854</a></span><span class="t">            <span class="key">else</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t855" href="#t855">855</a></span><span class="t">                <span class="nam">clip_value</span> <span class="op">=</span> <span class="nam">clip_value</span><span class="op">.</span><span class="nam">to</span><span class="op">(</span><span class="nam">signal</span><span class="op">.</span><span class="nam">pint</span><span class="op">.</span><span class="nam">signal_units</span><span class="op">)</span><span class="op">.</span><span class="nam">magnitude</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t856" href="#t856">856</a></span><span class="t">            <span class="com"># Remove values above clip_value instead of clipping them.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t857" href="#t857">857</a></span><span class="t">            <span class="nam">signal</span> <span class="op">=</span> <span class="nam">signal</span><span class="op">[</span><span class="nam">signal</span> <span class="op">&lt;=</span> <span class="nam">clip_value</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t858" href="#t858">858</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t859" href="#t859">859</a></span><span class="t">        <span class="key">return</span> <span class="nam">signal</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t860" href="#t860">860</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t861" href="#t861">861</a></span><span class="t">    <span class="key">def</span> <span class="nam">get_flattened_dataframe</span><span class="op">(</span><span class="nam">self</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t862" href="#t862">862</a></span><span class="t">        <span class="str">&quot;&quot;&quot;Return a flat event-wise dataframe with detector-feature columns.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t863" href="#t863">863</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t864" href="#t864">864</a></span><span class="t"><span class="str">        Returns</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t865" href="#t865">865</a></span><span class="t"><span class="str">        -------</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t866" href="#t866">866</a></span><span class="t"><span class="str">        pd.DataFrame</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t867" href="#t867">867</a></span><span class="t"><span class="str">            Flattened dataframe where columns are named as</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t868" href="#t868">868</a></span><span class="t"><span class="str">            ``&quot;{detector}-{metric_suffix}&quot;``.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t869" href="#t869">869</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t870" href="#t870">870</a></span><span class="t"><span class="str">        Notes</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t871" href="#t871">871</a></span><span class="t"><span class="str">        -----</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t872" href="#t872">872</a></span><span class="t"><span class="str">        This representation is convenient for exporting peak tables to tools</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t873" href="#t873">873</a></span><span class="t"><span class="str">        that do not handle multi-indexed columns well.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t874" href="#t874">874</a></span><span class="t"><span class="str">        &quot;&quot;&quot;</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t875" href="#t875">875</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t876" href="#t876">876</a></span><span class="t">        <span class="nam">df</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">copy</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">unstack</span><span class="op">(</span><span class="str">&quot;Detector&quot;</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t877" href="#t877">877</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t878" href="#t878">878</a></span><span class="t">        <span class="com"># Move detector first, metric second</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t879" href="#t879">879</a></span><span class="t">        <span class="nam">df</span><span class="op">.</span><span class="nam">columns</span> <span class="op">=</span> <span class="nam">df</span><span class="op">.</span><span class="nam">columns</span><span class="op">.</span><span class="nam">swaplevel</span><span class="op">(</span><span class="num">0</span><span class="op">,</span> <span class="num">1</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t880" href="#t880">880</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t881" href="#t881">881</a></span><span class="t">        <span class="com"># Sort columns if desired</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t882" href="#t882">882</a></span><span class="t">        <span class="nam">df</span> <span class="op">=</span> <span class="nam">df</span><span class="op">.</span><span class="nam">sort_index</span><span class="op">(</span><span class="nam">axis</span><span class="op">=</span><span class="num">1</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t844" href="#t844">844</a></span><span class="t">        <span class="key">if</span> <span class="nam">clip_value</span> <span class="key">is</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t845" href="#t845">845</a></span><span class="t">            <span class="key">return</span> <span class="nam">signal</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t846" href="#t846">846</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t847" href="#t847">847</a></span><span class="t">        <span class="key">if</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">clip_value</span><span class="op">,</span> <span class="nam">str</span><span class="op">)</span> <span class="key">and</span> <span class="nam">clip_value</span><span class="op">.</span><span class="nam">endswith</span><span class="op">(</span><span class="str">&quot;%&quot;</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t848" href="#t848">848</a></span><span class="t">            <span class="nam">percentile</span> <span class="op">=</span> <span class="num">100</span> <span class="op">-</span> <span class="nam">float</span><span class="op">(</span><span class="nam">clip_value</span><span class="op">.</span><span class="nam">rstrip</span><span class="op">(</span><span class="str">&quot;%&quot;</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t849" href="#t849">849</a></span><span class="t">            <span class="nam">array</span> <span class="op">=</span> <span class="nam">getattr</span><span class="op">(</span><span class="nam">signal</span><span class="op">,</span> <span class="str">&quot;array&quot;</span><span class="op">,</span> <span class="nam">signal</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t850" href="#t850">850</a></span><span class="t">            <span class="nam">clip_value</span> <span class="op">=</span> <span class="nam">np</span><span class="op">.</span><span class="nam">percentile</span><span class="op">(</span><span class="nam">getattr</span><span class="op">(</span><span class="nam">array</span><span class="op">,</span> <span class="str">&quot;quantity&quot;</span><span class="op">,</span> <span class="nam">array</span><span class="op">)</span><span class="op">,</span> <span class="nam">percentile</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t851" href="#t851">851</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t852" href="#t852">852</a></span><span class="t">        <span class="key">return</span> <span class="nam">signal</span><span class="op">[</span><span class="nam">signal</span> <span class="op">&lt;=</span> <span class="nam">clip_value</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t853" href="#t853">853</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t854" href="#t854">854</a></span><span class="t">    <span class="key">def</span> <span class="nam">get_flattened_dataframe</span><span class="op">(</span><span class="nam">self</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t855" href="#t855">855</a></span><span class="t">        <span class="str">&quot;&quot;&quot;Return a flat event-wise dataframe with detector-feature columns.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t856" href="#t856">856</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t857" href="#t857">857</a></span><span class="t"><span class="str">        Returns</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t858" href="#t858">858</a></span><span class="t"><span class="str">        -------</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t859" href="#t859">859</a></span><span class="t"><span class="str">        pd.DataFrame</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t860" href="#t860">860</a></span><span class="t"><span class="str">            Flattened dataframe where columns are named as</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t861" href="#t861">861</a></span><span class="t"><span class="str">            ``&quot;{detector}-{metric_suffix}&quot;``.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t862" href="#t862">862</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t863" href="#t863">863</a></span><span class="t"><span class="str">        Notes</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t864" href="#t864">864</a></span><span class="t"><span class="str">        -----</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t865" href="#t865">865</a></span><span class="t"><span class="str">        This representation is convenient for exporting peak tables to tools</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t866" href="#t866">866</a></span><span class="t"><span class="str">        that do not handle multi-indexed columns well.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t867" href="#t867">867</a></span><span class="t"><span class="str">        &quot;&quot;&quot;</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t868" href="#t868">868</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t869" href="#t869">869</a></span><span class="t">        <span class="nam">df</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">copy</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">unstack</span><span class="op">(</span><span class="str">&quot;Detector&quot;</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t870" href="#t870">870</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t871" href="#t871">871</a></span><span class="t">        <span class="com"># Move detector first, metric second</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t872" href="#t872">872</a></span><span class="t">        <span class="nam">df</span><span class="op">.</span><span class="nam">columns</span> <span class="op">=</span> <span class="nam">df</span><span class="op">.</span><span class="nam">columns</span><span class="op">.</span><span class="nam">swaplevel</span><span class="op">(</span><span class="num">0</span><span class="op">,</span> <span class="num">1</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t873" href="#t873">873</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t874" href="#t874">874</a></span><span class="t">        <span class="com"># Sort columns if desired</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t875" href="#t875">875</a></span><span class="t">        <span class="nam">df</span> <span class="op">=</span> <span class="nam">df</span><span class="op">.</span><span class="nam">sort_index</span><span class="op">(</span><span class="nam">axis</span><span class="op">=</span><span class="num">1</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t876" href="#t876">876</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t877" href="#t877">877</a></span><span class="t">        <span class="com"># Rename metrics to short suffixes</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t878" href="#t878">878</a></span><span class="t">        <span class="nam">metric_map</span> <span class="op">=</span> <span class="op">{</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t879" href="#t879">879</a></span><span class="t">            <span class="str">&quot;Index&quot;</span><span class="op">:</span> <span class="str">&quot;I&quot;</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t880" href="#t880">880</a></span><span class="t">            <span class="str">&quot;Height&quot;</span><span class="op">:</span> <span class="str">&quot;H&quot;</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t881" href="#t881">881</a></span><span class="t">            <span class="str">&quot;Area&quot;</span><span class="op">:</span> <span class="str">&quot;A&quot;</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t882" href="#t882">882</a></span><span class="t">        <span class="op">}</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t883" href="#t883">883</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t884" href="#t884">884</a></span><span class="t">        <span class="com"># Rename metrics to short suffixes</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t885" href="#t885">885</a></span><span class="t">        <span class="nam">metric_map</span> <span class="op">=</span> <span class="op">{</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t886" href="#t886">886</a></span><span class="t">            <span class="str">&quot;Index&quot;</span><span class="op">:</span> <span class="str">&quot;I&quot;</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t887" href="#t887">887</a></span><span class="t">            <span class="str">&quot;Height&quot;</span><span class="op">:</span> <span class="str">&quot;H&quot;</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t888" href="#t888">888</a></span><span class="t">            <span class="str">&quot;Area&quot;</span><span class="op">:</span> <span class="str">&quot;A&quot;</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t889" href="#t889">889</a></span><span class="t">        <span class="op">}</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t890" href="#t890">890</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t891" href="#t891">891</a></span><span class="t">        <span class="com"># Flatten MultiIndex columns</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t892" href="#t892">892</a></span><span class="t">        <span class="nam">df</span><span class="op">.</span><span class="nam">columns</span> <span class="op">=</span> <span class="op">[</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t893" href="#t893">893</a></span><span class="t">            <span class="fst">f&quot;</span><span class="op">{</span><span class="nam">detector</span><span class="op">}</span><span class="fst">-</span><span class="op">{</span><span class="nam">metric_map</span><span class="op">[</span><span class="nam">metric</span><span class="op">]</span><span class="op">}</span><span class="fst">&quot;</span> <span class="key">for</span> <span class="nam">detector</span><span class="op">,</span> <span class="nam">metric</span> <span class="key">in</span> <span class="nam">df</span><span class="op">.</span><span class="nam">columns</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t894" href="#t894">894</a></span><span class="t">        <span class="op">]</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t895" href="#t895">895</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t896" href="#t896">896</a></span><span class="t">        <span class="com"># Optional: bring SegmentID / PeakID back as normal columns</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t897" href="#t897">897</a></span><span class="t">        <span class="nam">df</span> <span class="op">=</span> <span class="nam">df</span><span class="op">.</span><span class="nam">reset_index</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t898" href="#t898">898</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t899" href="#t899">899</a></span><span class="t">        <span class="key">return</span> <span class="nam">df</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t884" href="#t884">884</a></span><span class="t">        <span class="com"># Flatten MultiIndex columns</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t885" href="#t885">885</a></span><span class="t">        <span class="nam">df</span><span class="op">.</span><span class="nam">columns</span> <span class="op">=</span> <span class="op">[</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t886" href="#t886">886</a></span><span class="t">            <span class="fst">f&quot;</span><span class="op">{</span><span class="nam">detector</span><span class="op">}</span><span class="fst">-</span><span class="op">{</span><span class="nam">metric_map</span><span class="op">[</span><span class="nam">metric</span><span class="op">]</span><span class="op">}</span><span class="fst">&quot;</span> <span class="key">for</span> <span class="nam">detector</span><span class="op">,</span> <span class="nam">metric</span> <span class="key">in</span> <span class="nam">df</span><span class="op">.</span><span class="nam">columns</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t887" href="#t887">887</a></span><span class="t">        <span class="op">]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t888" href="#t888">888</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t889" href="#t889">889</a></span><span class="t">        <span class="com"># Optional: bring SegmentID / PeakID back as normal columns</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t890" href="#t890">890</a></span><span class="t">        <span class="nam">df</span> <span class="op">=</span> <span class="nam">df</span><span class="op">.</span><span class="nam">reset_index</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t891" href="#t891">891</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t892" href="#t892">892</a></span><span class="t">        <span class="key">return</span> <span class="nam">df</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
     <div class="content">
@@ -990,7 +983,7 @@
             <a class="nav" href="z_64ecc9cd9f1c6130_triggered_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.17.3">coverage.py v7.17.3</a>,
-            created at 2026-11-25 10:08 +0000
+            created at 2026-11-25 10:57 +0000
         </p>
     </div>
 </footer>
