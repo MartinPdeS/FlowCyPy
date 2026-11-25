@@ -47,7 +47,7 @@ class Uniform : public BaseDistribution {
         mutable std::mt19937 generator;
 
         Uniform(const double lower_bound, const double upper_bound)
-        : lower_bound(lower_bound), upper_bound(upper_bound)
+        : lower_bound(lower_bound), upper_bound(upper_bound), generator(std::random_device{}())
         {}
 
         std::vector<double> sample(const size_t n_samples) const override;

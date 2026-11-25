@@ -1,3 +1,4 @@
+#include <pybind11/stl.h>
 #include <limits>
 #include <memory>
 #include <cmath>
@@ -208,7 +209,7 @@ PYBIND11_MODULE(amplifier, module) {
             [ureg](
                 const Amplifier& amplifier,
                 const py::object& signal,
-                const py::object& sampling_rate
+                const py::object& sampling_rate, noise::Seed seed
             ) {
                 if (!py::hasattr(signal, "units") || !py::hasattr(signal, "magnitude")) {
                     throw std::runtime_error(
@@ -232,7 +233,7 @@ PYBIND11_MODULE(amplifier, module) {
                 }
 
                 std::vector<double> output_signal =
-                    amplifier.amplify(input_signal, sampling_rate_value);
+                    amplifier.amplify(input_signal, sampling_rate_value, seed);
 
                 py::array_t<double> output_array(output_signal.size());
                 auto mutable_view = output_array.mutable_unchecked<1>();
@@ -245,6 +246,7 @@ PYBIND11_MODULE(amplifier, module) {
             },
             py::arg("signal"),
             py::arg("sampling_rate"),
+            py::kw_only(), py::arg("seed") = py::none(),
             R"pbdoc(
                 Amplify a one dimensional current signal and return the output voltage signal.
 
@@ -256,6 +258,9 @@ PYBIND11_MODULE(amplifier, module) {
                     Sampling rate in hertz. If provided and the amplifier bandwidth is defined,
                     bandwidth-limited filtering is applied. If omitted, waveform filtering is
                     skipped.
+
+                seed : int, optional
+                    Seed for this realization with a fixed worker count.
 
                 Returns
                 -------

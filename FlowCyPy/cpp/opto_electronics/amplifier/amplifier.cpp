@@ -68,7 +68,7 @@ double Amplifier::get_rms_noise() const {
 
 std::vector<double> Amplifier::amplify(
     const std::vector<double>& signal,
-    const double sampling_rate
+    const double sampling_rate, noise::Seed seed
 ) const {
     if (signal.empty()) {
         throw std::runtime_error("signal vector is empty.");
@@ -96,7 +96,8 @@ std::vector<double> Amplifier::amplify(
         output_signal = this->add_gaussian_noise(
             output_signal,
             0.0,
-            this->get_rms_noise()
+            this->get_rms_noise(),
+            seed
         );
     }
 
@@ -186,7 +187,7 @@ std::vector<double> Amplifier::amplify_without_bandwidth(
 std::vector<double> Amplifier::add_gaussian_noise(
     const std::vector<double>& signal,
     const double mean,
-    const double standard_deviation
+    const double standard_deviation, noise::Seed seed
 ) const {
     if (signal.empty()) {
         throw std::runtime_error("signal vector is empty.");
@@ -202,6 +203,8 @@ std::vector<double> Amplifier::add_gaussian_noise(
 
     std::vector<double> output_signal(signal);
 
+    const auto call_seed = noise::resolve_seed(seed);
+
     #pragma omp parallel
     {
         #pragma omp single
@@ -216,13 +219,10 @@ std::vector<double> Amplifier::add_gaussian_noise(
             }
         }
 
-        std::random_device random_device;
-        std::mt19937 generator(
-            random_device() + static_cast<unsigned int>(omp_get_thread_num())
-        );
+        auto generator = noise::make_generator(call_seed, omp_get_thread_num());
         std::normal_distribution<double> distribution(mean, standard_deviation);
 
-        #pragma omp for
+        #pragma omp for schedule(static)
         for (long long index = 0; index < static_cast<long long>(output_signal.size()); ++index) {
             output_signal[index] += distribution(generator);
         }

@@ -1,5 +1,5 @@
 import math
-
+from copy import copy
 import numpy as np
 from pydantic import ConfigDict
 from pydantic.dataclasses import dataclass
@@ -24,6 +24,7 @@ from FlowCyPy.flow_cytometer import FlowCytometer
 from FlowCyPy.fluidics import (
     FlowCell,
     Fluidics,
+    ScattererCollection,
     distributions,  # noqa: F401
     populations,
 )
@@ -176,10 +177,8 @@ class Workflow:
         -------
         Fluidics
         """
-        from FlowCyPy.fluidics import ScattererCollection
-
         scatterer_collection = ScattererCollection(
-            populations=self.population_list,
+            populations=[copy(population) for population in self.population_list],
         )
 
         scatterer_collection.dilute(self.dilution_factor)
@@ -261,6 +260,10 @@ class Workflow:
         ----------
         run_time : Time
             Duration of the acquisition to simulate.
+
+        random_state : int or numpy.random.Generator, optional
+            A non-negative integer repeats the events and noisy signals with the
+            same build and OpenMP worker count. A generator advances each run.
 
         Returns
         -------

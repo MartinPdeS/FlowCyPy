@@ -1,13 +1,12 @@
 import logging
 import math
-
 import numpy as np
 from TypedUnit import Power, Time, ureg, validate_units
-
 from FlowCyPy.digital_processing import DigitalProcessing
 from FlowCyPy.fluidics import Fluidics, populations
 from FlowCyPy.fluidics.event_collection import EventCollection
 from FlowCyPy.opto_electronics import OptoElectronics
+from FlowCyPy.opto_electronics.system import _next_noise_seed
 from FlowCyPy.run_record import RunRecord
 from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
 from FlowCyPy.sub_frames.peaks import PeakDataFrame
@@ -143,6 +142,8 @@ class FlowCytometer:
         event_collection: EventCollection,
         signal_dict: dict,
         opto_electronics: OptoElectronics,
+        *,
+        random_generator: np.random.Generator | None = None,
     ) -> None:
         """
         Add gamma model detector signals to the optical power dictionary.
@@ -155,6 +156,8 @@ class FlowCytometer:
             Optical power signal dictionary updated in place.
         opto_electronics : OptoElectronics
             Opto electronic configuration.
+        random_generator : numpy.random.Generator, optional
+            Random stream for analog signal generation.
         """
         for events in event_collection:
             if not isinstance(events.sampling_method, populations.GammaModel):
@@ -182,6 +185,7 @@ class FlowCytometer:
                 shape=expected_number_of_particles,
                 scale=reference_mean_amplitude,
                 mean_velocity=events.metadata["VelocityMean"],
+                seed=_next_noise_seed(generator=random_generator),
             )
 
             if reference_mean_amplitude.magnitude == 0:
@@ -204,6 +208,8 @@ class FlowCytometer:
         run_time: Time,
         event_collection: EventCollection,
         opto_electronics: OptoElectronics,
+        *,
+        random_generator: np.random.Generator | None = None,
     ) -> dict:
         """
         Compute the full analog detector waveforms from an event collection.
@@ -216,6 +222,8 @@ class FlowCytometer:
             Population event blocks with optical coupling already evaluated.
         opto_electronics : OptoElectronics
             Opto electronic configuration.
+        random_generator : numpy.random.Generator, optional
+            Random stream for analog signal generation.
 
         Returns
         -------
@@ -234,13 +242,19 @@ class FlowCytometer:
             opto_electronics=opto_electronics,
         )
 
+        gamma_rng, noise_rng = (
+            random_generator.spawn(2) if random_generator is not None else (None, None)
+        )
         self._add_gamma_model_signals(
             event_collection=event_collection,
             signal_dict=power_signal_dict,
             opto_electronics=opto_electronics,
+            random_generator=gamma_rng,
         )
 
-        return opto_electronics.convert_optical_power_to_voltage(power_signal_dict)
+        return opto_electronics.convert_optical_power_to_voltage(
+            power_signal_dict, random_generator=noise_rng
+        )
 
     def process_analog(
         self,
@@ -387,6 +401,10 @@ class FlowCytometer:
         opto_electronics : OptoElectronics
             Opto electronic configuration.
 
+        random_state : int or numpy.random.Generator, optional
+            A non-negative integer repeats the events and noisy signals with the
+            same build and OpenMP worker count. A generator advances each run.
+
         Returns
         -------
         RunRecord
@@ -396,6 +414,8 @@ class FlowCytometer:
         """
         self._validate_run_time(run_time)
         self._validate_opto_electronics(opto_electronics)
+        if isinstance(random_state, np.random.Generator):
+            random_state = int(random_state.integers(0, np.iinfo(np.uint32).max))
         event_collection = self.fluidics.generate_event_collection(
             run_time=run_time,
             sampling_rate=opto_electronics.digitizer.sampling_rate,
@@ -411,6 +431,9 @@ class FlowCytometer:
             run_time=run_time,
             event_collection=event_collection,
             opto_electronics=opto_electronics,
+            random_generator=(
+                np.random.default_rng(random_state) if random_state is not None else None
+            ),
         )
 
         run_record = RunRecord(
@@ -467,6 +490,10 @@ class FlowCytometer:
             Opto electronic configuration.
         digital_processing : DigitalProcessing, optional
             Signal processing configuration. If None, no digital processing is applied.
+
+        random_state : int or numpy.random.Generator, optional
+            A non-negative integer repeats the events and noisy signals with the
+            same build and OpenMP worker count. A generator advances each run.
 
         Returns
         -------

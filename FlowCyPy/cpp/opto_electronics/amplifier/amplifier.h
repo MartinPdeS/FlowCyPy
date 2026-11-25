@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utils/noise_seed.h>
+
 #include <vector>
 #include <limits>
 #include <random>
@@ -58,7 +60,7 @@ public:
      */
     std::vector<double> amplify(
         const std::vector<double>& signal,
-        const double sampling_rate = std::numeric_limits<double>::quiet_NaN()
+        const double sampling_rate = std::numeric_limits<double>::quiet_NaN(), noise::Seed seed = std::nullopt
     ) const;
 
     /**
@@ -98,6 +100,6 @@ public:
     std::vector<double> add_gaussian_noise(
         const std::vector<double>& signal,
         const double mean,
-        const double standard_deviation
+        const double standard_deviation, noise::Seed seed = std::nullopt
     ) const;
 };

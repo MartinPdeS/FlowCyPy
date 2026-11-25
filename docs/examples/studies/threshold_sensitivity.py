@@ -6,6 +6,7 @@ This tutorial investigates how discriminator threshold affects event recovery
 for weak signals close to baseline noise.
 """
 
+import pandas as pd
 from FlowCyPy.units import ureg
 from FlowCyPy import FlowCytometer
 from FlowCyPy.fluidics import (
@@ -121,8 +122,17 @@ cytometer = FlowCytometer(
 # %%
 # Step 2: Sweep discriminator threshold
 # -------------------------------------
+# Acquire the particles and analog noise once so each threshold sees the same
+# waveform. Event IDs below are row positions in this shared acquisition.
+acquisition = cytometer.acquire(
+    run_time=1 * ureg.millisecond,
+    opto_electronics=opto_electronics,
+    random_state=42,
+)
 threshold_values = ["2sigma", "3sigma", "4sigma", "5sigma"]
 run_records = []
+event_capture = pd.DataFrame()
+window_counts = []
 
 for threshold_value in threshold_values:
     digital_processing = DigitalProcessing(
@@ -136,13 +146,25 @@ for threshold_value in threshold_values:
         peak_algorithm=peak_locator.GlobalPeakLocator(),
     )
 
-    run_record = cytometer.run(
-        opto_electronics=opto_electronics,
+    run_record = cytometer.process_run(
+        run_record=acquisition,
         digital_processing=digital_processing,
-        run_time=1 * ureg.millisecond,
     )
 
     run_records.append((threshold_value, run_record))
+    events = run_record.annotate_detected_events()
+    event_capture[threshold_value] = events["Detected"].to_numpy()
+    occupancy = run_record.coincidence_statistics()
+    window_counts.append({
+        "Threshold": threshold_value,
+        "Captured arrivals": occupancy["DetectedEvents"],
+        "Empty windows": occupancy["EmptySegments"],
+        "Total windows": occupancy["TotalTriggerSegments"],
+    })
+
+event_capture.index.name = "Event ID"
+print(event_capture.to_string())
+print(pd.DataFrame(window_counts).set_index("Threshold").to_string())
 
 
 def plot_analog_window(run_record, threshold_value):
@@ -193,6 +215,8 @@ def plot_analog_window(run_record, threshold_value):
 
 
 def plot_digital_window(run_record, threshold_value):
+    if run_record.signal.digital is None:
+        return None
     figure = run_record.plot_digital(
         figure_size=(12, 4.5),
         include_scatterer=False,
@@ -216,6 +240,8 @@ def plot_digital_window(run_record, threshold_value):
 
 
 def plot_peak_heights(run_record, threshold_value):
+    if run_record.peaks is None:
+        return None
     figure = run_record.plot_peaks(
         x=("side", "Height"),
         figure_size=(8, 5),

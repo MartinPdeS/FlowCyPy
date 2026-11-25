@@ -221,6 +221,7 @@ PYBIND11_MODULE(populations, module) {
             )pdoc";
 
     py::class_<SpherePopulation, std::shared_ptr<SpherePopulation>, BasePopulation>(module, "SpherePopulation")
+        .def("__copy__", [](const SpherePopulation& population) { return SpherePopulation(population); })
         .def(
             py::init(
                 [ureg](
@@ -338,6 +339,7 @@ PYBIND11_MODULE(populations, module) {
             )pdoc";
 
     py::class_<CoreShellPopulation, std::shared_ptr<CoreShellPopulation>, BasePopulation>(module, "CoreShellPopulation")
+        .def("__copy__", [](const CoreShellPopulation& population) { return CoreShellPopulation(population); })
         .def(
             py::init<>(
                 [](

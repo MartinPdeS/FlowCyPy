@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utils/noise_seed.h>
+
 #include <string>
 #include <vector>
 #include <cmath>
@@ -40,7 +42,7 @@ public:
 
     std::vector<double> apply_dark_current_noise(
         const std::vector<double>& signal,
-        const double bandwidth = std::numeric_limits<double>::quiet_NaN()
+        const double bandwidth = std::numeric_limits<double>::quiet_NaN(), noise::Seed seed = std::nullopt
     ) const;
 
     std::string repr() const;

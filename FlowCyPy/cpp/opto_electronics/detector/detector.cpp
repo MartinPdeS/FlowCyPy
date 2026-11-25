@@ -120,7 +120,7 @@ double Detector::resolve_bandwidth(
 
 std::vector<double> Detector::apply_dark_current_noise(
     const std::vector<double>& signal,
-    const double bandwidth
+    const double bandwidth, noise::Seed seed
 ) const {
     const double effective_bandwidth = this->resolve_bandwidth(bandwidth);
 
@@ -148,8 +148,7 @@ std::vector<double> Detector::apply_dark_current_noise(
         current_noise_density_variance
     );
 
-    std::random_device random_device;
-    std::mt19937_64 random_number_generator(random_device());
+    std::mt19937_64 random_number_generator(noise::resolve_seed(seed));
     std::normal_distribution<double> normal_distribution(
         this->dark_current,
         standard_deviation_noise

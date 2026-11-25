@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utils/noise_seed.h>
+
 #include <vector>
 #include <random>
 #include <cmath>
@@ -158,7 +160,7 @@ public:
      *
      * @throws std::runtime_error If bandwidth is non positive or if a signal sample is negative.
      */
-    void add_rin_to_signal(std::vector<double>& signal_values) const;
+    void add_rin_to_signal(std::vector<double>& signal_values, noise::Seed seed = std::nullopt) const;
 
 
 
@@ -183,7 +185,7 @@ public:
      * if any channel is empty, if channel lengths differ, or if a channel contains
      * negative power values.
      */
-    void add_common_rin_to_signals(std::vector<std::vector<double>>& signal_values_per_channel) const;
+    void add_common_rin_to_signals(std::vector<std::vector<double>>& signal_values_per_channel, noise::Seed seed = std::nullopt) const;
 
 
 
@@ -204,7 +206,7 @@ public:
      *
      * @throws std::runtime_error If time_step is non positive or if a power sample is negative.
      */
-    void add_shot_noise_to_signal(std::vector<double>& power_values, const double time_step) const;
+    void add_shot_noise_to_signal(std::vector<double>& power_values, const double time_step, noise::Seed seed = std::nullopt) const;
 
 
 
@@ -400,7 +402,7 @@ public:
         const std::vector<double>& time_array,
         double shape,
         double scale,
-        double mean_velocity
+        double mean_velocity, noise::Seed seed = std::nullopt
     ) const;
 
 

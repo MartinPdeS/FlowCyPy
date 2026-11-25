@@ -104,7 +104,7 @@ double BaseSource::get_time_step_from_time_array(const std::vector<double>& time
 }
 
 
-void BaseSource::add_rin_to_signal(std::vector<double>& signal_values) const {
+void BaseSource::add_rin_to_signal(std::vector<double>& signal_values, noise::Seed seed) const {
     if (std::isnan(this->bandwidth)) {
         if (debug_mode) {
             std::printf("[RIN] bandwidth is NaN → RIN disabled\n");
@@ -128,6 +128,8 @@ void BaseSource::add_rin_to_signal(std::vector<double>& signal_values) const {
 
     const size_t N = signal_values.size();
 
+    const auto call_seed = noise::resolve_seed(seed);
+
     #pragma omp parallel
     {
         #pragma omp single
@@ -137,11 +139,10 @@ void BaseSource::add_rin_to_signal(std::vector<double>& signal_values) const {
             }
         }
 
-        static thread_local std::random_device rd;
-        static thread_local std::mt19937 gen(rd());
-        static thread_local std::normal_distribution<double> standard_normal(0.0, 1.0);
+        auto gen = noise::make_generator(call_seed, omp_get_thread_num());
+        std::normal_distribution<double> standard_normal(0.0, 1.0);
 
-        #pragma omp for
+        #pragma omp for schedule(static)
         for (size_t i = 0; i < N; ++i) {
             const double value = signal_values[i];
 
@@ -160,7 +161,7 @@ void BaseSource::add_rin_to_signal(std::vector<double>& signal_values) const {
 
 
 
-void BaseSource::add_common_rin_to_signals(std::vector<std::vector<double>>& signal_values_per_channel) const {
+void BaseSource::add_common_rin_to_signals(std::vector<std::vector<double>>& signal_values_per_channel, noise::Seed seed) const {
     if (std::isnan(this->bandwidth)) {
         if (debug_mode) {
             std::printf("[CommonRIN] bandwidth is NaN → RIN disabled\n");
@@ -193,6 +194,8 @@ void BaseSource::add_common_rin_to_signals(std::vector<std::vector<double>>& sig
         );
     }
 
+    const auto call_seed = noise::resolve_seed(seed);
+
     #pragma omp parallel
     {
         #pragma omp single
@@ -201,11 +204,10 @@ void BaseSource::add_common_rin_to_signals(std::vector<std::vector<double>>& sig
                 std::printf("[CommonRIN] using %d OpenMP threads\n", omp_get_num_threads());
             }
         }
-        static thread_local std::random_device random_device;
-        static thread_local std::mt19937 generator(random_device());
-        static thread_local std::normal_distribution<double> standard_normal(0.0, 1.0);
+        auto generator = noise::make_generator(call_seed, omp_get_thread_num());
+        std::normal_distribution<double> standard_normal(0.0, 1.0);
 
-        #pragma omp for
+        #pragma omp for schedule(static)
         for (size_t t = 0; t < N; ++t) {
             const double fluct = standard_normal(generator) * sigma;
 
@@ -222,7 +224,7 @@ void BaseSource::add_common_rin_to_signals(std::vector<std::vector<double>>& sig
 
 
 
-void BaseSource::add_shot_noise_to_signal(std::vector<double>& power_values, const double time_step) const {
+void BaseSource::add_shot_noise_to_signal(std::vector<double>& power_values, const double time_step, noise::Seed seed) const {
     if (time_step <= 0.0) {
         throw std::runtime_error("time_step must be strictly positive.");
     }
@@ -249,6 +251,8 @@ void BaseSource::add_shot_noise_to_signal(std::vector<double>& power_values, con
 
     const size_t number_of_samples = power_values.size();
 
+    const auto call_seed = noise::resolve_seed(seed);
+
     #pragma omp parallel
     {
         #pragma omp single
@@ -258,15 +262,14 @@ void BaseSource::add_shot_noise_to_signal(std::vector<double>& power_values, con
             }
         }
 
-        static thread_local std::random_device random_device;
-        static thread_local std::mt19937 generator(random_device());
-        static thread_local std::normal_distribution<double> standard_normal(0.0, 1.0);
+        auto generator = noise::make_generator(call_seed, omp_get_thread_num());
+        std::normal_distribution<double> standard_normal(0.0, 1.0);
 
         bool local_found_negative_input = false;
         size_t local_bad_index = 0;
         double local_bad_value = 0.0;
 
-        #pragma omp for
+        #pragma omp for schedule(static)
         for (size_t sample_index = 0; sample_index < number_of_samples; ++sample_index) {
             if (found_negative_input) {
                 continue;
@@ -435,7 +438,7 @@ std::vector<double> BaseSource::get_gamma_trace(
     const std::vector<double>& time_array,
     double shape,
     double scale,
-    double mean_velocity
+    double mean_velocity, noise::Seed seed
 ) const {
     const size_t N = time_array.size();
     const double dt = this->get_time_step_from_time_array(time_array);
@@ -446,6 +449,8 @@ std::vector<double> BaseSource::get_gamma_trace(
 
     std::vector<double> latent(N);
 
+    const auto call_seed = noise::resolve_seed(seed);
+
     #pragma omp parallel
     {
         #pragma omp single
@@ -455,11 +460,10 @@ std::vector<double> BaseSource::get_gamma_trace(
             }
         }
 
-        static thread_local std::random_device rd;
-        static thread_local std::mt19937 gen(rd());
+        auto gen = noise::make_generator(call_seed, omp_get_thread_num());
         std::gamma_distribution<double> gamma_dist(shape, scale);
 
-        #pragma omp for
+        #pragma omp for schedule(static)
         for (size_t i = 0; i < N; ++i) {
             latent[i] = gamma_dist(gen);
         }

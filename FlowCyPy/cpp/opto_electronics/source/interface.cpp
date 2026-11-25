@@ -213,7 +213,7 @@ PYBIND11_MODULE(source, module) {
         )
         .def(
             "add_shot_noise_to_signal",
-            [ureg](const BaseSource& source, const py::object& signal, const py::object& time_array) {
+            [ureg](const BaseSource& source, const py::object& signal, const py::object& time_array, noise::Seed seed) {
                 const double time_step = source.get_time_step_from_time_array(
                     time_array.attr("to")("second").attr("magnitude").cast<std::vector<double>>()
                 );
@@ -221,7 +221,7 @@ PYBIND11_MODULE(source, module) {
                 std::vector<double> signal_values =
                     signal.attr("to")("watt").attr("magnitude").cast<std::vector<double>>();
 
-                source.add_shot_noise_to_signal(signal_values, time_step);
+                source.add_shot_noise_to_signal(signal_values, time_step, seed);
 
                 py::array_t<double> output(signal_values.size());
                 auto mutable_view = output.mutable_unchecked<1>();
@@ -234,6 +234,7 @@ PYBIND11_MODULE(source, module) {
             },
             py::arg("signal"),
             py::arg("time"),
+            py::kw_only(), py::arg("seed") = py::none(),
             R"doc(
                 Add shot noise to an optical power trace.
 
@@ -243,6 +244,9 @@ PYBIND11_MODULE(source, module) {
                     Input optical power trace.
                 time : pint.Quantity
                     Time array associated with the signal samples.
+
+                seed : int, optional
+                    Seed for this realization with a fixed worker count.
 
                 Returns
                 -------
@@ -257,11 +261,11 @@ PYBIND11_MODULE(source, module) {
         )
         .def(
             "add_rin_to_signal",
-            [ureg](const BaseSource& source, const py::object& signal) {
+            [ureg](const BaseSource& source, const py::object& signal, noise::Seed seed) {
                 std::vector<double> signal_values =
                     signal.attr("to")("watt").attr("magnitude").cast<std::vector<double>>();
 
-                source.add_rin_to_signal(signal_values);
+                source.add_rin_to_signal(signal_values, seed);
                 py::array_t<double> output(signal_values.size());
                 auto mutable_view = output.mutable_unchecked<1>();
 
@@ -272,6 +276,7 @@ PYBIND11_MODULE(source, module) {
                 return output * ureg.attr("watt");
             },
             py::arg("signal"),
+            py::kw_only(), py::arg("seed") = py::none(),
             R"doc(
                 Add relative intensity noise to an optical power trace.
 
@@ -279,6 +284,9 @@ PYBIND11_MODULE(source, module) {
                 ----------
                 signal : pint.Quantity
                     Input optical power trace.
+
+                seed : int, optional
+                    Seed for this realization with a fixed worker count.
 
                 Returns
                 -------
@@ -288,7 +296,7 @@ PYBIND11_MODULE(source, module) {
         )
         .def(
             "add_rin_to_signal_dict",
-            [ureg](const BaseSource& source, const py::dict& signal_dict) {
+            [ureg](const BaseSource& source, const py::dict& signal_dict, noise::Seed seed) {
                 if (!signal_dict.contains("Time")) {
                     throw std::runtime_error("signal_dict must contain a 'Time' entry.");
                 }
@@ -319,7 +327,7 @@ PYBIND11_MODULE(source, module) {
                     );
                 }
 
-                source.add_common_rin_to_signals(detector_signals);
+                source.add_common_rin_to_signals(detector_signals, seed);
 
                 py::dict output_signal_dict;
                 output_signal_dict["Time"] = signal_dict["Time"];
@@ -340,6 +348,7 @@ PYBIND11_MODULE(source, module) {
                 return output_signal_dict;
             },
             py::arg("signal_dict"),
+            py::kw_only(), py::arg("seed") = py::none(),
             R"doc(
                 Apply a common RIN realization to all detector channels in a signal dictionary.
 
@@ -348,6 +357,9 @@ PYBIND11_MODULE(source, module) {
                 signal_dict : dict
                     Dictionary containing a ``"Time"`` entry and one or more
                     detector power traces.
+
+                seed : int, optional
+                    Seed for this realization with a fixed worker count.
 
                 Returns
                 -------
@@ -551,13 +563,13 @@ PYBIND11_MODULE(source, module) {
                 const py::object& time_array,
                 const double shape,
                 const py::object& scale,
-                const py::object& mean_velocity
+                const py::object& mean_velocity, noise::Seed seed
             ) {
                 std::vector<double> values = source.get_gamma_trace(
                     time_array.attr("to")("second").attr("magnitude").cast<std::vector<double>>(),
                     shape,
                     scale.attr("to")("watt").attr("magnitude").cast<double>(),
-                    mean_velocity.attr("to")("meter / second").attr("magnitude").cast<double>()
+                    mean_velocity.attr("to")("meter / second").attr("magnitude").cast<double>(), seed
                 );
 
                 return py::cast(values) * ureg.attr("watt");
@@ -566,6 +578,7 @@ PYBIND11_MODULE(source, module) {
             py::arg("shape"),
             py::arg("scale"),
             py::arg("mean_velocity"),
+            py::kw_only(), py::arg("seed") = py::none(),
             R"doc(
                 Generate a gamma distributed optical power trace.
 
@@ -580,6 +593,9 @@ PYBIND11_MODULE(source, module) {
                 mean_velocity : pint.Quantity
                     Mean particle velocity used to relate the intrinsic source
                     kernel to time.
+
+                seed : int, optional
+                    Seed for this realization with a fixed worker count.
 
                 Returns
                 -------

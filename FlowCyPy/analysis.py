@@ -128,15 +128,89 @@ class DetectionAnalyzer:
         if len(condition_names) != len(run_records):
             raise ValueError("condition_names must match run_records.")
 
+        selected_names = None if population_names is None else list(population_names)
         rows = []
         for condition, run_record in zip(condition_names, run_records):
             events = self.annotate(run_record)
-            available = sorted(events["Population"].dropna().unique())
-            selected = list(population_names) if population_names else available
+            selected = selected_names
+            if selected is None:
+                selected = sorted(events["Population"].dropna().unique())
             for population in selected:
-                statistics = run_record.detection_statistics(population)
+                statistics = self.population_statistics(events=events, population_name=population)
                 rows.append({"Condition": condition, **statistics})
         return pd.DataFrame(rows)
+
+    @staticmethod
+    def population_statistics(*, events: pd.DataFrame, population_name: str) -> dict:
+        """Compute detection and coincidence statistics from annotated events.
+
+        Parameters
+        ----------
+        events : pandas.DataFrame
+            Annotated arrivals for all populations in one acquisition.
+        population_name : str
+            Population whose statistics are requested.
+
+        Returns
+        -------
+        dict
+            Event counts, efficiency, standard error and coincidence metrics.
+        """
+        if "Population" not in events:
+            raise KeyError("Event data do not contain a 'Population' column.")
+
+        population_events = events[events["Population"] == population_name]
+        simulated_events = len(population_events)
+        detected_events = int(population_events["Detected"].sum())
+
+        detected = events[
+            events["Detected"] & events["TriggerID"].notna()
+        ]
+        segment_sizes = detected.groupby("TriggerID").size()
+        coincident_segments = set(segment_sizes[segment_sizes >= 2].index)
+        population_trigger_ids = set(
+            population_events.loc[
+                population_events["Detected"], "TriggerID"
+            ].dropna()
+        )
+        coincident_events = len(
+            population_events[
+                population_events["TriggerID"].isin(coincident_segments)
+            ]
+        )
+        partners = {}
+        for trigger_id in population_trigger_ids & coincident_segments:
+            segment = detected[detected["TriggerID"] == trigger_id]
+            for partner in segment["Population"]:
+                if partner != population_name:
+                    partners[partner] = partners.get(partner, 0) + 1
+
+        return {
+            "Population": population_name,
+            "SimulatedEvents": simulated_events,
+            "DetectedEvents": detected_events,
+            "DetectionEfficiencyStandardError": (
+                np.sqrt(
+                    (detected_events / simulated_events)
+                    * (1 - detected_events / simulated_events)
+                    / simulated_events
+                )
+                if simulated_events
+                else np.nan
+            ),
+            "DetectionEfficiency": (
+                detected_events / simulated_events
+                if simulated_events
+                else np.nan
+            ),
+            "CoincidentDetectedEvents": coincident_events,
+            "CoincidenceParticipationRate": (
+                coincident_events / detected_events
+                if detected_events
+                else np.nan
+            ),
+            "CoincidencePartners": partners,
+        }
 
     def coincidence_statistics(self, run_record) -> dict:
         """Count trigger segments by the number of assigned simulated arrivals.

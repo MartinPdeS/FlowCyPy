@@ -3,9 +3,7 @@ import numpy as np
 from pydantic import ConfigDict
 from pydantic.dataclasses import dataclass
 from TypedUnit import Power, Time
-
 from FlowCyPy.fluidics.event_collection import EventCollection
-
 from . import circuits, source
 from .amplifier import Amplifier
 from .detector import Detector
@@ -17,6 +15,13 @@ config_dict = ConfigDict(
     slots=True,
     extra="forbid",
 )
+
+
+def _next_noise_seed(*, generator: np.random.Generator | None) -> int | None:
+    """Draw an unsigned native seed, or request fresh native entropy."""
+    if generator is None:
+        return None
+    return int(generator.integers(0, 2**64, dtype=np.uint64))
 
 
 @dataclass(config=config_dict)
@@ -96,14 +101,19 @@ class OptoElectronics:
 
         return power_signal_dict
 
-    def apply_detector_current_noise(self, photocurrent_dict: dict) -> dict:
+    def apply_detector_current_noise(
+        self, photocurrent_dict: dict, *, random_generator: np.random.Generator | None = None
+    ) -> dict:
         """
         Apply detector current noise to photocurrent traces.
 
         Parameters
         ----------
-        signal_dict : dict
+        photocurrent_dict : dict
             Photocurrent signal dictionary.
+
+        random_generator : numpy.random.Generator, optional
+            Generator supplying independent seeds for native noise realizations.
 
         Returns
         -------
@@ -114,11 +124,14 @@ class OptoElectronics:
             photocurrent_dict[detector.name] = detector.apply_dark_current_noise(
                 signal=photocurrent_dict[detector.name],
                 bandwidth=self.digitizer.bandwidth,
+                seed=_next_noise_seed(generator=random_generator),
             )
 
         return photocurrent_dict
 
-    def apply_source_noise_to_optical_signals(self, power_signal_dict: dict) -> dict:
+    def apply_source_noise_to_optical_signals(
+        self, power_signal_dict: dict, *, random_generator: np.random.Generator | None = None
+    ) -> dict:
         """
         Apply source level optical noise processes.
 
@@ -126,6 +139,9 @@ class OptoElectronics:
         ----------
         power_signal_dict : dict
             Optical power signals.
+
+        random_generator : numpy.random.Generator, optional
+            Generator supplying independent seeds for native noise realizations.
 
         Returns
         -------
@@ -135,6 +151,7 @@ class OptoElectronics:
         if self.source.include_rin_noise and self.source.rin is not None:
             power_signal_dict = self.source.add_rin_to_signal_dict(
                 signal_dict=power_signal_dict,
+                seed=_next_noise_seed(generator=random_generator),
             )
 
         if self.source.include_shot_noise:
@@ -142,6 +159,7 @@ class OptoElectronics:
                 power_signal_dict[detector.name] = self.source.add_shot_noise_to_signal(
                     signal=power_signal_dict[detector.name],
                     time=power_signal_dict["Time"],
+                    seed=_next_noise_seed(generator=random_generator),
                 )
 
         return power_signal_dict
@@ -178,7 +196,9 @@ class OptoElectronics:
 
             simulator.run(event_collection, compute_cross_section=compute_cross_section)
 
-    def convert_photocurrent_to_voltage(self, photocurrent_dict: dict) -> dict:
+    def convert_photocurrent_to_voltage(
+        self, photocurrent_dict: dict, *, random_generator: np.random.Generator | None = None
+    ) -> dict:
         """
         Convert photocurrent traces to analog voltage traces.
 
@@ -186,6 +206,9 @@ class OptoElectronics:
         ----------
         photocurrent_dict : dict
             Photocurrent signal dictionary.
+
+        random_generator : numpy.random.Generator, optional
+            Generator supplying independent seeds for native noise realizations.
 
         Returns
         -------
@@ -196,11 +219,14 @@ class OptoElectronics:
             photocurrent_dict[detector.name] = self.amplifier.amplify(
                 signal=photocurrent_dict[detector.name],
                 sampling_rate=self.digitizer.sampling_rate,
+                seed=_next_noise_seed(generator=random_generator),
             )
 
         return photocurrent_dict
 
-    def convert_optical_power_to_voltage(self, power_signal_dict: dict) -> dict:
+    def convert_optical_power_to_voltage(
+        self, power_signal_dict: dict, *, random_generator: np.random.Generator | None = None
+    ) -> dict:
         """
         Convert optical power traces to analog voltage traces by applying the full optoelectronic chain.
 
@@ -209,13 +235,19 @@ class OptoElectronics:
         power_signal_dict : dict
             Optical power signal dictionary.
 
+        random_generator : numpy.random.Generator, optional
+            Generator supplying independent seeds for native noise realizations.
+
         Returns
         -------
         dict
             Analog voltage signal dictionary.
         """
+        source_rng, detector_rng, amplifier_rng = (
+            random_generator.spawn(3) if random_generator is not None else (None, None, None)
+        )
         power_signal_dict = self.apply_source_noise_to_optical_signals(
-            power_signal_dict=power_signal_dict,
+            power_signal_dict=power_signal_dict, random_generator=source_rng,
         )
 
         photocurrent_dict = self.convert_optical_power_to_photocurrent(
@@ -223,11 +255,11 @@ class OptoElectronics:
         )
 
         photocurrent_dict = self.apply_detector_current_noise(
-            photocurrent_dict=photocurrent_dict
+            photocurrent_dict=photocurrent_dict, random_generator=detector_rng,
         )
 
         voltage_dict = self.convert_photocurrent_to_voltage(
-            photocurrent_dict=photocurrent_dict,
+            photocurrent_dict=photocurrent_dict, random_generator=amplifier_rng,
         )
 
         return voltage_dict

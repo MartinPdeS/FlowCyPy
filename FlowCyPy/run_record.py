@@ -163,62 +163,11 @@ class RunRecord:
         detected when its arrival time lies inclusively between the first and
         last sample of a digital trigger segment.
         """
-        events = self.annotate_detected_events()
-        if "Population" not in events:
-            raise KeyError("Event data do not contain a 'Population' column.")
+        from .analysis import DetectionAnalyzer
 
-        population_events = events[events["Population"] == population_name]
-        simulated_events = len(population_events)
-        detected_events = int(population_events["Detected"].sum())
-
-        detected = events[
-            events["Detected"] & events["TriggerID"].notna()
-        ]
-        segment_sizes = detected.groupby("TriggerID").size()
-        coincident_segments = set(segment_sizes[segment_sizes >= 2].index)
-        population_trigger_ids = set(
-            population_events.loc[
-                population_events["Detected"], "TriggerID"
-            ].dropna()
+        return DetectionAnalyzer.population_statistics(
+            events=self.annotate_detected_events(), population_name=population_name
         )
-        coincident_events = len(
-            population_events[
-                population_events["TriggerID"].isin(coincident_segments)
-            ]
-        )
-        partners = {}
-        for trigger_id in population_trigger_ids & coincident_segments:
-            segment = detected[detected["TriggerID"] == trigger_id]
-            for partner in segment["Population"]:
-                if partner != population_name:
-                    partners[partner] = partners.get(partner, 0) + 1
-
-        return {
-            "Population": population_name,
-            "SimulatedEvents": simulated_events,
-            "DetectedEvents": detected_events,
-            "DetectionEfficiencyStandardError": (
-                np.sqrt(
-                    (detected_events / simulated_events)
-                    * (1 - detected_events / simulated_events)
-                    / simulated_events
-                )
-                if simulated_events
-                else np.nan
-            ),
-            "DetectionEfficiency": (
-                detected_events / simulated_events
-                if simulated_events
-                else np.nan
-            ),
-            "CoincidentDetectedEvents": coincident_events,
-            "CoincidenceParticipationRate": (
-                coincident_events / detected_events
-                if detected_events
-                else np.nan
-            ),
-            "CoincidencePartners": partners,
-        }
 
     def coincidence_statistics(self) -> dict[str, Any]:
         """Count trigger segments by the number of assigned simulated arrivals.

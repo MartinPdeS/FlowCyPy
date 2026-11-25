@@ -461,7 +461,7 @@ PYBIND11_MODULE(detector, module) {
             [unit_registry](
                 const Detector& self,
                 const py::object& signal,
-                const py::object& bandwidth
+                const py::object& bandwidth, noise::Seed seed
             ) -> py::object {
                 const py::object signal_magnitude = signal.attr("magnitude");
 
@@ -484,12 +484,13 @@ PYBIND11_MODULE(detector, module) {
                     );
 
                 const std::vector<double> output_signal =
-                    self.apply_dark_current_noise(signal_vector, bandwidth_value);
+                    self.apply_dark_current_noise(signal_vector, bandwidth_value, seed);
 
                 return py::array_t<double>(output_signal.size(), output_signal.data()) * unit_registry.attr("ampere");
             },
             py::arg("signal"),
             py::arg("bandwidth") = py::none(),
+            py::kw_only(), py::arg("seed") = py::none(),
             R"pbdoc(
                 Add dark current noise to a detector current signal.
 
@@ -506,6 +507,9 @@ PYBIND11_MODULE(detector, module) {
                     Input current trace expressed in amperes.
                 bandwidth : pint.Quantity or None, optional
                     Bandwidth to use for the noise calculation. If omitted, the detector stored bandwidth is used.
+
+                seed : int, optional
+                    Seed for this realization with a fixed worker count.
 
                 Returns
                 -------
