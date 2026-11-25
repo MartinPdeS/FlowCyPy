@@ -8,6 +8,7 @@
 !conda.recipe
 !conda.recipe/meta.yaml
 !FlowCyPy
+!cpp
 !development
 !docs
 !tests
@@ -42,3 +43,5 @@ docs/source/sg_execution_times.rst
 *.a*
 *.dir*
 *CmakeFiles*
+
+cmake_install.cmake

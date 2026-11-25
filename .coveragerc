@@ -10,7 +10,6 @@ omit =
     FlowCyPy/directories.py
     FlowCyPy/**/__main__.py
     FlowCyPy/gui/**
-    FlowCyPy/_utils.py
 
 [report]
 skip_covered = True

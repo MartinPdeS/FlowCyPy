@@ -1351,7 +1351,7 @@ def run_sec_swarm_demo(
 
     processing = digital_processing.DigitalProcessing(
         discriminator=discriminator,
-        peak_algorithm=peak_algorithm,
+        peak_locator=peak_algorithm,
     )
 
     cytometer = FlowCytometer(

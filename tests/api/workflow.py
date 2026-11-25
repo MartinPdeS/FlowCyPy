@@ -309,21 +309,6 @@ def test_process_thresholds_in_either_order(opto_electronics, use_filter):
         assert record.peaks.equals(repeated.peaks)
 
 
-def test_peak_locator_compatibility():
-    locator = peak_locator.GlobalPeakLocator()
-    for processing in (
-        DigitalProcessing(None, locator),
-        DigitalProcessing(peak_algorithm=locator),
-    ):
-        assert processing.peak_locator is locator
-        processing.peak_algorithm = None
-        assert processing.peak_locator is None
-        processing.peak_locator = locator
-        assert processing.peak_algorithm is locator
-    with pytest.raises(TypeError, match="only one"):
-        DigitalProcessing(peak_locator=locator, peak_algorithm=locator)
-
-
 def test_workflow_initialize_requires_a_population(detector_0, scatterer_collection):
     workflow = make_workflow(
         detector_0,

@@ -268,59 +268,6 @@ class FlowCytometer:
             digital_processing=digital_processing,
         )
 
-    def process_run(
-        self,
-        run_record: RunRecord,
-        digital_processing: DigitalProcessing,
-    ) -> RunRecord:
-        """
-        Process an existing acquired run through the downstream signal
-        processing chain.
-
-        This method is intended for notebook workflows where the caller already
-        has a ``RunRecord`` returned by ``acquire()`` and wants to apply
-        downstream processing without passing the acquisition configuration again.
-
-        Parameters
-        ----------
-        run_record : RunRecord
-            Existing run record containing analog acquisition data and the
-            opto electronic configuration used to produce it.
-        digital_processing : DigitalProcessing
-            Signal processing configuration.
-
-        Returns
-        -------
-        RunRecord
-            Processed run record.
-
-        Raises
-        ------
-        ValueError
-            If the input run record does not contain an ``opto_electronics``
-            configuration.
-        ValueError
-            If the input run record does not contain analog signal data.
-        """
-        if run_record.opto_electronics is None:
-            raise ValueError(
-                "The provided run_record does not contain opto_electronics. "
-                "Make sure it was created with acquire() or manually populated."
-            )
-
-        if run_record.signal is None or run_record.signal.analog is None:
-            raise ValueError(
-                "The provided run_record does not contain analog signal data."
-            )
-
-        return self.process_analog(
-            run_time=run_record.run_time,
-            event_collection=run_record.event_collection,
-            analog_dict=run_record.signal.analog.raw_data,
-            digital_processing=digital_processing,
-            opto_electronics=run_record.opto_electronics,
-        )
-
     def acquire(
         self,
         run_time: Time,
@@ -445,7 +392,4 @@ class FlowCytometer:
             random_state=random_state,
         )
 
-        return self.process_run(
-            run_record=acquired_run_record,
-            digital_processing=digital_processing,
-        )
+        return acquired_run_record.process(digital_processing=digital_processing)

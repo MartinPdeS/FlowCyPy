@@ -154,10 +154,10 @@ def test_coincidence_statistics_counts_all_trigger_segments():
     )
     record.signal.digital = pd.DataFrame(
         {
-            "segment_id": [10, 10, 20, 20, 30, 30],
+            "SegmentID": [10, 10, 20, 20, 30, 30],
             "Time": [0.0, 0.2, 0.4, 0.6, 0.7, 0.9],
         }
-    )
+    ).set_index("SegmentID")
 
     statistics = record.coincidence_statistics()
 

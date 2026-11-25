@@ -408,24 +408,6 @@ class PeakDataFrame(PeakMetricsMixin, pd.DataFrame):
 
             return figure
 
-    @helper.post_mpl_plot
-    def hist(self, *args, **kwargs) -> plt.Figure:
-        """Call :meth:`plot_hist` using the legacy histogram API.
-
-        Parameters
-        ----------
-        *args
-            Positional arguments forwarded to :meth:`plot_hist`.
-        **kwargs
-            Keyword arguments forwarded to :meth:`plot_hist`.
-
-        Returns
-        -------
-        plt.Figure
-            Histogram figure returned by :meth:`plot_hist`.
-        """
-        return self.plot_hist(*args, **kwargs)
-
     def plot_2d(
         self,
         x: tuple[str, str],

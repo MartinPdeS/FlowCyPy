@@ -260,9 +260,6 @@ class Fluidics:
                 "Name": population.name,
                 "PopulationType": population.__class__.__name__,
                 "Concentration": population.concentration,
-                # Retain the old key for consumers of previously serialized
-                # event collections. New code should use ``Concentration``.
-                "ParticleCount": population.concentration,
                 "SamplingMethod": population.sampling_method.__class__.__name__,
             },
         )

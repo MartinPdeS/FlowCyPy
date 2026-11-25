@@ -372,13 +372,7 @@ class EventCollection:
             ``particle / milliliter``.
         """
         return {
-            events.name: (
-                events.metadata["Concentration"]
-                if "Concentration" in events.metadata
-                else events.metadata["ParticleCount"]
-            )
-            .to("particle / milliliter")
-            .magnitude
+            events.name: events.metadata["Concentration"].m_as("particle / milliliter")
             for events in self._get_selected_events(filter_population=filter_population)
         }
 

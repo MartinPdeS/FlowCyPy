@@ -13,9 +13,7 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Type of build")
 
 
 # --------------------- Set the output directory for libraries --------------------
-set(LOCAL_CXX_DIR "${PROJECT_NAME}/cpp")
 set(LOCAL_EXTENSION_DIR "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}")
-include_directories(${LOCAL_CXX_DIR})
 # --------------------- Set the output directory for libraries --------------------
 
 # --------------------- Platform-specific compiler and linker options --------------------
@@ -108,7 +106,6 @@ message(STATUS "  Python site packages : ${Python_SITELIB}")
 message(STATUS "")
 message(STATUS "FlowCyPy integration")
 message(STATUS "  FlowCyPy version     : ${PACKAGE_VERSION}")
-message(STATUS "  FlowCyPy include dir : ${LOCAL_CXX_DIR}")
 
 message(STATUS "")
 message(STATUS "Install destination")
@@ -119,23 +116,4 @@ message(STATUS "")
 # ----------------- logging build configuration --------------------
 
 # ----------------- collect subdirectories --------------------
-add_subdirectory(FlowCyPy/cpp/utils)                                  # utils
-add_subdirectory(FlowCyPy/cpp/pint)                                   # pint
-
-add_subdirectory(FlowCyPy/cpp/fluidics/distributions)                 # distributions
-add_subdirectory(FlowCyPy/cpp/fluidics/populations)                   # populations
-add_subdirectory(FlowCyPy/cpp/fluidics/scatterer_collection)         # scatterer_collection
-add_subdirectory(FlowCyPy/cpp/fluidics/flow_cell)                     # flow_cell
-add_subdirectory(FlowCyPy/cpp/fluidics/population_events)             # population_events
-
-add_subdirectory(FlowCyPy/cpp/opto_electronics/source)                # source
-add_subdirectory(FlowCyPy/cpp/opto_electronics/detector)              # detector
-add_subdirectory(FlowCyPy/cpp/opto_electronics/amplifier)             # amplifier
-add_subdirectory(FlowCyPy/cpp/opto_electronics/coupling)             # coupling_model
-add_subdirectory(FlowCyPy/cpp/opto_electronics/digitizer)             # digitizer
-add_subdirectory(FlowCyPy/cpp/opto_electronics/circuits)              # circuits
-
-add_subdirectory(FlowCyPy/cpp/digital_processing/discriminator)       # discriminator
-add_subdirectory(FlowCyPy/cpp/digital_processing/peak_locator)        # peak_locator
-add_subdirectory(FlowCyPy/cpp/digital_processing/classifier)          # classifier
-# ----------------- collect subdirectories --------------------
+add_subdirectory(cpp)

@@ -1,8 +1,4 @@
-try:
-    from ._version import version as __version__
-
-except ImportError:
-    __version__ = "0.0.0"
+from ._version import __version__
 
 debug_mode = False
 
@@ -26,11 +22,7 @@ _LAZY_EXPORTS = {
 
 
 def __getattr__(name: str):
-    """Resolve public objects only when they are first accessed.
-
-    Keeping the compatibility exports lazy makes ``import FlowCyPy`` cheap
-    while retaining the established top-level API.
-    """
+    """Load the requested public object on first access."""
     try:
         module_name, attribute_name = _LAZY_EXPORTS[name]
     except KeyError as error:

@@ -39,19 +39,9 @@ class DetectionAnalyzer:
         quantity = getattr(values.array, "quantity", None)
         if quantity is not None:
             return quantity.to("second")
-        if pd.api.types.is_numeric_dtype(values.dtype):
-            return ureg.Quantity(values.to_numpy(dtype=float), unit).to("second")
-
-        # Older event tables can contain individual quantities in different units.
-        return ureg.Quantity.from_sequence(
-            [
-                value
-                if isinstance(value, Quantity)
-                else ureg.Quantity(float(value), unit)
-                for value in values
-            ],
-            units="second",
-        )
+        if not pd.api.types.is_numeric_dtype(values.dtype):
+            raise TypeError("Time must be a quantity array or a numeric column with time units.")
+        return ureg.Quantity(values.to_numpy(dtype=float), unit).to("second")
 
     @staticmethod
     def _event_dataframe(run_record) -> pd.DataFrame:
@@ -61,14 +51,6 @@ class DetectionAnalyzer:
             .get_concatenated_dataframe()
             .reset_index()
         )
-
-    @staticmethod
-    def _segment_column(*, digital: pd.DataFrame) -> str | None:
-        """Return the label used for trigger segment identifiers."""
-        for label in ("SegmentID", "segment_id"):
-            if label in digital.columns or label in digital.index.names:
-                return label
-        return None
 
     def annotate(self, run_record) -> pd.DataFrame:
         """Annotate events with ``Detected`` and ``TriggerID`` columns.
@@ -91,20 +73,15 @@ class DetectionAnalyzer:
         if digital is None or "Time" not in events or len(events) == 0:
             return events
 
-        segment_column = self._segment_column(digital=digital)
-        if segment_column is None:
-            return events
-
-        digital_table = digital.reset_index()
         digital_unit = digital.attrs.get("units", {}).get("Time", "second")
-        trigger_times = self._time_quantity(values=digital_table["Time"], unit=digital_unit)
+        trigger_times = self._time_quantity(values=digital["Time"], unit=digital_unit)
         event_times = self._time_quantity(
             values=events["Time"], unit=events.attrs.get("units", {}).get("Time", "second")
         )
         detected = np.zeros(len(events), dtype=bool)
         trigger_ids = np.full(len(events), -1, dtype=int)
 
-        segments = digital_table.groupby(segment_column, observed=True)
+        segments = digital.groupby(level="SegmentID", observed=True, sort=False)
         for segment_id, positions in segments.indices.items():
             times = trigger_times[positions]
             times = times[~np.isnan(times)]
@@ -269,11 +246,7 @@ class DetectionAnalyzer:
         digital = run_record.signal.digital
         total_trigger_segments = 0
         if digital is not None:
-            segment_column = self._segment_column(digital=digital)
-            if segment_column is not None:
-                total_trigger_segments = digital.groupby(
-                    segment_column, observed=True
-                ).ngroups
+            total_trigger_segments = digital.groupby(level="SegmentID", observed=True).ngroups
 
         trigger_segments = len(segment_sizes)
         return {

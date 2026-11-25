@@ -118,12 +118,9 @@ peak_algo = peak_locator.GlobalPeakLocator(
 
 digital_processing = DigitalProcessing(
     discriminator=triggering,
-    peak_algorithm=peak_algo,
+    peak_locator=peak_algo,
 )
 
-run_record = cytometer.process_run(
-    run_record=run_record,
-    digital_processing=digital_processing,
-)
+run_record = run_record.process(digital_processing=digital_processing)
 
 run_record.peaks.plot(y=("SSC", "Area"), x=("FSC", "Area"))

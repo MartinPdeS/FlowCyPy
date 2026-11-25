@@ -610,10 +610,7 @@ def simulate_rosetta_beads(
         post_buffer=post_buffer,
     )
 
-    return cytometer.process_run(
-        run_record=run_record,
-        digital_processing=digital_processing,
-    )
+    return run_record.process(digital_processing=digital_processing)
 
 
 # %%
