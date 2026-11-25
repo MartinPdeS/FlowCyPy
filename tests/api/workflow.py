@@ -32,6 +32,9 @@ from FlowCyPy.run_record import RunRecord
 from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
 from FlowCyPy.sub_frames.events import EventDataFrame
 from FlowCyPy.sub_frames.peaks import PeakDataFrame
+from FlowCyPy.systems.bd import facs_canto_ii
+from FlowCyPy.systems.cytek import aurora
+from FlowCyPy.systems.sony import id7000_488
 from FlowCyPy.units import ureg
 from FlowCyPy.workflow import Workflow
 from tests.api.event_collection import make_population_events
@@ -666,3 +669,37 @@ def test_run_record_plot_peak_2d_has_marginals_by_default():
 
 if __name__ == "__main__":
     pytest.main(["-W", "error", __file__])
+
+
+def test_component_workflow_uses_live_optics_and_sample(scatterer_collection):
+    """Use modified sampling settings on every acquisition and isolate samples."""
+    first = facs_canto_ii()
+    other = facs_canto_ii()
+    first.fluidics.scatterer_collection.add_population(*scatterer_collection.populations)
+    optics = first.opto_electronics
+    optics.digitizer.sampling_rate = 5 * ureg.megahertz
+    first.initialize()
+    assert first.opto_electronics is optics
+    assert other.opto_electronics.digitizer.sampling_rate == 10 * ureg.megahertz
+    assert not other.fluidics.scatterer_collection.populations
+    record = first.run(run_time=0.05 * ureg.millisecond, random_state=123)
+    times = record.signal.analog["Time"].to("second").magnitude
+    np.testing.assert_allclose(np.diff(times), 1 / 5e6)
+
+
+@pytest.mark.parametrize(
+    ("factory", "wavelength_nm", "names", "apertures"),
+    [
+        (facs_canto_ii, 488, ["SSC", "FSC"], [1.2, 0.18]),
+        (aurora, 405, ["SSC", "FSC"], [1.2, 0.16]),
+        (id7000_488, 488, ["FSC"], [0.18]),
+    ],
+)
+def test_rosettax_scattering_geometry(factory, wavelength_nm, names, apertures):
+    """Match catalog wavelengths and collection cones and trigger on a modeled channel."""
+    system = factory()
+    optics = system.opto_electronics
+    assert optics.source.wavelength.to("nm").magnitude == pytest.approx(wavelength_nm)
+    assert [d.name for d in optics.detectors] == names
+    assert [d.numerical_aperture for d in optics.detectors] == pytest.approx(apertures)
+    assert system.digital_processing.discriminator.trigger_channel == names[0]

@@ -2,7 +2,7 @@
 FACSCanto simulation
 ====================
 
-This tutorial demonstrates how to set up and run a flow cytometry simulation using the FacsCanto instance from the FlowCyPy library.
+This tutorial demonstrates how to set up and run a flow cytometry simulation using a FACSCanto workflow from the FlowCyPy library.
 It includes defining a particle population, configuring the flow cytometer, running the simulation, and visualizing the results.
 """
 
@@ -10,7 +10,8 @@ It includes defining a particle population, configuring the flow cytometer, runn
 # Step 0: Global Settings and Imports
 # -----------------------------------
 from FlowCyPy.units import ureg
-from FlowCyPy.presets.flow_cytometer import FacsCanto, SampleFlowRate, SheathFlowRate
+from FlowCyPy.systems.bd import facs_canto
+from FlowCyPy.fluidics import SampleFlowRate, SheathFlowRate
 from FlowCyPy.fluidics import populations, distributions
 
 
@@ -43,9 +44,9 @@ population_0 = populations.SpherePopulation(
 # ------------------------
 # Choose flow rates, laser power, noise sources and the trigger threshold.
 
-facs_canto = FacsCanto(
-    sample_volume_flow=SampleFlowRate.MEDIUM.value,
-    sheath_volume_flow=SheathFlowRate.DEFAULT.value,
+instrument = facs_canto(
+    sample_volume_flow=SampleFlowRate.MEDIUM,
+    sheath_volume_flow=SheathFlowRate.DEFAULT,
     optical_power=200 * ureg.milliwatt,
     threshold="3sigma",
     include_shot_noise=True,
@@ -53,9 +54,10 @@ facs_canto = FacsCanto(
     background_power=0.01 * ureg.nanowatt,
 )
 
-facs_canto.add_population(population_0)
+sample = instrument.fluidics.scatterer_collection
+sample.add_population(population_0)
 
-facs_canto.dilute_sample(factor=100)
+sample.dilute(factor=100)
 
 
 # %%
@@ -63,7 +65,7 @@ facs_canto.dilute_sample(factor=100)
 # ------------------
 # Dilute the population and simulate a short acquisition.
 
-run_record = facs_canto.run(run_time=0.2 * ureg.millisecond)
+run_record = instrument.run(run_time=0.2 * ureg.millisecond)
 
 
 # %%

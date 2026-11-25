@@ -1,8 +1,8 @@
 import math
 from copy import copy
+from typing import Self
 import numpy as np
-from pydantic import ConfigDict
-from pydantic.dataclasses import dataclass
+from pydantic import ConfigDict, validate_call
 from TypedUnit import (
     FlowRate,
     Frequency,
@@ -41,58 +41,98 @@ from FlowCyPy.opto_electronics.source import FlatTop, Gaussian  # noqa: F401
 from FlowCyPy.run_record import RunRecord
 from FlowCyPy.units import ureg
 
-config_dict = ConfigDict(arbitrary_types_allowed=True, extra="forbid", kw_only=True)
+config_dict = ConfigDict(arbitrary_types_allowed=True, extra="forbid")
 
 
-@dataclass(config=config_dict, kw_only=True)
 class Workflow:
     """High-level convenience builder for a complete flow cytometry pipeline.
 
     The workflow groups fluidics, opto-electronics, and digital processing
     configuration into one object so a simulation can be initialized and run
-    with a compact, user-facing API.
+    with a compact, user-facing API. Use the keyword constructor to build from
+    settings, or use from_components to keep and edit assembled subsystems.
     """
-    # Source configuration. Wavelength and optical power are properties of
-    # the source itself and intentionally are not duplicated here.
-    source: object
 
-    # Flowcell parameters
-    sample_volume_flow: FlowRate
-    sheath_volume_flow: FlowRate
-    width: Length
-    height: Length
+    @validate_call(config=config_dict)
+    def __init__(
+        self,
+        *,
+        source: object,
+        sample_volume_flow: FlowRate,
+        sheath_volume_flow: FlowRate,
+        width: Length,
+        height: Length,
+        bit_depth: int,
+        sampling_rate: Frequency,
+        gain: Resistance,
+        bandwidth: Frequency,
+        detectors: list[Detector] | None = None,
+        use_auto_range: bool = True,
+        background_power: Power = 0 * ureg.watt,
+        population_list: list[populations.SpherePopulation] | None = None,
+        dilution_factor: float = 1,
+        analog_processing: list[object] | None = None,
+        peak_locator: BasePeakLocator | None = None,
+        discriminator: BaseDiscriminator | None = None,
+    ):
+        """Store acquisition settings for initialization on the first run."""
+        self.source = source
+        self.sample_volume_flow = sample_volume_flow
+        self.sheath_volume_flow = sheath_volume_flow
+        self.width = width
+        self.height = height
+        self.bit_depth = bit_depth
+        self.sampling_rate = sampling_rate
+        self.gain = gain
+        self.bandwidth = bandwidth
+        self.detectors = detectors if detectors is not None else []
+        self.use_auto_range = use_auto_range
+        self.background_power = background_power
+        self.population_list = population_list if population_list is not None else []
+        self.dilution_factor = dilution_factor
+        self.analog_processing = (
+            analog_processing if analog_processing is not None else []
+        )
+        self.peak_locator = peak_locator
+        self.discriminator = discriminator
+        self._uses_components = False
 
-    # Opto-electronic parameters
-    detectors: list[Detector] = None
-    bit_depth: int
-    use_auto_range: bool = True
-    sampling_rate: Frequency
-    background_power: Power = 0 * ureg.watt
+    @classmethod
+    @validate_call(config=config_dict)
+    def from_components(
+        cls,
+        *,
+        fluidics: Fluidics,
+        opto_electronics: OptoElectronics,
+        digital_processing: DigitalProcessing,
+        background_power: Power = 0 * ureg.watt,
+    ) -> Self:
+        """Assemble a workflow using the supplied live components.
 
-    # Population parameters
-    population_list: list[populations.SpherePopulation] = None
-    dilution_factor: float = 1
+        Parameters
+        ----------
+        fluidics : Fluidics
+            Flow cell and sample collection. Populations can be added after assembly.
+        opto_electronics : OptoElectronics
+            Source, detector channels, amplifier, digitizer and analog circuits.
+        digital_processing : DigitalProcessing
+            Trigger and peak measurement settings.
+        background_power : Power, optional
+            Constant optical background for each detector, convertible to watts.
 
-    # signal processing parameters
-    gain: Resistance
-    bandwidth: Frequency
-    analog_processing: list[object] = None
-    peak_locator: BasePeakLocator | None = None
-    discriminator: BaseDiscriminator | None = None
-
-    def __post_init__(self):
-        """Normalize optional list-like fields after dataclass construction.
-
-        The workflow accepts ``None`` for list-valued configuration fields so
-        callers can omit them. This hook converts those ``None`` values to empty
-        lists to simplify downstream initialization logic.
+        Returns
+        -------
+        Workflow
+            A ready-to-use workflow. Edits to its components apply to the next run.
         """
-        if self.analog_processing is None:
-            self.analog_processing = []
-        if self.detectors is None:
-            self.detectors = []
-        if self.population_list is None:
-            self.population_list = []
+        workflow = cls.__new__(cls)
+        workflow._uses_components = True
+        workflow.fluidics = fluidics
+        workflow.opto_electronics = opto_electronics
+        workflow.digital_processing = digital_processing
+        workflow.background_power = background_power
+        workflow.initialize()
+        return workflow
 
     def _validate_configuration(self) -> None:
         """Validate configuration before constructing simulation components."""
@@ -233,16 +273,20 @@ class Workflow:
         """
         Build and attach the configured simulation components.
 
-        This method materializes the fluidics, opto-electronics, digital
-        processing, and flow cytometer objects from the dataclass parameters.
-        Call this explicitly to rebuild the components after editing settings.
+        For a workflow constructed from settings, call this after editing those
+        settings to rebuild the subsystems. For a workflow built with
+        from_components, this reattaches the existing subsystems.
         """
 
-        self._validate_configuration()
-
-        self.fluidics = self._get_fluidics()
-        self.opto_electronics = self._get_opto_electronics()
-        self.digital_processing = self._get_digital_processing()
+        if self._uses_components:
+            self._validate_positive_quantity(
+                self.background_power, "watt", "background_power", allow_zero=True
+            )
+        else:
+            self._validate_configuration()
+            self.fluidics = self._get_fluidics()
+            self.opto_electronics = self._get_opto_electronics()
+            self.digital_processing = self._get_digital_processing()
 
         self.cytometer = FlowCytometer(
             fluidics=self.fluidics,
@@ -271,6 +315,16 @@ class Workflow:
         """
         if not hasattr(self, "cytometer"):
             self.initialize()
+        if self._uses_components:
+            collection = self.fluidics.scatterer_collection
+            if not collection.populations:
+                raise ValueError("Workflow requires at least one population.")
+            self._validate_named_objects(collection.populations, "population")
+            self._validate_positive_quantity(
+                self.background_power, "watt", "background_power", allow_zero=True
+            )
+            self.cytometer.fluidics = self.fluidics
+            self.cytometer.background_power = self.background_power
         return self.cytometer.acquire(
             run_time=run_time,
             opto_electronics=self.opto_electronics,
