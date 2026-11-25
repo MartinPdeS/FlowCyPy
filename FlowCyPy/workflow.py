@@ -16,10 +16,11 @@ from TypedUnit import (
 from FlowCyPy.digital_processing import (
     DigitalProcessing,
     classifier,  # noqa: F401
-    discriminator,
-    peak_locator,
+    discriminator,  # noqa: F401
+    peak_locator,  # noqa: F401
 )
-from FlowCyPy.digital_processing.discriminator import BaseDiscriminator  # noqa: F401
+from FlowCyPy.digital_processing.discriminator import BaseDiscriminator
+from FlowCyPy.digital_processing.peak_locator import BasePeakLocator
 from FlowCyPy.flow_cytometer import FlowCytometer
 from FlowCyPy.fluidics import (
     FlowCell,
@@ -37,6 +38,7 @@ from FlowCyPy.opto_electronics import (
     circuits,  # noqa: F401
 )
 from FlowCyPy.opto_electronics.source import FlatTop, Gaussian  # noqa: F401
+from FlowCyPy.run_record import RunRecord
 from FlowCyPy.units import ureg
 
 config_dict = ConfigDict(arbitrary_types_allowed=True, extra="forbid", kw_only=True)
@@ -75,8 +77,8 @@ class Workflow:
     gain: Resistance
     bandwidth: Frequency
     analog_processing: list[object] = None
-    peak_locator: peak_locator.BasePeakLocator
-    discriminator: discriminator.BaseDiscriminator
+    peak_locator: BasePeakLocator | None = None
+    discriminator: BaseDiscriminator | None = None
 
     def __post_init__(self):
         """Normalize optional list-like fields after dataclass construction.
@@ -121,9 +123,7 @@ class Workflow:
         if not math.isfinite(self.dilution_factor) or self.dilution_factor <= 0:
             raise ValueError("dilution_factor must be finite and greater than zero.")
 
-        sampling_rate = self.sampling_rate.to("hertz").magnitude
-        bandwidth = self.bandwidth.to("hertz").magnitude
-        if bandwidth > sampling_rate / 2:
+        if self.bandwidth > self.sampling_rate / 2:
             raise ValueError("bandwidth must not exceed the Nyquist frequency.")
 
         self._validate_named_objects(self.detectors, "detector")
@@ -225,7 +225,7 @@ class Workflow:
         DigitalProcessing
         """
         return DigitalProcessing(
-            peak_algorithm=self.peak_locator,
+            peak_locator=self.peak_locator,
             discriminator=self.discriminator,
         )
 
@@ -235,7 +235,7 @@ class Workflow:
 
         This method materializes the fluidics, opto-electronics, digital
         processing, and flow cytometer objects from the dataclass parameters.
-        It must be called before :meth:`run`.
+        Call this explicitly to rebuild the components after editing settings.
         """
 
         self._validate_configuration()
@@ -247,6 +247,34 @@ class Workflow:
         self.cytometer = FlowCytometer(
             fluidics=self.fluidics,
             background_power=self.background_power,
+        )
+
+    def acquire(
+        self,
+        *,
+        run_time: Time,
+        random_state: int | np.random.Generator | None = None,
+    ) -> RunRecord:
+        """Acquire analog waveforms, initializing the workflow on first use.
+
+        Parameters
+        ----------
+        run_time : Time
+            Duration of the acquisition.
+        random_state : int or numpy.random.Generator, optional
+            Seed or advancing random stream, as for :meth:`run`.
+
+        Returns
+        -------
+        RunRecord
+            Particle events and analog voltages, ready for repeated processing.
+        """
+        if not hasattr(self, "cytometer"):
+            self.initialize()
+        return self.cytometer.acquire(
+            run_time=run_time,
+            opto_electronics=self.opto_electronics,
+            random_state=random_state,
         )
 
     def run(
@@ -273,15 +301,8 @@ class Workflow:
 
         Notes
         -----
-        :meth:`initialize` must be called first so the workflow components are
-        available.
+        The first run initializes the workflow automatically. Call
+        :meth:`initialize` to rebuild it after editing configuration settings.
         """
-        if not hasattr(self, "cytometer"):
-            raise RuntimeError("Workflow must be initialized before calling run().")
-
-        return self.cytometer.run(
-            run_time=run_time,
-            opto_electronics=self.opto_electronics,
-            digital_processing=self.digital_processing,
-            random_state=random_state,
-        )
+        acquisition = self.acquire(run_time=run_time, random_state=random_state)
+        return acquisition.process(digital_processing=self.digital_processing)

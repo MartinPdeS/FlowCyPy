@@ -1,4 +1,3 @@
-import logging
 import math
 import numpy as np
 from TypedUnit import Power, Time, ureg, validate_units
@@ -9,10 +8,6 @@ from FlowCyPy.opto_electronics import OptoElectronics
 from FlowCyPy.opto_electronics.system import _next_noise_seed
 from FlowCyPy.run_record import RunRecord
 from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
-from FlowCyPy.sub_frames.peaks import PeakDataFrame
-from FlowCyPy.sub_frames.triggered import TriggerDataFrame
-
-logger = logging.getLogger(__name__)
 
 
 class FlowCytometer:
@@ -58,84 +53,59 @@ class FlowCytometer:
         event_collection : EventCollection
             Population event blocks.
         signal_dict : dict
-            Optical power signal dictionary updated in place.
+            Uniform sample times under "Time" and one optical power array per
+            detector, all of shape (n_samples,). Detector powers are incremented
+            in place.
         opto_electronics : OptoElectronics
             Opto electronic configuration.
         """
+        sample_times = signal_dict["Time"]
+        if sample_times.size == 0:
+            return
+
+        if sample_times.size == 1:
+            acquisition_window = sample_times[0]
+        else:
+            sample_interval = sample_times[1] - sample_times[0]
+            acquisition_window = sample_times[-1] - sample_times[0] + sample_interval
+
         for events in event_collection:
-            if not isinstance(events.sampling_method, populations.ExplicitModel):
+            if events.empty or not isinstance(
+                events.sampling_method, populations.ExplicitModel
+            ):
                 continue
 
-            if events.empty:
-                continue
+            event_times = events.get_quantity("Time")
+            velocities = events.get_quantity("Velocity")
+            support_margin = 4 * opto_electronics.source.get_particle_width(velocities)
 
-            time_array_seconds = signal_dict["Time"].to("second").magnitude
-
-            if time_array_seconds.size == 0:
-                continue
-
-            if time_array_seconds.size == 1:
-                acquisition_window_seconds = time_array_seconds[0]
-            else:
-                acquisition_window_seconds = (
-                    time_array_seconds[-1] - time_array_seconds[0]
-                    + (time_array_seconds[1] - time_array_seconds[0])
+            # A pulse within four widths of an edge also contributes on the
+            # opposite side of the periodic acquisition window.
+            late_events = np.flatnonzero(
+                event_times >= acquisition_window - support_margin
+            )
+            early_events = np.flatnonzero(event_times < support_margin)
+            pulse_centers = np.concatenate(
+                (
+                    event_times[late_events] - acquisition_window,
+                    event_times,
+                    event_times[early_events] + acquisition_window,
                 )
-
-            event_times = events.get_quantity("Time").to("second")
-            event_velocities = events.get_quantity("Velocity").to("meter / second")
-            pulse_widths = opto_electronics.source.get_particle_width(
-                event_velocities
-            ).to("second")
-
-            event_time_values = event_times.magnitude
-            velocity_values = event_velocities.magnitude
-            pulse_width_values = pulse_widths.magnitude
-            support_margin_seconds = 4.0 * pulse_width_values
-
-            prepend_mask = event_time_values >= (
-                acquisition_window_seconds - support_margin_seconds
             )
-            append_mask = event_time_values < support_margin_seconds
-
-            wrapped_time_values = np.concatenate(
-                [
-                    event_time_values[prepend_mask] - acquisition_window_seconds,
-                    event_time_values,
-                    event_time_values[append_mask] + acquisition_window_seconds,
-                ]
+            event_indices = np.concatenate(
+                (late_events, np.arange(event_times.size), early_events)
             )
-            wrapped_velocity_values = np.concatenate(
-                [
-                    velocity_values[prepend_mask],
-                    velocity_values,
-                    velocity_values[append_mask],
-                ]
-            )
-
-            wrapped_times = wrapped_time_values * ureg.second
-            wrapped_velocities = wrapped_velocity_values * ureg.meter / ureg.second
+            pulse_velocities = velocities[event_indices]
 
             for detector in opto_electronics.detectors:
-                event_amplitudes = events.get_quantity(detector.name).to("watt")
-                amplitude_values = event_amplitudes.magnitude
-                wrapped_amplitude_values = np.concatenate(
-                    [
-                        amplitude_values[prepend_mask],
-                        amplitude_values,
-                        amplitude_values[append_mask],
-                    ]
-                )
-
-                generated_pulse_signal = opto_electronics.source.generate_pulses(
-                    velocities=wrapped_velocities,
-                    pulse_centers=wrapped_times,
-                    pulse_amplitudes=wrapped_amplitude_values * ureg.watt,
-                    time_array=signal_dict["Time"],
+                amplitudes = events.get_quantity(detector.name)
+                signal_dict[detector.name] += opto_electronics.source.generate_pulses(
+                    velocities=pulse_velocities,
+                    pulse_centers=pulse_centers,
+                    pulse_amplitudes=amplitudes[event_indices],
+                    time_array=sample_times,
                     base_level=0 * ureg.watt,
                 )
-
-                signal_dict[detector.name] += generated_pulse_signal
 
     def _add_gamma_model_signals(
         self,
@@ -188,7 +158,7 @@ class FlowCytometer:
                 seed=_next_noise_seed(generator=random_generator),
             )
 
-            if reference_mean_amplitude.magnitude == 0:
+            if reference_mean_amplitude == 0 * ureg.watt:
                 raise ValueError(
                     "Gamma Model reference mean amplitude is zero, cannot normalize."
                 )
@@ -287,50 +257,16 @@ class FlowCytometer:
             Run record containing the analog acquisition and all downstream
             results that could be computed.
         """
-        run_record = RunRecord(
+        acquisition = RunRecord(
             run_time=run_time,
             event_collection=event_collection,
             opto_electronics=opto_electronics,
+        )
+        processed = opto_electronics.apply_analog_processing(analog_dict=analog_dict)
+        return acquisition._process_filtered(
+            analog=AcquisitionDataFrame._construct_from_signal_dict(processed),
             digital_processing=digital_processing,
         )
-
-        processed_analog_dict = opto_electronics.apply_analog_processing(
-            analog_dict=analog_dict,
-        )
-
-        run_record.signal.analog = AcquisitionDataFrame._construct_from_signal_dict(
-            signal_dict=processed_analog_dict,
-        )
-
-        triggered_analog_dict = (
-            digital_processing.discriminator.run_with_dict(processed_analog_dict)
-            if digital_processing.discriminator is not None
-            else None
-        )
-
-        if triggered_analog_dict is None:
-            return run_record
-
-        if len(triggered_analog_dict["segment_id"]) == 0:
-            logger.debug(
-                "No triggers detected. Returning analog signal without digital processing."
-            )
-            return run_record
-
-        triggered_digital_dict = opto_electronics.digitizer.digitize_data_dict(
-            triggered_analog_dict
-        )
-
-        run_record.signal.digital = TriggerDataFrame._construct_from_flat_dict(
-            triggered_digital_dict,
-        )
-
-        if digital_processing.peak_algorithm is not None:
-            peaks_dict = digital_processing.peak_algorithm.run(triggered_digital_dict)
-
-            run_record.peaks = PeakDataFrame._construct_from_dict(peaks_dict)
-
-        return run_record
 
     def process_run(
         self,

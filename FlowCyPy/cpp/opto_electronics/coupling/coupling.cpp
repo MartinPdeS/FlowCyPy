@@ -157,8 +157,8 @@ py::object ScatteringModel::build_scatterer_set(
             "MediumRefractiveIndex"
         );
         keywords["diameter"] = get_column(event_dataframe, "Diameter");
-        keywords["material"] = refractive_index.attr("magnitude");
-        keywords["medium"] = medium_refractive_index.attr("magnitude");
+        keywords["material"] = refractive_index.attr("m_as")("RIU");
+        keywords["medium"] = medium_refractive_index.attr("m_as")("RIU");
 
         return keyword_call(
             scatterer_set_module.attr("SphereSet").attr("build_sequential"),

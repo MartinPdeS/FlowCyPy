@@ -140,7 +140,7 @@ signal_processing = SignalProcessing(
     digitizer=digitizer,
     analog_processing=analog_processing,
     triggering_system=triggering,
-    peak_algorithm=peak_algo,
+    peak_locator=peak_algo,
 )
 
 # %%

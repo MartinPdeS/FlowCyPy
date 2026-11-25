@@ -533,7 +533,7 @@ def make_digital_processing(
 
     return DigitalProcessing(
         discriminator=dynamic_discriminator,
-        peak_algorithm=global_peak_locator,
+        peak_locator=global_peak_locator,
     )
 
 

@@ -1,5 +1,5 @@
 from collections.abc import Mapping
-
+from typing import ClassVar
 import pandas as pd
 from TypedUnit import Time, Voltage, ureg
 
@@ -31,6 +31,8 @@ class AcquisitionDataFrame(pd.DataFrame):
 
         super().__getitem__(column_name)
     """
+
+    _metadata: ClassVar[list[str]] = ["raw_data"]
 
     @property
     def _constructor(self) -> type:
@@ -134,8 +136,6 @@ class AcquisitionDataFrame(pd.DataFrame):
         AcquisitionDataFrame
             A dataframe containing the time axis and detector signals.
         """
-        cls.raw_data = signal_dict
-
         if "Time" not in signal_dict:
             raise ValueError("signal_dict must contain a 'Time' entry.")
 
@@ -179,6 +179,7 @@ class AcquisitionDataFrame(pd.DataFrame):
             signal_dataframe[detector_name] = pd.Series(detector_signal.magnitude)
 
         signal_dataframe = cls(signal_dataframe)
+        signal_dataframe.raw_data = signal_dict
         signal_dataframe.attrs["units"]["Time"] = time_values.units
 
         for detector_name, detector_signal in signal_dict.items():

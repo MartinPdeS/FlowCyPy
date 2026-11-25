@@ -206,9 +206,7 @@ workflow = Workflow(
 # %%
 # Run the acquisition
 # -------------------
-# Initialize the model and acquire one millisecond of particle events.
-
-workflow.initialize()
+# The first run builds the instrument and acquires one millisecond of events.
 
 run_record = workflow.run(run_time=1 * ureg.millisecond)
 

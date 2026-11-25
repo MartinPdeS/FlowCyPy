@@ -75,7 +75,7 @@ particle event detection.
 - **Attributes**:
 
   - `discriminator`: Peak/event trigger algorithm.
-  - `peak_algorithm`: Algorithm used to characterize detected peaks.
+  - `peak_locator`: Algorithm used to characterize detected peaks.
 
 - **Key Features**:
 

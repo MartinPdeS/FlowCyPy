@@ -264,7 +264,7 @@ dynamic_window_discriminator = discriminator.DynamicWindow(
 
 
 digital_processing = DigitalProcessing(
-    peak_algorithm=peak_algorithm,
+    peak_locator=peak_algorithm,
     discriminator=dynamic_window_discriminator,
 )
 

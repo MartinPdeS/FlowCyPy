@@ -19,6 +19,7 @@ from FlowCyPy.fluidics import (
     populations,
 )
 from FlowCyPy.fluidics.event_collection import EventCollection
+from FlowCyPy.fluidics.population_events import PopulationEvents
 from FlowCyPy.opto_electronics import (
     Amplifier,
     Detector,
@@ -28,6 +29,8 @@ from FlowCyPy.opto_electronics import (
     source,
 )
 from FlowCyPy.run_record import RunRecord
+from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
+from FlowCyPy.sub_frames.events import EventDataFrame
 from FlowCyPy.sub_frames.peaks import PeakDataFrame
 from FlowCyPy.units import ureg
 from FlowCyPy.workflow import Workflow
@@ -190,6 +193,7 @@ def make_short_run_record(flow_cytometer, opto_electronics) -> RunRecord:
         run_time=0.05 * ureg.millisecond,
         opto_electronics=opto_electronics,
         digital_processing=DigitalProcessing(),
+        random_state=42,
     )
 
 
@@ -231,11 +235,93 @@ def make_workflow(detector_0, scatterer_collection, **overrides) -> Workflow:
 # ----------------- UNIT TESTS -----------------
 
 
-def test_workflow_run_requires_initialization(detector_0, scatterer_collection):
+@pytest.mark.parametrize("first_method", ["acquire", "run"])
+def test_workflow_initializes_once(detector_0, scatterer_collection, first_method):
     workflow = make_workflow(detector_0, scatterer_collection)
+    settings = {"run_time": 0.05 * ureg.millisecond, "random_state": 123}
+    first = getattr(workflow, first_method)(**settings)
+    instrument = workflow.cytometer
+    second = workflow.run(**settings)
+    assert workflow.cytometer is instrument
+    if first_method == "acquire":
+        assert first.digital_processing is None
+        first = first.process(digital_processing=workflow.digital_processing)
+    np.testing.assert_array_equal(
+        first.signal.analog["default"].to("volt").magnitude,
+        second.signal.analog["default"].to("volt").magnitude,
+    )
+    workflow.initialize()
+    assert workflow.cytometer is not instrument
 
-    with pytest.raises(RuntimeError, match="must be initialized"):
-        workflow.run(0.05 * ureg.millisecond)
+
+@pytest.mark.parametrize("use_filter", [False, True])
+def test_process_thresholds_in_either_order(opto_electronics, use_filter):
+    if use_filter:
+        opto_electronics.analog_processing = [
+            circuits.BaselineRestorationServo(time_constant=100 * ureg.microsecond)
+        ]
+    waveform = np.zeros(100)
+    waveform[20:24] = 2
+    waveform[60:64] = 4
+    analog = {
+        "Time": np.arange(100) / opto_electronics.digitizer.sampling_rate,
+        "default": waveform * ureg.volt,
+        "default_bis": waveform * ureg.volt,
+    }
+    acquisition = RunRecord(
+        run_time=100 / opto_electronics.digitizer.sampling_rate,
+        event_collection=EventCollection(),
+        opto_electronics=opto_electronics,
+    )
+    acquisition.signal.analog = AcquisitionDataFrame._construct_from_signal_dict(analog)
+    other = AcquisitionDataFrame._construct_from_signal_dict(
+        {**analog, "default": waveform * 0 * ureg.volt}
+    )
+    assert acquisition.signal.analog.raw_data is not other.raw_data
+
+    settings = [
+        DigitalProcessing(
+            discriminator=discriminator.FixedWindow(
+                trigger_channel="default",
+                threshold=level * ureg.volt,
+                pre_buffer=2,
+                post_buffer=5,
+                max_triggers=-1,
+            ),
+            peak_locator=peak_locator.GlobalPeakLocator(),
+        )
+        for level in (1, 3)
+    ]
+    low, high = [
+        acquisition.process(digital_processing=setting) for setting in settings
+    ]
+    high_again, low_again = [
+        acquisition.process(digital_processing=setting)
+        for setting in reversed(settings)
+    ]
+    assert low.number_of_triggers == 2
+    assert high.number_of_triggers == 1
+    assert acquisition.signal.digital is None
+    assert acquisition.peaks is None
+    for record, repeated in ((low, low_again), (high, high_again)):
+        assert record.signal.analog.raw_data is low.signal.analog.raw_data
+        assert record.signal.digital.equals(repeated.signal.digital)
+        assert record.peaks.equals(repeated.peaks)
+
+
+def test_peak_locator_compatibility():
+    locator = peak_locator.GlobalPeakLocator()
+    for processing in (
+        DigitalProcessing(None, locator),
+        DigitalProcessing(peak_algorithm=locator),
+    ):
+        assert processing.peak_locator is locator
+        processing.peak_algorithm = None
+        assert processing.peak_locator is None
+        processing.peak_locator = locator
+        assert processing.peak_algorithm is locator
+    with pytest.raises(TypeError, match="only one"):
+        DigitalProcessing(peak_locator=locator, peak_algorithm=locator)
 
 
 def test_workflow_initialize_requires_a_population(detector_0, scatterer_collection):
@@ -321,6 +407,78 @@ def test_flow_cytometer_acquisition(flow_cytometer, opto_electronics):
     assert np.std(run_record.signal.analog["default"].magnitude) > 0
 
 
+def test_explicit_pulses_wrap_with_mixed_units(flow_cytometer, opto_electronics):
+    """Check boundary pulses and detector amplitudes against explicit periodic copies."""
+    frame = EventDataFrame()
+    frame.set_column("Time", [1000, 50000, 99000], unit=ureg.nanosecond)
+    frame.set_column("Velocity", [100, 200, 300], unit=ureg.centimeter / ureg.second)
+    frame.set_column("default", [2, 3, 5], unit=ureg.microwatt)
+    frame.set_column("default_bis", [7, 11, 13], unit=ureg.nanowatt)
+    events = PopulationEvents(
+        dataframe=frame,
+        population=object(),
+        sampling_method=populations.ExplicitModel(),
+        name="boundary events",
+        scatterer_type="Sphere",
+        metadata={},
+    )
+    sample_times = np.arange(100) * ureg.microsecond
+    signals = {
+        "Time": sample_times,
+        "default": np.ones(100) * ureg.nanowatt,
+        "default_bis": np.ones(100) * ureg.nanowatt,
+    }
+    flow_cytometer._add_explicit_model_signals(
+        event_collection=EventCollection(events_list=[events]),
+        signal_dict=signals,
+        opto_electronics=opto_electronics,
+    )
+
+    for detector in opto_electronics.detectors:
+        expected = opto_electronics.source.generate_pulses(
+            velocities=np.array([3, 1, 2, 3, 1]) * ureg.meter / ureg.second,
+            pulse_centers=np.array([-1, 1, 50, 99, 101]) * ureg.microsecond,
+            pulse_amplitudes=events.get_quantity(detector.name)[[2, 0, 1, 2, 0]].to(
+                "watt"
+            ),
+            time_array=sample_times.to("second"),
+            base_level=1 * ureg.nanowatt,
+        )
+        assert signals[detector.name].shape == sample_times.shape
+        np.testing.assert_allclose(
+            signals[detector.name].magnitude, expected.to("nanowatt").magnitude
+        )
+
+
+def test_sphere_coupling_accepts_scaled_refractive_index_units(
+    flow_cytometer, opto_electronics
+):
+    """The same refractive indices in milli-RIU yield the same coupled powers."""
+    events = flow_cytometer.fluidics.generate_event_collection(
+        run_time=0.01 * ureg.millisecond,
+        sampling_rate=opto_electronics.digitizer.sampling_rate,
+        random_state=123,
+    )
+    scaled = events.convert_units(
+        column_units={
+            "RefractiveIndex": "milliRIU",
+            "MediumRefractiveIndex": "milliRIU",
+        },
+        inplace=False,
+    )
+    for collection in (events, scaled):
+        opto_electronics.add_coupling_to_dataframe(event_collection=collection)
+    for detector in opto_electronics.detectors:
+        expected = events[0].get_quantity(detector.name).to("watt")
+        assert expected.size > 0
+        np.testing.assert_allclose(
+            scaled[0].get_quantity(detector.name).m_as("watt"),
+            expected.magnitude,
+            rtol=1e-10,
+            atol=0,
+        )
+
+
 def test_flow_cytometer_multiple_detectors(flow_cytometer, opto_electronics):
     run_record = make_short_run_record(
         flow_cytometer=flow_cytometer,
@@ -378,120 +536,60 @@ def test_workflow_gamma_and_explicit_models_complete_acquisition(
     assert "ParticleTrace" in gamma_events.metadata
 
 
-@patch("matplotlib.pyplot.show")
-def test_flow_cytometer_plot_is_called_without_rendering(
-    mocked_show,
-    flow_cytometer,
-    opto_electronics,
+def test_analog_plot_displays_each_acquired_channel(flow_cytometer, opto_electronics):
+    """Each detector axis shows its acquired voltages on the acquisition time grid."""
+    record = make_short_run_record(flow_cytometer, opto_electronics)
+    analog = record.signal.analog
+    time = analog["Time"]
+    voltages = {name: analog[name] for name in record.detector_names}
+
+    with patch.object(plt, "show") as show:
+        figure = record.plot_analog(include_scatterer=False)
+    show.assert_not_called()
+
+    for name, axis in zip(record.detector_names, figure.axes, strict=True):
+        assert name in axis.get_ylabel()
+        (line,) = axis.lines
+        np.testing.assert_allclose(
+            line.get_xdata(orig=False), time.m_as(analog.time_units)
+        )
+        np.testing.assert_allclose(
+            line.get_ydata(orig=False), voltages[name].m_as(analog.signal_units)
+        )
+
+
+def test_run_reports_maximum_of_each_digitized_segment(
+    flow_cytometer, opto_electronics
 ):
-    run_record = make_short_run_record(
-        flow_cytometer=flow_cytometer,
-        opto_electronics=opto_electronics,
-    )
-
-    with patch.object(run_record, "plot_analog", autospec=True) as mocked_plot_analog:
-        run_record.plot_analog()
-
-    mocked_plot_analog.assert_called_once_with()
-    mocked_show.assert_not_called()
-
-
-def test_flow_cytometer_triggered_acquisition(flow_cytometer, opto_electronics):
-    run_record = make_short_run_record(
-        flow_cytometer=flow_cytometer,
-        opto_electronics=opto_electronics,
-    )
-
-    dynamic_window_discriminator = make_dynamic_window_discriminator()
-
-    triggered_signal = dynamic_window_discriminator.run_with_dict(
-        run_record.signal.analog.raw_data
-    )
-
-    assert triggered_signal is not None
-    assert len(triggered_signal) > 0
-
-
-def test_flow_cytometer_digital_processing(flow_cytometer, opto_electronics):
-    run_record = make_short_run_record(
-        flow_cytometer=flow_cytometer,
-        opto_electronics=opto_electronics,
-    )
-
-    dynamic_window_discriminator = make_dynamic_window_discriminator()
-
-    triggered_signal = dynamic_window_discriminator.run_with_dict(
-        run_record.signal.analog.raw_data
-    )
-
-    assert np.std(triggered_signal["default"]) > 0
-
-
-def test_peak_detection(flow_cytometer, digitizer, opto_electronics):
+    """Verify every reported peak against the recorded ADC samples for that channel."""
     opto_electronics.analog_processing = [
-        circuits.BaselineRestorationServo(
-            time_constant=10 * ureg.microsecond,
-        ),
-        circuits.BesselLowPass(
-            cutoff_frequency=1 * ureg.megahertz,
-            order=4,
-            gain=2,
-        ),
+        circuits.BaselineRestorationServo(time_constant=10 * ureg.microsecond),
+        circuits.BesselLowPass(cutoff_frequency=1 * ureg.megahertz, order=4, gain=2),
     ]
-
-    run_record = make_short_run_record(
-        flow_cytometer=flow_cytometer,
+    record = flow_cytometer.run(
+        run_time=0.05 * ureg.millisecond,
         opto_electronics=opto_electronics,
+        digital_processing=DigitalProcessing(
+            discriminator=discriminator.DynamicWindow(
+                trigger_channel="default", threshold="1 sigma",
+                pre_buffer=4, post_buffer=4, max_triggers=-1,
+            ),
+            peak_locator=peak_locator.GlobalPeakLocator(),
+        ),
+        random_state=42,
     )
 
-    dynamic_window_discriminator = make_dynamic_window_discriminator()
-
-    triggered_acquisition = dynamic_window_discriminator.run_with_dict(
-        run_record.signal.analog.raw_data
-    )
-
-    digitizer.capture_signal(run_record.signal.analog.raw_data["default"])
-
-    digital_signal_dict = digitizer.digitize_data_dict(triggered_acquisition)
-
-    peak_algorithm = peak_locator.GlobalPeakLocator()
-
-    peaks = peak_algorithm.run(digital_signal_dict)
-
-    assert len(peaks) > 0
-
-
-@patch("matplotlib.pyplot.show")
-def test_peak_plot_dependencies_are_called_without_rendering(
-    mocked_show,
-    flow_cytometer,
-    digitizer,
-    opto_electronics,
-):
-    run_record = make_short_run_record(
-        flow_cytometer=flow_cytometer,
-        opto_electronics=opto_electronics,
-    )
-
-    with patch.object(run_record, "plot_analog", autospec=True) as mocked_plot_analog:
-        run_record.plot_analog()
-        mocked_plot_analog.assert_called_once_with()
-
-    dynamic_window_discriminator = make_dynamic_window_discriminator()
-
-    triggered_acquisition = dynamic_window_discriminator.run_with_dict(
-        run_record.signal.analog.raw_data
-    )
-
-    digitizer.capture_signal(run_record.signal.analog.raw_data["default"])
-
-    digital_signal_dict = digitizer.digitize_data_dict(triggered_acquisition)
-
-    peak_algorithm = peak_locator.GlobalPeakLocator()
-
-    peaks = peak_algorithm.run(digital_signal_dict)
-
-    assert len(peaks) > 0
+    assert record.number_of_triggers > 0
+    assert record.signal.digital["default"].nunique() > 1
+    assert len(record.peaks) == record.number_of_triggers * len(record.detector_names)
+    for segment_id, segment in record.signal.digital.groupby(level="SegmentID"):
+        for detector in record.detector_names:
+            samples = segment[detector].to_numpy()
+            peak = record.peaks.loc[(detector, segment_id, 0)]
+            assert samples.min() >= 0
+            assert samples.max() < 2**opto_electronics.digitizer.bit_depth
+            assert peak["Height"] == samples.max()
+            assert peak["Index"] == np.argmax(samples)
 
 
 def test_run_record_plot_peak_hist_returns_figure():

@@ -106,7 +106,7 @@ digital_processing = DigitalProcessing(
         post_buffer=30,
         max_triggers=-1,
     ),
-    peak_algorithm=peak_locator.GlobalPeakLocator(),
+    peak_locator=peak_locator.GlobalPeakLocator(),
 )
 
 # %%

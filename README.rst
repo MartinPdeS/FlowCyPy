@@ -222,7 +222,7 @@ Simulate a simple flow cytometer experiment:
 
     digital_processing = DigitalProcessing(
         discriminator=triggering,
-        peak_algorithm=peak_algo,
+        peak_locator=peak_algo,
     )
 
     # %%

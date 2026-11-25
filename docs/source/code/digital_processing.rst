@@ -124,5 +124,5 @@ The example below shows a typical digital processing configuration using a fixed
 
    digital_processing = DigitalProcessing(
        discriminator=triggering,
-       peak_algorithm=peak_algorithm,
+       peak_locator=peak_algorithm,
    )

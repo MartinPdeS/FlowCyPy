@@ -143,13 +143,10 @@ for threshold_value in threshold_values:
             post_buffer=40,
             max_triggers=-1,
         ),
-        peak_algorithm=peak_locator.GlobalPeakLocator(),
+        peak_locator=peak_locator.GlobalPeakLocator(),
     )
 
-    run_record = cytometer.process_run(
-        run_record=acquisition,
-        digital_processing=digital_processing,
-    )
+    run_record = acquisition.process(digital_processing=digital_processing)
 
     run_records.append((threshold_value, run_record))
     events = run_record.annotate_detected_events()

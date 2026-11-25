@@ -104,15 +104,13 @@ def test_apply_dark_current_noise_returns_input_when_no_bandwidth_is_available()
     signal = np.array([1e-9, 2e-9, 3e-9]) * ureg.ampere
     noisy_signal = detector.apply_dark_current_noise(signal)
 
-    assert np.allclose(
+    np.testing.assert_array_equal(
         noisy_signal.to("ampere").magnitude,
         signal.to("ampere").magnitude,
     )
 
 
 def test_apply_dark_current_noise_uses_stored_bandwidth():
-    np.random.seed(0)
-
     detector = Detector(
         phi_angle=90 * ureg.degree,
         numerical_aperture=0.7,
@@ -121,7 +119,7 @@ def test_apply_dark_current_noise_uses_stored_bandwidth():
     )
 
     signal = np.array([1e-9, 2e-9, 3e-9]) * ureg.ampere
-    noisy_signal = detector.apply_dark_current_noise(signal)
+    noisy_signal = detector.apply_dark_current_noise(signal, seed=42)
 
     assert hasattr(noisy_signal, "to")
     assert noisy_signal.to("ampere").magnitude.shape == (3,)
@@ -134,8 +132,6 @@ def test_apply_dark_current_noise_uses_stored_bandwidth():
 
 
 def test_apply_dark_current_noise_method_bandwidth_overrides_instance_bandwidth():
-    np.random.seed(0)
-
     detector = Detector(
         phi_angle=90 * ureg.degree,
         numerical_aperture=0.7,
@@ -148,16 +144,19 @@ def test_apply_dark_current_noise_method_bandwidth_overrides_instance_bandwidth(
     noisy_signal_with_override = detector.apply_dark_current_noise(
         signal,
         bandwidth=50 * ureg.megahertz,
+        seed=42,
     )
-    noisy_signal_with_instance_bandwidth = detector.apply_dark_current_noise(signal)
+    noisy_signal_with_instance_bandwidth = detector.apply_dark_current_noise(
+        signal, seed=42
+    )
 
-    assert noisy_signal_with_override.to("ampere").magnitude.shape == (3,)
-    assert noisy_signal_with_instance_bandwidth.to("ampere").magnitude.shape == (3,)
-    assert not np.allclose(
-        noisy_signal_with_override.to("ampere").magnitude,
-        noisy_signal_with_instance_bandwidth.to("ampere").magnitude,
-        atol=0.0,
+    # Identical random draws isolate the sqrt(bandwidth) scaling of the fluctuations.
+    baseline = signal + detector.dark_current
+    np.testing.assert_allclose(
+        (noisy_signal_with_override - baseline).m_as("ampere"),
+        np.sqrt(10) * (noisy_signal_with_instance_bandwidth - baseline).m_as("ampere"),
         rtol=1e-12,
+        atol=0,
     )
 
 

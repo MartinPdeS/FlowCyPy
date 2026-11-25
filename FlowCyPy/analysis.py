@@ -2,10 +2,9 @@
 
 
 from collections.abc import Iterable, Sequence
-
 import numpy as np
 import pandas as pd
-
+from pint import Quantity
 from .units import ureg
 
 
@@ -20,25 +19,39 @@ class DetectionAnalyzer:
     """
 
     @staticmethod
-    def _to_seconds(values, unit=None) -> np.ndarray:
-        """Convert quantities or numeric values to seconds."""
-        if hasattr(values, "pint"):
-            return np.asarray(values.pint.to("second").magnitude, dtype=float)
+    def _time_quantity(*, values: pd.Series | Quantity, unit) -> Quantity:
+        """Read a time column for comparing arrivals with trigger windows.
 
-        if hasattr(values, "to") and hasattr(values, "magnitude"):
-            return np.asarray(values.to("second").magnitude, dtype=float)
+        Parameters
+        ----------
+        values : pandas.Series or pint.Quantity
+            One-dimensional time column.
+        unit : str or pint.Unit
+            Unit recorded for bare numeric values.
 
-        raw_values = list(values) if hasattr(values, "__iter__") else [values]
-        seconds = []
-        for value in raw_values:
-            if hasattr(value, "to") and hasattr(value, "magnitude"):
-                seconds.append(value.to("second").magnitude)
-            elif unit is not None:
-                unit_value = ureg(unit) if isinstance(unit, str) else unit
-                seconds.append((value * unit_value).to("second").magnitude)
-            else:
-                seconds.append(value)
-        return np.asarray(seconds, dtype=float)
+        Returns
+        -------
+        pint.Quantity
+            Time array in seconds, in the original row order.
+        """
+        if isinstance(values, Quantity):
+            return values.to("second")
+        quantity = getattr(values.array, "quantity", None)
+        if quantity is not None:
+            return quantity.to("second")
+        if pd.api.types.is_numeric_dtype(values.dtype):
+            return ureg.Quantity(values.to_numpy(dtype=float), unit).to("second")
+
+        # Older event tables can contain individual quantities in different units.
+        return ureg.Quantity.from_sequence(
+            [
+                value
+                if isinstance(value, Quantity)
+                else ureg.Quantity(float(value), unit)
+                for value in values
+            ],
+            units="second",
+        )
 
     @staticmethod
     def _event_dataframe(run_record) -> pd.DataFrame:
@@ -84,16 +97,21 @@ class DetectionAnalyzer:
 
         digital_table = digital.reset_index()
         digital_unit = digital.attrs.get("units", {}).get("Time", "second")
-        digital_table["_time_s"] = self._to_seconds(
-            digital_table["Time"], unit=digital_unit
+        trigger_times = self._time_quantity(values=digital_table["Time"], unit=digital_unit)
+        event_times = self._time_quantity(
+            values=events["Time"], unit=events.attrs.get("units", {}).get("Time", "second")
         )
-        event_times = self._to_seconds(events["Time"])
         detected = np.zeros(len(events), dtype=bool)
         trigger_ids = np.full(len(events), -1, dtype=int)
 
-        for segment_id, segment in digital_table.groupby(segment_column, observed=True):
-            start = segment["_time_s"].min()
-            stop = segment["_time_s"].max()
+        segments = digital_table.groupby(segment_column, observed=True)
+        for segment_id, positions in segments.indices.items():
+            times = trigger_times[positions]
+            times = times[~np.isnan(times)]
+            if not times.size:
+                continue
+            start = times.min()
+            stop = times.max()
             matches = (
                 (event_times >= start)
                 & (event_times <= stop)

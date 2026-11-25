@@ -842,21 +842,14 @@ class PeakDataFrame(PeakMetricsMixin, pd.DataFrame):
             Filtered signal containing only values at or below the threshold.
         """
         if clip_value is None:
-            # If no clip value is provided, return the original signal.
             return signal
 
-        # Remove data above the clip threshold if clip_value is provided.
-        if clip_value is not None:
-            if isinstance(clip_value, str) and clip_value.endswith("%"):
-                # For a percentage clip, compute the threshold quantile.
-                percent = float(clip_value.rstrip("%"))
-                clip_value = np.percentile(signal, 100 - percent)
-            else:
-                clip_value = clip_value.to(signal.pint.signal_units).magnitude
-            # Remove values above clip_value instead of clipping them.
-            signal = signal[signal <= clip_value]
+        if isinstance(clip_value, str) and clip_value.endswith("%"):
+            percentile = 100 - float(clip_value.rstrip("%"))
+            array = getattr(signal, "array", signal)
+            clip_value = np.percentile(getattr(array, "quantity", array), percentile)
 
-        return signal
+        return signal[signal <= clip_value]
 
     def get_flattened_dataframe(self):
         """Return a flat event-wise dataframe with detector-feature columns.

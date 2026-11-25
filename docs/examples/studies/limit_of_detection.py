@@ -124,7 +124,7 @@ discriminator = discriminator.FixedWindow(
 
 digital_processing = DigitalProcessing(
     discriminator=discriminator,
-    peak_algorithm=peak_locator.GlobalPeakLocator(),
+    peak_locator=peak_locator.GlobalPeakLocator(),
 )
 
 # %%

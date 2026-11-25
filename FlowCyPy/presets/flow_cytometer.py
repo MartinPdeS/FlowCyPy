@@ -206,7 +206,7 @@ class FacsCanto:
 
         return digital_processing.DigitalProcessing(
             discriminator=triggering,
-            peak_algorithm=peak_algo,
+            peak_locator=peak_algo,
         )
 
 
@@ -421,5 +421,5 @@ class Cytek:
 
         return digital_processing.DigitalProcessing(
             discriminator=discriminator,
-            peak_algorithm=peak_algo,
+            peak_locator=peak_algo,
         )

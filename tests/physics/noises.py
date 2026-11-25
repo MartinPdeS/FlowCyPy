@@ -1,110 +1,89 @@
 import numpy as np
 import pytest
-from FlowCyPy.opto_electronics.source import Gaussian
 from TypedUnit import ureg
-
-from FlowCyPy.opto_electronics import Detector, Digitizer
-
-
-class PhysicalConstant:
-    h = 6.62607015e-34 * ureg.joule * ureg.second  # Planck constant
-    c = 3e8 * ureg.meter / ureg.second  # Speed of light
-    epsilon_0 = 8.8541878128e-12 * ureg.farad / ureg.meter  # Permtivitty of vacuum
-    pi = np.pi  # Pi, what else?
-    kb = 1.380649e-23 * ureg.joule / ureg.kelvin  # Botlzmann constant
-    e = 1.602176634e-19 * ureg.coulomb  # Electron charge
+from FlowCyPy.opto_electronics import Detector
+from FlowCyPy.opto_electronics.source import Gaussian
 
 
-# ----------------- CONSTANTS -----------------
-
-TOLERANCE = 0.05
-N_ELEMENTS = 5000
+SAMPLE_COUNT = 5000
 
 
-# ----------------- FIXTURES -----------------
-
-
-@pytest.fixture
-def digitizer():
-    return Digitizer(
-        bit_depth=10,
-        use_auto_range=True,
-        sampling_rate=1e6 * ureg.hertz,
-        bandwidth=1e6 * ureg.hertz,
+def assert_noise_statistics(*, signal, expected_mean, expected_std):
+    """Compare sampled mean and standard deviation within five standard errors."""
+    assert signal.shape == (SAMPLE_COUNT,)
+    assert abs(signal.mean() - expected_mean) <= 5 * expected_std / np.sqrt(
+        SAMPLE_COUNT
     )
+    # For independent Gaussian samples, the relative standard error of the
+    # sample standard deviation is approximately 1 / sqrt(2 * (n - 1)).
+    relative_error = abs(signal.std(ddof=1) / expected_std - 1)
+    assert relative_error <= 5 / np.sqrt(2 * (SAMPLE_COUNT - 1))
 
 
-# ----------------- HELPERS -----------------
-
-
-def validate_noise(
-    noise: np.ndarray, expected_std: float, tolerance: float = TOLERANCE
-):
-    measured_std = np.std(noise)
-    assert np.isclose(
-        measured_std, expected_std, rtol=tolerance, atol=1e-10
-    ), f"Measured noise std {measured_std} does not match expected {expected_std}."
-
-
-# ----------------- TESTS -----------------
-
-
-def test_shot_noise(digitizer):
-    """
-    Shot noise is applied by the source on an optical power signal.
-    """
-
-    # Constant optical power (P)
-    optical_power = 0.001 * ureg.milliwatt
-    power_watt = optical_power.to("watt").magnitude
-    power_signal = np.full(N_ELEMENTS, power_watt, dtype=float)
-
-    # Source with shot noise enabled
+def test_shot_noise():
+    """Photon counts per sampling interval determine optical power variance."""
+    optical_power = 1 * ureg.microwatt
+    wavelength = 1550 * ureg.nanometer
+    sample_interval = 0.5 * ureg.microsecond
     source = Gaussian(
-        wavelength=1550 * ureg.nanometer,
+        wavelength=wavelength,
         optical_power=optical_power,
-        waist_y=1e-6 * ureg.meter,
-        waist_z=1e-6 * ureg.meter,
-        rin=-120.0 * ureg.dB_per_Hz,
-        polarization=0.0 * ureg.radian,
-        bandwidth=digitizer.bandwidth,
+        waist_y=1 * ureg.micrometer,
+        waist_z=1 * ureg.micrometer,
         include_shot_noise=True,
         include_rin_noise=False,
-        debug_mode=False,
+    )
+    signal = source.add_shot_noise_to_signal(
+        np.ones(SAMPLE_COUNT) * optical_power,
+        np.arange(SAMPLE_COUNT) * sample_interval,
+        seed=42,
     )
 
-    # Use a time step consistent with the bandwidth convention:
-    # Δt = 1 / (2 B)  ⇒  B = 1 / (2 Δt)
-    bandwidth_hz = digitizer.bandwidth.to("hertz")
-    dt = 1.0 / (2.0 * bandwidth_hz)
-
-    noisy_power = power_signal.copy() * ureg.watt
-    time_array = np.arange(N_ELEMENTS) * dt
-    # C++ signature: add_shot_noise_to_signal(std::vector<double>& power_values, double time_step)
-    noisy_power = source.add_shot_noise_to_signal(noisy_power, time_array)
-
-    # Convert power → current using responsivity
-    responsivity = 1 * ureg.ampere / ureg.watt
-    current_amp = noisy_power * responsivity.to("ampere/watt")
-
-    # Expected shot noise std: σ = sqrt(2 e I B)
-    current_mean = (optical_power * responsivity).to("ampere")
-    expected_std = np.sqrt(
-        2 * PhysicalConstant.e * current_mean * digitizer.bandwidth
-    ).to("ampere")
-
-    validate_noise(current_amp, expected_std)
+    photon_energy = ureg.planck_constant * ureg.speed_of_light / wavelength
+    expected_std = np.sqrt(optical_power * photon_energy / sample_interval).to("watt")
+    assert_noise_statistics(
+        signal=signal, expected_mean=optical_power, expected_std=expected_std
+    )
 
 
-def test_dark_current_noise(digitizer):
-    """
-    Dark current noise is applied by the detector on a current signal.
-    """
+def test_low_light_shot_noise_resolves_individual_photons():
+    """A quarter photon per sample gives discrete counts and Poisson zero occupancy."""
+    wavelength = 532 * ureg.nanometer
+    sample_interval = 2 * ureg.microsecond
+    single_photon_power = (
+        ureg.planck_constant * ureg.speed_of_light / wavelength / sample_interval
+    ).to("watt")
+    expected_count = 0.25
+    optical_power = expected_count * single_photon_power
+    source = Gaussian(
+        wavelength=wavelength,
+        optical_power=optical_power,
+        waist_y=1 * ureg.micrometer,
+        waist_z=1 * ureg.micrometer,
+        include_shot_noise=True,
+        include_rin_noise=False,
+    )
+    powers = source.add_shot_noise_to_signal(
+        np.ones(SAMPLE_COUNT) * optical_power,
+        np.arange(SAMPLE_COUNT) * sample_interval,
+        seed=42,
+    )
+    counts = (powers / single_photon_power).m_as("dimensionless")
+    assert np.all(counts >= 0)
+    observed_quantum = counts[counts > 0].min()
+    # The native model rounds c to 3e8 m/s, within 0.1% of the SI value.
+    assert abs(observed_quantum - 1) < 0.001
+    observed_counts = counts / observed_quantum
+    np.testing.assert_allclose(observed_counts, np.rint(observed_counts), rtol=1e-14, atol=0)
+    zero_probability = np.exp(-expected_count)
+    standard_error = np.sqrt(zero_probability * (1 - zero_probability) / SAMPLE_COUNT)
+    assert abs(np.mean(counts == 0) - zero_probability) <= 5 * standard_error
 
-    dark_current = 1e-12 * ureg.ampere
-    # Baseline signal (can be zero or dark_current; only noise std matters)
-    signal = np.full(N_ELEMENTS, 0.0, dtype=float) * ureg.ampere
 
+def test_dark_current_noise():
+    """Check the DC offset and the shot-noise variance 2 q I B in amperes."""
+    dark_current = 1 * ureg.picoampere
+    bandwidth = 1 * ureg.megahertz
     detector = Detector(
         name="TestDetector",
         responsivity=1 * ureg.ampere / ureg.watt,
@@ -112,21 +91,19 @@ def test_dark_current_noise(digitizer):
         dark_current=dark_current,
         phi_angle=0 * ureg.degree,
     )
-
-    noisy_signal = detector.apply_dark_current_noise(
-        signal=signal,
-        bandwidth=digitizer.bandwidth,
+    signal = detector.apply_dark_current_noise(
+        signal=np.zeros(SAMPLE_COUNT) * ureg.ampere,
+        bandwidth=bandwidth,
+        seed=42,
     )
 
-    # Expected dark current noise std: σ = sqrt(2 q I_d B)
-    expected_std = (
-        np.sqrt(2 * PhysicalConstant.e * dark_current * digitizer.bandwidth)
-        .to("ampere")
-        .magnitude
+    expected_std = np.sqrt(2 * ureg.elementary_charge * dark_current * bandwidth).to(
+        "ampere"
     )
-
-    validate_noise(noisy_signal.to("ampere").magnitude, expected_std)
+    assert_noise_statistics(
+        signal=signal, expected_mean=dark_current, expected_std=expected_std
+    )
 
 
 if __name__ == "__main__":
-    pytest.main(["-W error", __file__, "-s"])
+    pytest.main(["-W", "error", __file__, "-s"])

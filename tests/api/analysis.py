@@ -2,10 +2,12 @@
 import numpy as np
 import pandas as pd
 import pytest
+from pint import DimensionalityError
 from TypedUnit import ureg
 
 from FlowCyPy.analysis import DetectionAnalyzer
 from FlowCyPy.run_record import RunRecord, SignalRecord
+from FlowCyPy.sub_frames.peaks import PeakDataFrame
 
 
 def make_run_record(event_times, populations, trigger_times=None):
@@ -45,6 +47,35 @@ def test_detection_analyzer_marks_events_inside_trigger_windows():
 
     assert result["Detected"].tolist() == [True, False, False]
     assert result.loc[0, "TriggerID"] == 0
+
+
+def test_detection_uses_time_metadata_on_both_tables():
+    """Include both ends of a microsecond trigger window for millisecond events."""
+    record = make_run_record(
+        event_times=[1.0, 2.0, 3.0],
+        populations=["A"] * 3,
+        trigger_times=[1000.0, 2000.0],
+    )
+    record.event_collection.get_concatenated_dataframe().attrs["units"] = {
+        "Time": ureg.millisecond
+    }
+    record.signal.digital.attrs["units"] = {"Time": ureg.microsecond}
+
+    assert record.annotate_detected_events()["Detected"].tolist() == [True, True, False]
+    record.signal.digital.attrs["units"] = {"Time": ureg.volt}
+    with pytest.raises(DimensionalityError):
+        record.annotate_detected_events()
+
+
+def test_peak_clipping_preserves_metric_units():
+    """Clip a millivolt series with a volt threshold and a percentile."""
+    signal = pd.Series([100, 500, 900], dtype="pint[millivolt]")
+    peaks = PeakDataFrame(pd.DataFrame())
+    for threshold in (0.5 * ureg.volt, "50%"):
+        clipped = peaks.clip_data(signal=signal, clip_value=threshold)
+        assert clipped.equals(signal.iloc[:2])
+    with pytest.raises(DimensionalityError):
+        peaks.clip_data(signal=signal, clip_value=1 * ureg.second)
 
 
 def test_detection_analyzer_handles_no_triggers():

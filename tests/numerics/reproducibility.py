@@ -69,18 +69,28 @@ def test_fluidics_random_state_changes_stochastic_events():
     "sampling_method",
     [populations.ExplicitModel(), populations.GammaModel(number_of_samples=250)],
 )
-def test_random_state_accepts_numpy_generator(sampling_method):
+def test_numpy_generator_replays_and_advances(sampling_method):
+    """Independent generators with the same seed replay successive transverse samples."""
     fluidics = make_fluidics(sampling_method)
     generator = np.random.default_rng(1234)
+    replay = np.random.default_rng(1234)
+    previous_positions = None
+    for _ in range(2):
+        positions = []
+        for stream in (generator, replay):
+            collection = fluidics.generate_event_collection(
+                run_time=0.2 * ureg.millisecond,
+                sampling_rate=5 * ureg.megahertz,
+                random_state=stream,
+            )
+            assert len(collection) == 1
+            positions.append(collection[0].get_quantity("x").m_as("meter").copy())
 
-    collection = fluidics.generate_event_collection(
-        run_time=0.2 * ureg.millisecond,
-        sampling_rate=5 * ureg.megahertz,
-        random_state=generator,
-    )
-
-    assert len(collection) == 1
-    assert len(collection[0]) > 0
+        assert positions[0].size > 0
+        np.testing.assert_array_equal(positions[0], positions[1])
+        if previous_positions is not None:
+            assert not np.array_equal(positions[0], previous_positions)
+        previous_positions = positions[0]
 
 
 def test_gamma_and_explicit_models_preserve_particle_statistics():

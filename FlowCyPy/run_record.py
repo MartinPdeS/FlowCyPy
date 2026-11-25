@@ -1,12 +1,17 @@
+import logging
 from dataclasses import dataclass, field
 from typing import Any
-
 import matplotlib.pyplot as plt
 import MPSPlots
 import numpy as np
 from TypedUnit import Frequency, Time, Voltage
-
+from FlowCyPy.digital_processing import DigitalProcessing
 from FlowCyPy.fluidics.event_collection import EventCollection
+from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
+from FlowCyPy.sub_frames.peaks import PeakDataFrame
+from FlowCyPy.sub_frames.triggered import TriggerDataFrame
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -66,6 +71,88 @@ class RunRecord:
     digital_processing: Any = None
     signal: SignalRecord = field(default_factory=SignalRecord)
     peaks: Any = None
+
+    _filtered_analog: AcquisitionDataFrame | None = field(
+        default=None, init=False, repr=False, compare=False
+    )
+
+    def process(self, *, digital_processing: DigitalProcessing) -> "RunRecord":
+        """Process this acquisition using the supplied trigger and peak settings.
+
+        Parameters
+        ----------
+        digital_processing : DigitalProcessing
+            Discriminator and optional peak locator to apply.
+
+        Returns
+        -------
+        RunRecord
+            New result with independent digital segments and peak features.
+            The analog circuits are applied on the first call. Subsequent calls
+            reuse that filtered waveform and the original particle events.
+        """
+        if self.opto_electronics is None:
+            raise ValueError("Processing requires the acquisition's opto_electronics.")
+        if self.signal is None or self.signal.analog is None:
+            raise ValueError("Processing requires analog signal data.")
+        if self._filtered_analog is None:
+            if self.opto_electronics.analog_processing:
+                filtered = self.opto_electronics.apply_analog_processing(
+                    analog_dict=self.signal.analog.raw_data
+                )
+                self._filtered_analog = AcquisitionDataFrame._construct_from_signal_dict(
+                    filtered
+                )
+            else:
+                self._filtered_analog = self.signal.analog
+        return self._process_filtered(
+            analog=self._filtered_analog, digital_processing=digital_processing
+        )
+
+    def _process_filtered(
+        self, *, analog: AcquisitionDataFrame, digital_processing: DigitalProcessing
+    ) -> "RunRecord":
+        """Trigger, digitize and locate peaks on an already filtered waveform."""
+        # Plotting can rescale dataframe columns. Give each result its own units
+        # and column bindings while sharing the underlying samples.
+        analog_view = analog.copy(deep=False)
+        run_record = RunRecord(
+            run_time=self.run_time,
+            event_collection=self.event_collection,
+            opto_electronics=self.opto_electronics,
+            digital_processing=digital_processing,
+            signal=SignalRecord(analog=analog_view),
+        )
+        run_record._filtered_analog = analog
+        triggered_analog_dict = (
+            digital_processing.discriminator.run_with_dict(analog.raw_data)
+            if digital_processing.discriminator is not None
+            else None
+        )
+
+        if triggered_analog_dict is None:
+            return run_record
+
+        if len(triggered_analog_dict["segment_id"]) == 0:
+            logger.debug(
+                "No triggers detected. Returning analog signal without digital processing."
+            )
+            return run_record
+
+        triggered_digital_dict = self.opto_electronics.digitizer.digitize_data_dict(
+            triggered_analog_dict
+        )
+
+        run_record.signal.digital = TriggerDataFrame._construct_from_flat_dict(
+            triggered_digital_dict,
+        )
+
+        if digital_processing.peak_locator is not None:
+            peaks_dict = digital_processing.peak_locator.run(triggered_digital_dict)
+
+            run_record.peaks = PeakDataFrame._construct_from_dict(peaks_dict)
+
+        return run_record
 
     @property
     def detector_names(self):

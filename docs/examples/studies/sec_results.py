@@ -213,7 +213,7 @@ def run_sec_swarm_demo(
     # Instantiate the DigitalProcessing module with the discriminator and peak algorithm.
     _digital_processing = digital_processing.DigitalProcessing(
         discriminator=discri,
-        peak_algorithm=peak_algo,
+        peak_locator=peak_algo,
     )
 
     # 6. Flow Cytometer Run
