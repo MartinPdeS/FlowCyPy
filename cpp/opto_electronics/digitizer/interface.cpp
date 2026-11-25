@@ -902,8 +902,6 @@ PYBIND11_MODULE(digitizer, module) {
             R"pbdoc(
                 Process acquisition data stored in a dictionary.
 
-                Supported input formats
-                -----------------------
                 Flat acquisition dictionary::
 
                     {
@@ -916,8 +914,6 @@ PYBIND11_MODULE(digitizer, module) {
                 such as ``"segment_id"``. Metadata fields are copied through
                 unchanged and are never used for voltage range inference.
 
-                Range resolution order
-                ----------------------
                 For each detector channel, the applied range is chosen in this order:
 
                 1. explicit channel range set with :meth:`set_channel_voltage_range`

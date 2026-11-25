@@ -18,7 +18,9 @@ py::dict copy_mapping_values(const py::dict& source) {
 py::object dataframe_copy(const py::object& dataframe) {
     py::kwargs keywords;
     keywords["deep"] = true;
-    return dataframe.attr("copy")(**keywords);
+    py::object output = dataframe.attr("copy")(**keywords);
+    output.attr("attrs") = copy_mapping_values(dataframe.attr("attrs").cast<py::dict>());
+    return output;
 }
 
 void set_dataframe_column(
@@ -65,9 +67,6 @@ std::size_t PopulationEvents::size() const {
 
 std::shared_ptr<PopulationEvents> PopulationEvents::copy() const {
     py::object copied_dataframe = dataframe_copy(dataframe);
-    copied_dataframe.attr("attrs") = copy_mapping_values(
-        dataframe.attr("attrs").cast<py::dict>()
-    );
 
     return std::make_shared<PopulationEvents>(
         copied_dataframe,
@@ -111,13 +110,24 @@ void PopulationEvents::set_quantity_column(
     set_dataframe_column(dataframe, column_name, value);
 }
 
+py::object PopulationEvents::dataframe_in_units(const py::dict& column_units) const {
+    py::object output = dataframe_copy(dataframe);
+    const py::object columns = output.attr("columns");
+    for (const auto& item : column_units) {
+        if (!columns.contains(item.first) || output.attr("get_unit")(item.first).is_none()) {
+            continue;
+        }
+        py::object quantity = output.attr("get_quantity")(item.first);
+        set_dataframe_column(output, py::cast<std::string>(item.first), quantity.attr("to")(item.second));
+    }
+    output.attr("scatterer_type") = scatterer_type;
+    return output;
+}
+
 py::object PopulationEvents::to_dataframe(
     const bool include_metadata_in_attrs
 ) const {
     py::object output = dataframe_copy(dataframe);
-    output.attr("attrs") = copy_mapping_values(
-        dataframe.attr("attrs").cast<py::dict>()
-    );
     output.attr("scatterer_type") = scatterer_type;
 
     py::dict attrs = output.attr("attrs").cast<py::dict>();

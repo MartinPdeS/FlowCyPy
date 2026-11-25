@@ -45,6 +45,14 @@ def event_values(fluidics, random_state):
     }
 
 
+@pytest.mark.parametrize("value, error", [(True, TypeError), (0.5, TypeError), (-1, ValueError)])
+def test_fluidics_rejects_invalid_seed(value, error):
+    """Reject invalid seed values before reseeding either sampler."""
+    fluidics = make_fluidics(populations.ExplicitModel())
+    with pytest.raises(error, match="non-negative integer"):
+        fluidics.seed(value=value)
+
+
 def test_fluidics_random_state_reproduces_event_collection():
     fluidics = make_fluidics(populations.ExplicitModel())
 
@@ -91,6 +99,33 @@ def test_numpy_generator_replays_and_advances(sampling_method):
         if previous_positions is not None:
             assert not np.array_equal(positions[0], previous_positions)
         previous_positions = positions[0]
+
+
+def test_empty_explicit_population_keeps_its_event_block():
+    """A zero-particle acquisition retains population identity and count metadata."""
+    fluidics = make_fluidics(populations.ExplicitModel())
+    population = fluidics.scatterer_collection.populations[0]
+    population.concentration = 0 * ureg.particle / ureg.liter
+
+    collection = fluidics.generate_event_collection(
+        run_time=1 * ureg.millisecond, sampling_rate=1 * ureg.megahertz,
+    )
+
+    assert len(collection) == 1
+    block = collection[0]
+    assert block.population is population
+    assert block.empty
+    assert block.metadata["NumberOfEvents"] == 0
+    assert block.dataframe.scatterer_type == "SpherePopulation"
+
+
+def test_gamma_count_exceeding_sampler_capacity_is_rejected():
+    """Reject counts that would overflow the native sampler before allocating arrays."""
+    fluidics = make_fluidics(populations.GammaModel(number_of_samples=2**31))
+    with pytest.raises(OverflowError, match="transverse sampler"):
+        fluidics.generate_event_collection(
+            run_time=1 * ureg.millisecond, sampling_rate=1 * ureg.megahertz,
+        )
 
 
 def test_gamma_and_explicit_models_preserve_particle_statistics():

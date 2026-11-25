@@ -11,6 +11,7 @@ def test_top_level_public_api_is_explicit():
         "__version__",
         "FlowCytometer",
         "Workflow",
+        "EventCollection",
         "Fluidics",
         "distributions",
         "populations",
@@ -55,8 +56,9 @@ def test_fluidics_imports_in_fresh_interpreter():
             "-c",
             (
                 "from FlowCyPy.fluidics import Fluidics, PopulationEvents; "
-                "from FlowCyPy.fluidics.event_collection import EventCollection; "
-                "assert EventCollection().empty"
+                "from FlowCyPy.event_collection import EventCollection; "
+                "from FlowCyPy import EventCollection as PublicCollection; "
+                "assert PublicCollection is EventCollection and EventCollection().empty"
             ),
         ],
         check=True,

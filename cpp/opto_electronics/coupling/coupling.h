@@ -15,6 +15,8 @@ class ScatteringModel {
 public:
     ScatteringModel(py::object source, py::object detector);
 
+    py::str repr() const;
+
     /** Compute detector coupling for every non-empty event frame in place. */
     void run(const py::object& event_frames, bool compute_cross_section = false);
 

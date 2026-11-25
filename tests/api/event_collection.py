@@ -1,9 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
+from pint import DimensionalityError
 from FlowCyPy.fluidics.population_events import PopulationEvents
 
-from FlowCyPy.fluidics.event_collection import EventCollection
+from FlowCyPy.event_collection import EventCollection
 from FlowCyPy.sub_frames.events import EventDataFrame
 from FlowCyPy.units import ureg
 
@@ -71,6 +72,20 @@ def test_convert_units_with_copy_leaves_original_unchanged() -> None:
     assert np.allclose(converted[0].get_quantity("Diameter").magnitude, [1.0, 2.5])
     assert converted[0].metadata is not collection[0].metadata
     assert converted[0].metadata["nested"] is not collection[0].metadata["nested"]
+
+
+def test_unit_conversion_failure_preserves_every_block():
+    """An incompatible unit in a later population leaves earlier frames intact."""
+    first = make_population_events(name="A")
+    second = make_population_events(name="B")
+    second.dataframe.set_column("Signal", [1.0, 2.0], unit=ureg.second)
+    collection = EventCollection(events_list=[first, second])
+
+    with pytest.raises(DimensionalityError):
+        collection.convert_units(column_units={"Signal": ureg.millivolt})
+
+    assert first.get_quantity("Signal").units == ureg.volt
+    assert second.get_quantity("Signal").units == ureg.second
 
 
 def test_convert_units_requires_mapping_input() -> None:

@@ -22,7 +22,11 @@ PYBIND11_MODULE(discriminator, module) {
         pre/post buffering, and segment extraction.
     )pbdoc";
 
-    py::class_<Threshold>(module, "Threshold")
+    py::class_<Threshold>(module, "Threshold", R"doc(
+        Store a discriminator threshold as a numeric voltage in volts, a symbolic
+        expression, or both. Inspect numeric and symbolic to see the resolved level and
+        its expression.
+    )doc")
         .def(py::init<>())
         .def(py::init<double>(), py::arg("numeric_value"))
         .def(py::init<const std::string &>(), py::arg("symbolic_value"))
@@ -147,7 +151,10 @@ PYBIND11_MODULE(discriminator, module) {
 
 
 
-    py::class_<Trigger>(module, "Trigger")
+    py::class_<Trigger>(module, "Trigger", R"doc(
+        Store segmented samples from a discriminator run. segment_ids associates each
+        sampled time and detector signal value with its trigger window.
+    )doc")
         .def(py::init<>())
         .def_readonly(
             "global_time",
@@ -220,7 +227,10 @@ PYBIND11_MODULE(discriminator, module) {
             }
         );
 
-    py::class_<BaseDiscriminator>(module, "BaseDiscriminator")
+    py::class_<BaseDiscriminator>(module, "BaseDiscriminator", R"doc(
+        Select event windows using one detector channel and apply the same windows to
+        all channels. Buffer lengths are measured in samples.
+    )doc")
         .def_readonly(
             "trigger",
             &BaseDiscriminator::trigger,
@@ -379,7 +389,11 @@ PYBIND11_MODULE(discriminator, module) {
         )
         ;
 
-    py::class_<FixedWindow, BaseDiscriminator>(module, "FixedWindow")
+    py::class_<FixedWindow, BaseDiscriminator>(module, "FixedWindow", R"doc(
+        Extract a fixed window around each trigger on trigger_channel. Set threshold to
+        a voltage or a symbolic expression. pre_buffer and post_buffer specify sample
+        counts around the crossing.
+    )doc")
         .def(
             py::init(
                 [](
@@ -488,7 +502,11 @@ PYBIND11_MODULE(discriminator, module) {
             }
         );
 
-    py::class_<DynamicWindow, BaseDiscriminator>(module, "DynamicWindow")
+    py::class_<DynamicWindow, BaseDiscriminator>(module, "DynamicWindow", R"doc(
+        Extract variable-length windows while trigger_channel exceeds threshold. Supply
+        a voltage or a symbolic expression and use pre_buffer and post_buffer to include
+        surrounding samples.
+    )doc")
         .def(
             py::init(
                 [](
@@ -594,7 +612,11 @@ PYBIND11_MODULE(discriminator, module) {
             }
         );
 
-    py::class_<DoubleThreshold, BaseDiscriminator>(module, "DoubleThreshold")
+    py::class_<DoubleThreshold, BaseDiscriminator>(module, "DoubleThreshold", R"doc(
+        Segment pulses using an upper trigger threshold and an optional lower release
+        threshold on the same channel. Configure debounce_enabled and
+        min_window_duration to control short windows.
+    )doc")
         .def(
             py::init(
                 [](

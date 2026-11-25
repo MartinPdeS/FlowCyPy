@@ -229,3 +229,10 @@ void ScatteringModel::write_results(
         keyword_call(dataframe.attr("set_column"), cross_section_keywords);
     }
 }
+
+py::str ScatteringModel::repr() const {
+    return py::str("ScatteringModel(source={}, detector={})")
+        .format(py::type::of(source_).attr("__name__"),
+                py::hasattr(detector_, "name") ? py::repr(detector_.attr("name"))
+                                               : py::str(py::type::of(detector_).attr("__name__")));
+}

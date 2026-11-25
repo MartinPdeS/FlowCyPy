@@ -40,6 +40,7 @@ public:
     py::object columns() const;
     py::object get_quantity(const std::string& column_name) const;
     void set_quantity_column(const std::string& column_name, const py::object& value);
+    py::object dataframe_in_units(const py::dict& column_units) const;
     py::object to_dataframe(bool include_metadata_in_attrs = true) const;
 
 private:

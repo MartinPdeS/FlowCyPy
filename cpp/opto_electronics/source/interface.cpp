@@ -20,11 +20,11 @@ PYBIND11_MODULE(source, module) {
 
         This module exposes source models used to illuminate particles in the
         interrogation region of a flow cytometry simulation.
-        %
+
         A source defines the spatial optical field, the corresponding optical
         power distribution, and optional stochastic noise contributions such as
         shot noise and relative intensity noise.
-        %
+
         These source models are used upstream of detection and amplification and
         therefore control the optical excitation profile from which detector
         signals are ultimately derived.
@@ -40,10 +40,10 @@ PYBIND11_MODULE(source, module) {
 
             A :class:`BaseSource` represents an illumination model that can be
             queried in space and used to generate optical power traces in time.
-            %
+
             Concrete subclasses implement specific beam profiles, such as
             Gaussian and flat top illumination.
-            %
+
             In addition to deterministic field and power calculations, a source
             may optionally add stochastic fluctuations such as shot noise and
             relative intensity noise.
@@ -107,7 +107,7 @@ PYBIND11_MODULE(source, module) {
                 Relative intensity noise level of the source.
 
                 This quantity is expressed in decibel per hertz.
-                %
+
                 Setting this attribute to ``None`` removes the stored RIN value.
             )doc"
         )
@@ -683,7 +683,7 @@ PYBIND11_MODULE(source, module) {
 
             This source uses a Gaussian transverse intensity profile with
             potentially different waists along the y and z directions.
-            %
+
             It is appropriate for focused illumination geometries in which the
             field amplitude decays smoothly away from the beam center.
         )doc"
@@ -854,7 +854,7 @@ PYBIND11_MODULE(source, module) {
 
             This source approximates an illumination profile with a more uniform
             intensity across the beam support than a Gaussian beam.
-            %
+
             It is useful when modeling excitation geometries intended to produce
             a relatively homogeneous optical field over the interrogation region.
         )doc"

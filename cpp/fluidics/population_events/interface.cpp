@@ -64,6 +64,10 @@ PYBIND11_MODULE(population_events, module) {
             "Scatterer type label associated with the population.")
         .def_readwrite("metadata", &PopulationEvents::metadata,
             "Population-level metadata dictionary.")
+        .def("__repr__", [](const PopulationEvents& events) {
+            return py::str("PopulationEvents(name={!r}, scatterer_type={!r}, rows={})")
+                .format(events.name, events.scatterer_type, events.size());
+        })
         .def("__len__", &PopulationEvents::size,
             "Return the number of event rows.")
         .def("copy", &PopulationEvents::copy,
@@ -82,6 +86,8 @@ PYBIND11_MODULE(population_events, module) {
         .def("set_quantity_column", &PopulationEvents::set_quantity_column,
             py::arg("column_name"), py::arg("value"),
             "Store a quantity column in the underlying dataframe.")
+        .def("dataframe_in_units", &PopulationEvents::dataframe_in_units, py::kw_only(),
+            py::arg("column_units"), "Return a detached event dataframe in the requested column units.")
         .def("to_dataframe", &PopulationEvents::to_dataframe,
             py::arg("include_metadata_in_attrs") = true,
             R"pdoc(

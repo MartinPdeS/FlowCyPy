@@ -11,7 +11,11 @@ PYBIND11_MODULE(flow_cell, module) {
 
     py::object ureg = get_shared_ureg();
 
-    py::class_<FluidRegion, std::shared_ptr<FluidRegion>>(module, "FluidRegion")
+    py::class_<FluidRegion, std::shared_ptr<FluidRegion>>(module, "FluidRegion", R"doc(
+        Geometry and transport properties of the sample or sheath in a rectangular flow
+        cell. Access a region through FlowCell.sample or FlowCell.sheath to inspect its
+        dimensions, volume flow rate and axial speeds as Pint quantities.
+    )doc")
         .def_property_readonly(
             "width",
             [ureg](const FluidRegion& self){
@@ -443,8 +447,8 @@ PYBIND11_MODULE(flow_cell, module) {
         R"pbdoc(
             Sample event arrival times over a specified run duration using the flow cell's configured event scheme.
 
-            Configured schemes
-            ------------------
+            The configured event scheme determines how times are drawn:
+
             ``"uniform-random"``
                 Draw ``n_events`` random times uniformly over the run duration and sort them.
 

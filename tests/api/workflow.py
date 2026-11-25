@@ -18,7 +18,7 @@ from FlowCyPy.fluidics import (
     distributions,
     populations,
 )
-from FlowCyPy.fluidics.event_collection import EventCollection
+from FlowCyPy.event_collection import EventCollection
 from FlowCyPy.fluidics.population_events import PopulationEvents
 from FlowCyPy.opto_electronics import (
     Amplifier,

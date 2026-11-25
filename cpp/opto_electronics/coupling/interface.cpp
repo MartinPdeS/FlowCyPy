@@ -48,6 +48,7 @@ PYBIND11_MODULE(coupling_model, module) {
                     Detection channel.
             )pdoc"
         )
+        .def("__repr__", &ScatteringModel::repr)
         .def(
             "run",
             &ScatteringModel::run,
@@ -58,8 +59,8 @@ PYBIND11_MODULE(coupling_model, module) {
 
                 Parameters
                 ----------
-                event_frames : iterable of EventDataFrame
-                    Event frames containing spatial coordinates and scatterer
+                event_frames : iterable of PopulationEvents
+                    Population blocks containing spatial coordinates and scatterer
                     properties.
                 compute_cross_section : bool, optional
                     If true, also writes the ``Csca`` column in square meters.

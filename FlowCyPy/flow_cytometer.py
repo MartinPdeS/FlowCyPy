@@ -3,7 +3,7 @@ import numpy as np
 from TypedUnit import Power, Time, ureg, validate_units
 from FlowCyPy.digital_processing import DigitalProcessing
 from FlowCyPy.fluidics import Fluidics, populations
-from FlowCyPy.fluidics.event_collection import EventCollection
+from FlowCyPy.event_collection import EventCollection
 from FlowCyPy.opto_electronics import OptoElectronics
 from FlowCyPy.opto_electronics.system import _next_noise_seed
 from FlowCyPy.run_record import RunRecord

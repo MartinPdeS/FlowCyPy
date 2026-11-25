@@ -135,7 +135,11 @@ namespace
 
 PYBIND11_MODULE(classifier, module)
 {
-    py::class_<KmeansClassifier>(module, "KmeansClassifier")
+    py::class_<KmeansClassifier>(module, "KmeansClassifier", R"doc(
+        Group events into number_of_clusters clusters by their selected detector
+        features. run accepts a wide peak table and returns the corresponding detector
+        rows with a Label column.
+    )doc")
         .def(
             py::init<std::size_t>(),
             py::arg("number_of_clusters")
@@ -221,7 +225,7 @@ PYBIND11_MODULE(classifier, module)
 
                 Examples
                 --------
-                >>> classifier = KMEANSCLASSIFIER(number_of_clusters=2)
+                >>> classifier = KmeansClassifier(number_of_clusters=2)
                 >>> classified = classifier.run(
                 ...     dataframe=run_record.peaks.unstack("Detector"),
                 ...     features=["Height"],
@@ -231,7 +235,11 @@ PYBIND11_MODULE(classifier, module)
             )pbdoc"
         );
 
-    py::class_<DbscanClassifier>(module, "DBScanClassifier")
+    py::class_<DbscanClassifier>(module, "DBScanClassifier", R"doc(
+        Group events by density in detector-feature space. epsilon sets the neighborhood
+        radius and minimum_samples the minimum neighborhood count. Noise points receive
+        label -1.
+    )doc")
         .def(
             py::init<double, std::size_t>(),
             py::arg("epsilon"),

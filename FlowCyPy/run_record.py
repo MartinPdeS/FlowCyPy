@@ -6,7 +6,7 @@ import MPSPlots
 import numpy as np
 from TypedUnit import Frequency, Time, Voltage
 from FlowCyPy.digital_processing import DigitalProcessing
-from FlowCyPy.fluidics.event_collection import EventCollection
+from FlowCyPy.event_collection import EventCollection
 from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
 from FlowCyPy.sub_frames.peaks import PeakDataFrame
 from FlowCyPy.sub_frames.triggered import TriggerDataFrame

@@ -11,8 +11,8 @@ their separation. The noiseless signal isolates the role of pulse overlap.
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from FlowCyPy import EventCollection
 from FlowCyPy.digital_processing.discriminator import DynamicWindow
-from FlowCyPy.fluidics.event_collection import EventCollection
 from FlowCyPy.fluidics.population_events import PopulationEvents
 from FlowCyPy.run_record import RunRecord, SignalRecord
 from FlowCyPy.sub_frames.events import EventDataFrame
@@ -54,7 +54,8 @@ def simulate_pair(*, separation: float) -> tuple[np.ndarray, dict]:
     )
     trigger_times = triggered["Time"].to("microsecond")
     digital = pd.DataFrame(
-        {"Time": trigger_times.magnitude, "segment_id": triggered["segment_id"]}
+        {"Time": trigger_times.magnitude},
+        index=pd.Index(triggered["segment_id"], name="SegmentID"),
     )
     digital.attrs["units"] = {"Time": trigger_times.units}
 

@@ -9,9 +9,30 @@
 
 namespace py = pybind11;
 
+namespace {
+std::string format_parameter(const py::object& registry, const std::string& units, double value) {
+    auto quantity = py::float_(value) * registry.attr(units.c_str());
+    return py::str("{:.8g}").format(quantity.attr("to_compact")()).cast<std::string>();
+}
+
+std::string format_cutoffs(const py::object& registry, const std::string& units, double low, double high) {
+    std::string bounds;
+    if (low != std::numeric_limits<double>::lowest()) {
+        bounds += ", low_cutoff=" + format_parameter(registry, units, low);
+    }
+    if (high != std::numeric_limits<double>::infinity()) {
+        bounds += ", high_cutoff=" + format_parameter(registry, units, high);
+    }
+    return bounds;
+}
+} // namespace
+
 PYBIND11_MODULE(distributions, module) {
     py::object ureg = get_shared_ureg();
-    py::class_<BaseDistribution, std::shared_ptr<BaseDistribution>>(module, "BaseDistribution")
+    py::class_<BaseDistribution, std::shared_ptr<BaseDistribution>>(module, "BaseDistribution", R"doc(
+        Sample a one-dimensional particle property. sample(n_samples) returns a quantity
+        array with one draw per element in the distribution's units.
+    )doc")
         .def(
             "sample",
             [ureg](const BaseDistribution& self, const size_t n_samples){
@@ -40,7 +61,11 @@ PYBIND11_MODULE(distributions, module) {
         )
         ;
 
-    py::class_<Normal, BaseDistribution, std::shared_ptr<Normal>>(module, "Normal")
+    py::class_<Normal, BaseDistribution, std::shared_ptr<Normal>>(module, "Normal", R"doc(
+        Draw normally distributed values with the specified mean and standard deviation.
+        Optional low_cutoff and high_cutoff restrict the sampled interval. Supply
+        compatible quantities throughout, or use numbers for dimensionless draws.
+    )doc")
         .def(
             py::init(
                 [](
@@ -97,7 +122,7 @@ PYBIND11_MODULE(distributions, module) {
             py::arg("standard_deviation"),
             py::arg("low_cutoff") = py::none(),
             py::arg("high_cutoff") = py::none(),
-            "Constructor for Normal distribution. Mean and standard deviation must be of the same type (either Length or RefractiveIndex). Cutoff must be of the same type as mean or None."
+            "Set the mean, standard deviation and optional cutoffs in compatible units, or all as numbers."
         )
         .def_property(
             "mean",
@@ -123,18 +148,18 @@ PYBIND11_MODULE(distributions, module) {
             "__repr__",
             [ureg](const Normal& self) {
                 return "Normal(mean=" +
-                    py::str((py::float_(self.mean) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() +
+                    format_parameter(ureg, self.units, self.mean) +
                     ", standard_deviation=" +
-                    py::str((py::float_(self.standard_deviation) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() +
-                    ", low_cutoff=" +
-                    py::str((py::float_(self.low_cutoff) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() +
-                    ", high_cutoff=" +
-                    py::str((py::float_(self.high_cutoff) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() + ")";
+                    format_parameter(ureg, self.units, self.standard_deviation) +
+                    format_cutoffs(ureg, self.units, self.low_cutoff, self.high_cutoff) + ")";
             }
         )
         ;
 
-    py::class_<Uniform, BaseDistribution, std::shared_ptr<Uniform>>(module, "Uniform")
+    py::class_<Uniform, BaseDistribution, std::shared_ptr<Uniform>>(module, "Uniform", R"doc(
+        Draw uniformly between lower_bound and upper_bound. Both bounds are Pint
+        quantities with compatible dimensions.
+    )doc")
         .def(
             py::init(
                 [](
@@ -157,7 +182,7 @@ PYBIND11_MODULE(distributions, module) {
             ),
             py::arg("lower_bound"),
             py::arg("upper_bound"),
-            "Constructor for Uniform distribution. Lower and upper bounds must be of type Length."
+            "Set the lower and upper limits using compatible quantities."
         )
         .def_property(
             "lower_bound",
@@ -173,14 +198,18 @@ PYBIND11_MODULE(distributions, module) {
             "__repr__",
             [ureg](const Uniform& self) {
                 return "Uniform(lower_bound=" +
-                    py::str((py::float_(self.lower_bound) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() +
+                    format_parameter(ureg, self.units, self.lower_bound) +
                     ", upper_bound=" +
-                    py::str((py::float_(self.upper_bound) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() + ")";
+                    format_parameter(ureg, self.units, self.upper_bound) + ")";
             }
         )
         ;
 
-    py::class_<RosinRammler, BaseDistribution, std::shared_ptr<RosinRammler>>(module, "RosinRammler")
+    py::class_<RosinRammler, BaseDistribution, std::shared_ptr<RosinRammler>>(module, "RosinRammler", R"doc(
+        Draw particle properties from a Rosin–Rammler distribution. The scale sets the
+        characteristic size and shape is a dimensionless exponent. Optional cutoffs use
+        the same units as scale.
+    )doc")
         .def(
             py::init(
                 [](
@@ -240,7 +269,7 @@ PYBIND11_MODULE(distributions, module) {
             py::arg("shape"),
             py::arg("low_cutoff") = py::none(),
             py::arg("high_cutoff") = py::none(),
-            "Constructor for RosinRammler distribution. Scale and shape parameters must be of type Length."
+            "Set the characteristic scale, dimensionless shape exponent and optional cutoffs."
         )
         .def_property(
             "scale",
@@ -266,17 +295,19 @@ PYBIND11_MODULE(distributions, module) {
             "__repr__",
             [ureg](const RosinRammler& self) {
                 return "RosinRammler(scale=" +
-                    py::str((py::float_(self.scale) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() +
+                    format_parameter(ureg, self.units, self.scale) +
                     ", shape=" + std::to_string(self.shape) +
-                    ", low_cutoff=" +
-                    py::str((py::float_(self.low_cutoff) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() +
-                    ", high_cutoff=" +
-                    py::str((py::float_(self.high_cutoff) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() + ")";
+                    format_cutoffs(ureg, self.units, self.low_cutoff, self.high_cutoff) + ")";
             }
         )
         ;
 
-    py::class_<LogNormal, BaseDistribution, std::shared_ptr<LogNormal>>(module, "LogNormal")
+    py::class_<LogNormal, BaseDistribution, std::shared_ptr<LogNormal>>(module, "LogNormal", R"doc(
+        Draw positive, lognormally distributed particle properties. Supply the mean,
+        standard deviation and optional cutoffs as quantities with compatible units.
+        The sampler uses the base-unit magnitudes of mean and standard_deviation as
+        the location and scale of the underlying normal distribution in log space.
+    )doc")
         .def(
             py::init(
                 [](
@@ -319,7 +350,7 @@ PYBIND11_MODULE(distributions, module) {
             py::arg("standard_deviation"),
             py::arg("low_cutoff") = py::none(),
             py::arg("high_cutoff") = py::none(),
-            "Constructor for LogNormal distribution. Mean and standard deviation must be of type Length."
+            "Set the mean, standard deviation and optional cutoffs in compatible units."
         )
         .def_property(
             "mean",
@@ -345,18 +376,18 @@ PYBIND11_MODULE(distributions, module) {
             "__repr__",
             [ureg](const LogNormal& self) {
                 return "LogNormal(mean=" +
-                    py::str((py::float_(self.mean) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() +
+                    format_parameter(ureg, self.units, self.mean) +
                     ", standard_deviation=" +
-                    py::str((py::float_(self.standard_deviation) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() +
-                    ", low_cutoff=" +
-                    py::str((py::float_(self.low_cutoff) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() +
-                    ", high_cutoff=" +
-                    py::str((py::float_(self.high_cutoff) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() + ")";
+                    format_parameter(ureg, self.units, self.standard_deviation) +
+                    format_cutoffs(ureg, self.units, self.low_cutoff, self.high_cutoff) + ")";
             }
         )
         ;
 
-    py::class_<Delta, BaseDistribution, std::shared_ptr<Delta>>(module, "Delta")
+    py::class_<Delta, BaseDistribution, std::shared_ptr<Delta>>(module, "Delta", R"doc(
+        Represent a fixed particle property. Every sample equals value, with its units
+        preserved. A numeric value produces dimensionless samples.
+    )doc")
         .def(
             py::init(
                 [](
@@ -381,7 +412,7 @@ PYBIND11_MODULE(distributions, module) {
                 }
             ),
             py::arg("value"),
-            "Constructor for Delta distribution. Value must be of type Length."
+            "Set the fixed value as a quantity or a dimensionless number."
         )
         .def_property(
             "value",
@@ -392,7 +423,7 @@ PYBIND11_MODULE(distributions, module) {
             "__repr__",
             [ureg](const Delta& self) {
                 return "Delta(value=" +
-                    py::str((py::float_(self.value) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() + ")";
+                    format_parameter(ureg, self.units, self.value) + ")";
             }
         )
         ;

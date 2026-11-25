@@ -21,10 +21,10 @@ PYBIND11_MODULE(circuits, module) {
 
         This module exposes analog processing circuits used in the opto electronic
         acquisition chain of a flow cytometry simulation.
-        %
+
         Each circuit operates on a one dimensional signal and returns a processed
         signal with the same physical units as the input.
-        %
+
         Typical use cases include baseline correction, baseline restoration, and
         analog low pass filtering prior to digitization or downstream digital
         processing.
@@ -43,10 +43,10 @@ PYBIND11_MODULE(circuits, module) {
 
             A :class:`BaseCircuit` represents a transformation applied to a
             one dimensional signal in the analog acquisition chain.
-            %
+
             Concrete subclasses implement specific operations such as baseline
             subtraction or low pass filtering.
-            %
+
             The processed output always retains the same physical units as the
             input signal.
         )pbdoc"
@@ -102,7 +102,7 @@ PYBIND11_MODULE(circuits, module) {
                     One dimensional input signal.
                 sampling_rate : pint.Quantity or None, optional
                     Sampling rate in hertz.
-                    %
+
                     Circuits that depend on time scale or frequency response may
                     require this value, while others may ignore it.
 
@@ -114,7 +114,7 @@ PYBIND11_MODULE(circuits, module) {
                 Notes
                 -----
                 This method preserves the physical units of the input signal.
-                %
+
                 Only the numerical values are transformed by the circuit.
             )pbdoc"
         )
@@ -139,11 +139,11 @@ PYBIND11_MODULE(circuits, module) {
             This circuit estimates the local baseline by tracking the minimum
             signal value within a sliding window and subtracting that baseline
             estimate from the input.
-            %
+
             It is useful for suppressing slowly varying offsets or drifting
             baselines while preserving positive excursions associated with
             particle events.
-            %
+
             A window size of ``-1 * second`` is interpreted as an infinite
             window, meaning that the baseline is estimated from the global
             minimum over the full signal.
@@ -168,7 +168,7 @@ PYBIND11_MODULE(circuits, module) {
                 ----------
                 window_size : pint.Quantity
                     Sliding window size in second.
-                    %
+
                     Use ``-1 * second`` to request an infinite window spanning
                     the full signal.
 
@@ -196,7 +196,7 @@ PYBIND11_MODULE(circuits, module) {
                 -------
                 pint.Quantity
                     Window size in second.
-                    %
+
                     A value of ``-1 * second`` indicates an infinite window.
             )pbdoc"
         )
@@ -251,10 +251,10 @@ PYBIND11_MODULE(circuits, module) {
                     One dimensional input signal.
                 sampling_rate : pint.Quantity or None, optional
                     Sampling rate in hertz.
-                    %
+
                     This is required when ``window_size`` is finite, because the
                     time window must be converted into a number of samples.
-                    %
+
                     It may be omitted when the window is infinite.
 
                 Returns
@@ -286,10 +286,10 @@ PYBIND11_MODULE(circuits, module) {
             This circuit models a baseline restoration stage that continuously
             estimates the slowly varying baseline of a signal and subtracts it
             so that the output is driven toward a target reference level.
-            %
+
             It is useful for suppressing baseline drift and restoring a stable
             operating point before digitization or event extraction.
-            %
+
             The response speed of the servo is controlled by its time constant.
         )pbdoc"
     )
@@ -320,7 +320,7 @@ PYBIND11_MODULE(circuits, module) {
                 ----------
                 time_constant : pint.Quantity
                     Servo time constant in second.
-                    %
+
                     Larger values produce slower baseline tracking, while smaller
                     values produce faster adaptation.
                 reference_level : float, optional
@@ -328,7 +328,7 @@ PYBIND11_MODULE(circuits, module) {
                 initialize_with_first_sample : bool, optional
                     If ``True``, initialize the internal baseline state from the
                     first input sample.
-                    %
+
                     If ``False``, the internal state is initialized independently
                     of the first sample.
 
@@ -464,11 +464,11 @@ PYBIND11_MODULE(circuits, module) {
 
             This circuit applies a Butterworth low pass response to the input
             signal.
-            %
+
             Butterworth filters provide a maximally flat magnitude response in
             the passband and are useful when smooth low pass attenuation is
             desired without passband ripple.
-            %
+
             The output can optionally be scaled by a multiplicative gain factor.
         )pbdoc"
     )
@@ -501,7 +501,7 @@ PYBIND11_MODULE(circuits, module) {
                     Cutoff frequency in hertz.
                 order : int
                     Filter order.
-                    %
+
                     Higher orders produce a steeper roll off.
                 gain : float
                     Multiplicative gain applied to the filtered output.
@@ -632,11 +632,11 @@ PYBIND11_MODULE(circuits, module) {
             Bessel low pass filter.
 
             This circuit applies a Bessel low pass response to the input signal.
-            %
+
             Bessel filters are often preferred when preserving waveform shape and
             approximate phase linearity is more important than maximizing roll off
             steepness.
-            %
+
             The output can optionally be scaled by a multiplicative gain factor.
         )pbdoc"
     )

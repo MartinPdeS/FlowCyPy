@@ -1,5 +1,3 @@
-
-
 """Utilities for managing and visualizing collections of simulated events.
 
 This module defines :class:`EventCollection`, the high-level container used to
@@ -29,10 +27,10 @@ import seaborn as sns
 
 from FlowCyPy.sub_frames.events import EventDataFrame
 
-from .populations import ExplicitModel, GammaModel
+from .fluidics.populations import ExplicitModel, GammaModel
 
 if TYPE_CHECKING:
-    from .population_events import PopulationEvents
+    from .fluidics.population_events import PopulationEvents
 
 
 @dataclass
@@ -120,13 +118,10 @@ class EventCollection:
 
         converted_collection = self if inplace else self.copy()
 
-        for events in converted_collection.events_list:
-            converted_dataframe = self._convert_events_to_target_units(
-                events=events,
-                target_units=column_units,
-            )
-            converted_dataframe.scatterer_type = events.scatterer_type
-            events.dataframe = converted_dataframe
+        target_units = dict(column_units)
+        frames = [events.dataframe_in_units(column_units=target_units) for events in converted_collection]
+        for events, frame in zip(converted_collection, frames, strict=True):
+            events.dataframe = frame
 
         return converted_collection
 
@@ -231,45 +226,6 @@ class EventCollection:
 
         return target_units
 
-    def _convert_events_to_target_units(
-        self,
-        events: PopulationEvents,
-        target_units: dict[str, Any],
-    ) -> EventDataFrame:
-        """Convert one population dataframe to a target unit mapping.
-
-        Parameters
-        ----------
-        events : PopulationEvents
-            Event block whose dataframe should be converted.
-        target_units : dict[str, Any]
-            Mapping from column name to target unit.
-
-        Returns
-        -------
-        EventDataFrame
-            Converted dataframe copy. The original dataframe is left untouched.
-        """
-        dataframe = events.dataframe.copy(deep=True)
-        dataframe.attrs = {
-            key: value.copy() if isinstance(value, dict) else value
-            for key, value in events.dataframe.attrs.items()
-        }
-
-        for column_name, target_unit in target_units.items():
-            if column_name not in dataframe.columns:
-                continue
-
-            column_unit = dataframe.get_unit(column_name)
-
-            if column_unit is None:
-                continue
-
-            quantity = dataframe.get_quantity(column_name).to(target_unit)
-            dataframe.set_column(column_name=column_name, values=quantity)
-
-        return dataframe
-
     def _get_empty_population_dataframe(self) -> pd.DataFrame:
         """Return an empty population-indexed dataframe placeholder.
 
@@ -313,10 +269,7 @@ class EventCollection:
         population_names = []
 
         for events in selected_events:
-            converted_dataframe = self._convert_events_to_target_units(
-                events=events,
-                target_units=target_units,
-            )
+            converted_dataframe = events.dataframe_in_units(column_units=target_units)
             dataframe_blocks.append(pd.DataFrame(converted_dataframe))
             population_names.append(events.name)
 

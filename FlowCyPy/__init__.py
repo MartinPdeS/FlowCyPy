@@ -6,6 +6,7 @@ debug_mode = False
 _LAZY_EXPORTS = {
     "FlowCytometer": (".flow_cytometer", "FlowCytometer"),
     "Workflow": (".workflow", "Workflow"),
+    "EventCollection": (".event_collection", "EventCollection"),
     "Fluidics": (".fluidics", "Fluidics"),
     "distributions": (".fluidics", "distributions"),
     "populations": (".fluidics", "populations"),
@@ -39,6 +40,7 @@ __all__ = [  # noqa: RUF022
     "__version__",
     "FlowCytometer",
     "Workflow",
+    "EventCollection",
     "Fluidics",
     "distributions",
     "populations",
