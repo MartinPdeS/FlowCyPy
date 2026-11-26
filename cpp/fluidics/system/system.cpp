@@ -116,7 +116,7 @@ py::object Fluidics::generate_event_collection(
 
         for (auto label : population.attr("labels")) {
             block->set_quantity_column(label.attr("column_name").cast<std::string>(),
-                                       label.attr("_sample")(py::arg("size") = count));
+                                       label.attr("_sample")(py::arg("size") = count, py::arg("properties") = properties));
         }
 
         auto [x, y, speeds] = cell.sample_transverse_profile(count);

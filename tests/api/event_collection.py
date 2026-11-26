@@ -1,9 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
-from pint import DimensionalityError
 from FlowCyPy.fluidics.population_events import PopulationEvents
-
+from pint import DimensionalityError
 from FlowCyPy.event_collection import EventCollection
 from FlowCyPy.sub_frames.events import EventDataFrame
 from FlowCyPy.units import ureg

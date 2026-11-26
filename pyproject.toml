@@ -109,6 +109,9 @@ extend-exclude = ["FlowCyPy/_version.py"]
 # FlowCyPy is the established public import name.
 ignore = ["N999"]
 
+[tool.ruff.lint.isort]
+no-lines-before = ["standard-library", "third-party", "first-party", "local-folder"]
+
 [tool.mps-maintenance]
 version-file = "FlowCyPy/_version.py"
 version-method = "literal"

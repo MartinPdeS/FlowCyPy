@@ -1,7 +1,6 @@
 import numpy as np
 import pytest
 from FlowCyPy.digital_processing.discriminator import DoubleThreshold, FixedWindow
-
 from FlowCyPy.units import ureg
 
 N_POINTS = 1000

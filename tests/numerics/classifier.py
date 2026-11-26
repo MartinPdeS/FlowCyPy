@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 import pytest
 from FlowCyPy.digital_processing.classifier import DBScanClassifier, KmeansClassifier
-
 from FlowCyPy.sub_frames.classifier import ClassifierDataFrame
 
 

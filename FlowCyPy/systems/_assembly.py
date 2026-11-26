@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 from TypedUnit import Angle, FlowRate, Length, Power, Voltage
 from FlowCyPy.digital_processing import DigitalProcessing, discriminator, peak_locator
+from FlowCyPy.flow_cytometer import FlowCytometer
 from FlowCyPy.fluidics import (
     FlowCell,
     Fluidics,
@@ -18,7 +19,6 @@ from FlowCyPy.opto_electronics import (
     source,
 )
 from FlowCyPy.units import ureg
-from FlowCyPy.flow_cytometer import FlowCytometer
 
 
 def assemble(

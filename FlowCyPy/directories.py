@@ -1,6 +1,5 @@
 
 from pathlib import Path
-
 import FlowCyPy
 
 __all__ = ["doc_css_path", "doc_path", "logo_path", "project_path", "root_path"]

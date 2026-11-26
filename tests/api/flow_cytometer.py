@@ -4,13 +4,13 @@ import matplotlib
 matplotlib.use("Agg")
 
 from unittest.mock import patch
-
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
-
+from FlowCyPy.fluidics.population_events import PopulationEvents
 from FlowCyPy import FlowCytometer
 from FlowCyPy.digital_processing import DigitalProcessing, discriminator, peak_locator
+from FlowCyPy.event_collection import EventCollection
 from FlowCyPy.fluidics import (
     FlowCell,
     Fluidics,
@@ -18,8 +18,6 @@ from FlowCyPy.fluidics import (
     distributions,
     populations,
 )
-from FlowCyPy.event_collection import EventCollection
-from FlowCyPy.fluidics.population_events import PopulationEvents
 from FlowCyPy.opto_electronics import (
     Amplifier,
     Detector,

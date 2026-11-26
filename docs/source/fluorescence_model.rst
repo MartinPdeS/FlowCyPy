@@ -64,6 +64,33 @@ Choosing physical inputs
   For radiant power per nm, also divide by the photon energy before integrating.
   Use a response-corrected spectrum if detector sensitivity shaped the measurement.
 
+Stochastic surface labeling
+---------------------------
+
+To model independent binding on a spherical particle, give a label its mean
+surface density. For each particle FlowCyPy draws a molecule count once,
+using the same sampled outer diameter :math:`D` used to define that particle:
+
+.. math::
+
+   N \mid D \sim \mathrm{Poisson}(\rho \pi D^2).
+
+.. code-block:: python
+
+   from FlowCyPy.dyes import fitc
+   from FlowCyPy.fluorescence import Label
+   from FlowCyPy.units import ureg
+
+   coating = Label(fluorophore=fitc(), molecules_per_area=0.02 / ureg.nm**2)
+
+For a core-shell particle the outer diameter is the core diameter plus twice
+the radial shell thickness. Even equal-sized beads fluctuate: at a fixed
+diameter, the count variance equals its mean. Size dispersion adds variation
+through the area. All channels use the stored event count, and an acquisition
+seed reproduces the draws. The model assumes independent occupancy and has no
+finite binding-site capacity. Use ``molecules_per_particle`` for a fixed
+count or a count distribution independent of geometry.
+
 Predefined dyes
 ---------------
 

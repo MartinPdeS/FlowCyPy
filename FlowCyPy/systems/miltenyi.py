@@ -3,7 +3,6 @@
 from FlowCyPy.systems._assembly import ScatterChannel, ScatterSystem
 from FlowCyPy.units import ureg
 
-
 macsquant_analyzer_16 = ScatterSystem(
     wavelength=405 * ureg.nanometer,
     channels=(

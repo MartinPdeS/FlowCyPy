@@ -1,9 +1,8 @@
 import numpy as np
 import pytest
+from FlowCyPy.opto_electronics.source import Gaussian
 from TypedUnit import ureg
 from FlowCyPy.opto_electronics import Detector
-from FlowCyPy.opto_electronics.source import Gaussian
-
 
 SAMPLE_COUNT = 5000
 

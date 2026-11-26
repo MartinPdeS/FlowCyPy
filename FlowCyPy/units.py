@@ -9,7 +9,6 @@ from TypedUnit import (
     Viscosity,
     ureg,
 )
-
 from FlowCyPy.interface_pint import set_ureg
 
 set_ureg(ureg)

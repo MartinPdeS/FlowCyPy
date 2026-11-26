@@ -1,5 +1,4 @@
 from typing import Any
-
 import matplotlib.pyplot as plt
 import MPSPlots
 import numpy
@@ -9,7 +8,6 @@ import pint_pandas
 import seaborn as sns
 from MPSPlots import helper
 from TypedUnit import Quantity
-
 from .peak_metrics import PeakMetricsMixin
 
 

@@ -14,19 +14,15 @@ and computes derived dataframes or figures on demand.
 """
 
 from __future__ import annotations
-
 from collections.abc import Iterator, Mapping
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
-
 import matplotlib.pyplot as plt
 import MPSPlots
 import numpy as np
 import pandas as pd
 import seaborn as sns
-
 from FlowCyPy.sub_frames.events import EventDataFrame
-
 from .fluidics.populations import ExplicitModel, GammaModel
 
 if TYPE_CHECKING:

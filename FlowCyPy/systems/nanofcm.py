@@ -3,7 +3,6 @@
 from FlowCyPy.systems._assembly import ScatterChannel, ScatterSystem
 from FlowCyPy.units import ureg
 
-
 nanoanalyzer = ScatterSystem(
     wavelength=488 * ureg.nanometer,
     channels=(

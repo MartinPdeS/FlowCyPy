@@ -4,7 +4,6 @@ import pandas as pd
 import pytest
 from pint import DimensionalityError
 from TypedUnit import ureg
-
 from FlowCyPy.analysis import DetectionAnalyzer
 from FlowCyPy.run_record import RunRecord, SignalRecord
 from FlowCyPy.sub_frames.peaks import PeakDataFrame

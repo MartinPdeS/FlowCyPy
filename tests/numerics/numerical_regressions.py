@@ -1,7 +1,6 @@
 import numpy as np
 import pytest
 from FlowCyPy.digital_processing.discriminator import FixedWindow
-
 from FlowCyPy.fluidics import FlowCell
 from FlowCyPy.opto_electronics import Digitizer
 from FlowCyPy.units import ureg

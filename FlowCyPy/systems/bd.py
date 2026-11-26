@@ -1,12 +1,12 @@
 """Instrument configurations for BD Biosciences."""
 
 from TypedUnit import FlowRate, Power, Voltage
-from FlowCyPy import opto_electronics, digital_processing
+from FlowCyPy import digital_processing, opto_electronics
 from FlowCyPy.detectors.photomultipliers import pmt
+from FlowCyPy.flow_cytometer import FlowCytometer
 from FlowCyPy.fluidics import SampleFlowRate, SheathFlowRate
 from FlowCyPy.systems._assembly import ScatterChannel, ScatterSystem, assemble
 from FlowCyPy.units import ureg
-from FlowCyPy.flow_cytometer import FlowCytometer
 
 
 def facs_canto(

@@ -1,5 +1,4 @@
 import pytest
-
 import FlowCyPy
 from FlowCyPy.fluidics import (
     FlowCell,

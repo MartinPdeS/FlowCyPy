@@ -1,10 +1,8 @@
 from unittest.mock import patch
-
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 from TypedUnit import Length, ureg
-
 import FlowCyPy
 from FlowCyPy.fluidics import distributions as dist
 

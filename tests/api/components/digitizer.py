@@ -1,7 +1,6 @@
 import numpy as np
 import pytest
 from PyMieSim.units import ureg
-
 from FlowCyPy.opto_electronics import Digitizer
 
 

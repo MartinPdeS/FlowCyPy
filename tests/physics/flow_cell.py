@@ -1,7 +1,6 @@
 import numpy as np
 import pytest
 from TypedUnit import ureg
-
 # Import necessary components from FlowCyPy.
 from FlowCyPy.fluidics import (
     FlowCell,

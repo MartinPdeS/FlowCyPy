@@ -1,5 +1,4 @@
 from typing import Any
-
 import numpy
 import pandas as pd
 from TypedUnit import ureg

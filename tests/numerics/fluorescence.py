@@ -3,7 +3,13 @@
 import numpy as np
 import pytest
 from FlowCyPy.detectors.photomultipliers import pmt
-from FlowCyPy.dyes import alexa_fluor_488, alexa_fluor_594, alexa_fluor_647, atto_647n, fitc
+from FlowCyPy.dyes import (
+    alexa_fluor_488,
+    alexa_fluor_594,
+    alexa_fluor_647,
+    atto_647n,
+    fitc,
+)
 from FlowCyPy.fluidics import distributions, populations
 from FlowCyPy.fluorescence import Bandpass, Fluorophore, Label, _decay_bin_averages
 from FlowCyPy.opto_electronics import Amplifier
@@ -102,8 +108,9 @@ def test_fluorescence_acquisition(*, shot_noise):
     )
 
 
-def test_mixed_channel_and_scatter_default():
-    workflow = _instrument(shot_noise=False, count=10000)
+@pytest.mark.parametrize("shot_noise", [False, True])
+def test_mixed_channel_and_scatter_default(*, shot_noise):
+    workflow = _instrument(shot_noise=shot_noise, count=10000)
     optics = workflow.opto_electronics
     geometry = {"phi_angle": 90 * ureg.degree, "numerical_aperture": 0.8}
     optics.detectors = [
@@ -117,7 +124,9 @@ def test_mixed_channel_and_scatter_default():
         ),
     ]
     settings = {"run_time": 0.5 * ureg.millisecond, "random_state": 17}
-    block = workflow.acquire(**settings).event_collection[0]
+    record = workflow.acquire(**settings)
+    assert np.isfinite(record.signal.analog["mixed"].m_as("V")).all()
+    block = record.event_collection[0]
     reference = _instrument(shot_noise=False, count=0)
     reference.opto_electronics.detectors = optics.detectors
     blank = reference.acquire(**settings).event_collection[0]
@@ -284,3 +293,51 @@ def test_dye_preset(preset, lifetime_ns, quantum_yield, emission_nm, peak_area_m
 def test_preset_rejects_absorption_above_peak():
     with pytest.raises(ValueError, match="relative_absorption"):
         alexa_fluor_488(relative_absorption=1.1)
+
+
+@pytest.mark.parametrize("core_shell", [False, True])
+def test_surface_label_counts_follow_each_outer_diameter(core_shell):
+    instrument = facs_canto()
+    density = 2_000 / ureg.micrometer**2
+    label = Label(fluorophore=fitc(), molecules_per_area=density)
+    sample = {
+        "name": "beads",
+        "concentration": 2e9 * ureg.particle / ureg.mL,
+        "medium_refractive_index": 1.33,
+        "labels": (label,),
+    }
+    sizes = distributions.Uniform(lower_bound=80 * ureg.nm, upper_bound=200 * ureg.nm)
+    if core_shell:
+        population = populations.CoreShellPopulation(
+            **sample, core_diameter=sizes, shell_thickness=20 * ureg.nm,
+            core_refractive_index=1.4, shell_refractive_index=1.5,
+        )
+    else:
+        population = populations.SpherePopulation(**sample, diameter=sizes, refractive_index=1.5)
+    instrument.fluidics.scatterer_collection.add_population(population)
+    settings = {"run_time": 1 * ureg.millisecond, "sampling_rate": 1 * ureg.megahertz, "random_state": 23}
+    events = instrument.fluidics.generate_event_collection(**settings)[0]
+    counts = events.get_quantity(label.column_name).m_as("")
+    if core_shell:
+        diameter = events.get_quantity("CoreDiameter") + 2 * events.get_quantity("ShellThickness")
+    else:
+        diameter = events.get_quantity("Diameter")
+    expected = (np.pi * diameter**2 * density).m_as("")
+    residuals = (counts - expected) / np.sqrt(expected)
+    assert np.all(counts >= 0)
+    np.testing.assert_array_equal(counts, counts.astype(int))
+    assert abs(residuals.mean()) < 5 / np.sqrt(len(counts))
+    assert residuals.var() == pytest.approx(1, abs=0.15)
+    repeat = instrument.fluidics.generate_event_collection(**settings)[0]
+    np.testing.assert_array_equal(counts, repeat.get_quantity(label.column_name).m_as(""))
+
+
+@pytest.mark.parametrize("settings", [
+    {},
+    {"molecules_per_particle": 1, "molecules_per_area": 1 / ureg.nm**2},
+    {"molecules_per_area": -1 / ureg.nm**2},
+    {"molecules_per_area": 1 * ureg.nm},
+])
+def test_label_requires_one_valid_loading(settings):
+    with pytest.raises((ValueError, TypeError)):
+        Label(fluorophore=fitc(), **settings)

@@ -1,6 +1,6 @@
 """Single-laser fluorescence for explicitly sampled particles."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import numpy as np
 from FlowCyPy.fluidics import distributions, populations
 from FlowCyPy.opto_electronics.coupling_model import ScatteringModel
@@ -116,18 +116,34 @@ class Label:
     ----------
     fluorophore : Fluorophore
         Optical properties shared by the labeled particles.
-    molecules_per_particle : int or BaseDistribution
+    molecules_per_particle : int or BaseDistribution, optional
         Fixed count or dimensionless count distribution, sampled once per event.
         Distribution samples are rounded to the nearest integer.
+    molecules_per_area : inverse area quantity, optional
+        Mean surface density of bound fluorophores. Counts are Poisson draws
+        with mean density times the individual particle’s outer surface area.
+        Supply exactly one of molecules_per_particle and molecules_per_area.
     """
 
     fluorophore: Fluorophore
-    molecules_per_particle: int | distributions.BaseDistribution
+    molecules_per_particle: int | distributions.BaseDistribution | None = None
+    molecules_per_area: ureg.Quantity | None = None
+    _rng: np.random.Generator | None = field(default=None, init=False, repr=False, compare=False)
 
     def __post_init__(self):
         """Check dye and count configuration before sampling."""
         if not isinstance(self.fluorophore, Fluorophore):
             raise TypeError("fluorophore must be a Fluorophore.")
+        if (self.molecules_per_area is None) == (self.molecules_per_particle is None):
+            raise ValueError("Specify exactly one of molecules_per_particle and molecules_per_area.")
+        if self.molecules_per_area is not None:
+            if not hasattr(self.molecules_per_area, "m_as"):
+                raise TypeError("molecules_per_area requires an inverse area quantity.")
+            density = np.asarray(self.molecules_per_area.m_as("1 / meter**2"))
+            if density.ndim or not np.isfinite(density) or density < 0:
+                raise ValueError("molecules_per_area must be a finite nonnegative scalar.")
+            object.__setattr__(self, "_rng", np.random.default_rng())
+            return
         count = self.molecules_per_particle
         if not isinstance(count, distributions.BaseDistribution) and (
             not isinstance(count, (int, np.integer))
@@ -145,12 +161,25 @@ class Label:
 
     def _seed(self, *, value):
         """Seed a stochastic molecule count for a repeatable acquisition."""
-        if isinstance(self.molecules_per_particle, distributions.BaseDistribution):
+        if self.molecules_per_area is not None:
+            object.__setattr__(self, "_rng", np.random.default_rng(value))
+        elif isinstance(self.molecules_per_particle, distributions.BaseDistribution):
             self.molecules_per_particle.seed(value)
 
-    def _sample(self, *, size):
+    def _sample(self, *, size, properties=None):
         """Return dimensionless molecule counts for a block of events."""
-        if isinstance(self.molecules_per_particle, distributions.BaseDistribution):
+        if self.molecules_per_area is not None:
+            if properties is None:
+                raise RuntimeError("Surface labeling requires sampled geometry. Rebuild the FlowCyPy fluidics extension.")
+            if "Diameter" in properties:
+                diameter = properties["Diameter"]
+            else:
+                diameter = properties["CoreDiameter"] + 2 * properties["ShellThickness"]
+            if np.any(diameter.magnitude < 0):
+                raise ValueError("Surface labeling requires nonnegative outer diameters.")
+            expected = (np.pi * diameter**2 * self.molecules_per_area).m_as("")
+            counts = self._rng.poisson(expected)
+        elif isinstance(self.molecules_per_particle, distributions.BaseDistribution):
             counts = self.molecules_per_particle.sample(size).m_as("")
             if not np.isfinite(counts).all() or np.any(counts < 0):
                 raise ValueError(

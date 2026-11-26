@@ -3,7 +3,6 @@
 from FlowCyPy.systems._assembly import ScatterChannel, ScatterSystem
 from FlowCyPy.units import ureg
 
-
 novocyte_488 = ScatterSystem(
     wavelength=488 * ureg.nanometer,
     channels=(
