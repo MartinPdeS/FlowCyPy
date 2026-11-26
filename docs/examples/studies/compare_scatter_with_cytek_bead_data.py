@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Cytek bead comparison
-=====================
+Compare simulated scatter with Cytek bead measurements
+======================================================
 
 This example compares simulated and experimental flow cytometry measurements
 for Rosetta bead populations.
@@ -20,7 +20,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.colors import LogNorm
-from MPSPlots.styles import scientific
 
 from TypedUnit import ureg
 
@@ -686,16 +685,15 @@ experimental_dataframe = pd.read_csv(experimental_data_path)
 # The two datasets are shown with identical FSC-H and SSC-H limits so that the
 # visual comparison reflects the same feature space.
 
-with plt.style.context(scientific):
-    plot_simulation_experiment_comparison(
-        simulation_dataframe=simulation_dataframe,
-        experimental_dataframe=experimental_dataframe,
-        x_column_name="FSC-H",
-        y_column_name="SSC-H",
-        number_of_bins=250,
-        quantile_limits=(0.0, 1.0),
-        x_limits=(1e1, 5e6),
-        y_limits=(2e2, 5e6),
-    )
+plot_simulation_experiment_comparison(
+    simulation_dataframe=simulation_dataframe,
+    experimental_dataframe=experimental_dataframe,
+    x_column_name="FSC-H",
+    y_column_name="SSC-H",
+    number_of_bins=250,
+    quantile_limits=(0.0, 1.0),
+    x_limits=(1e1, 5e6),
+    y_limits=(2e2, 5e6),
+)
 
 plt.show()

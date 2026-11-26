@@ -3,6 +3,7 @@
 import numpy as np
 import pytest
 from FlowCyPy.detectors.photomultipliers import pmt
+from FlowCyPy.dyes import alexa_fluor_488, alexa_fluor_594, alexa_fluor_647, atto_647n, fitc
 from FlowCyPy.fluidics import distributions, populations
 from FlowCyPy.fluorescence import Bandpass, Fluorophore, Label, _decay_bin_averages
 from FlowCyPy.opto_electronics import Amplifier
@@ -258,3 +259,28 @@ def test_overlapping_spectra_with_different_lifetimes():
     np.testing.assert_allclose(
         (voltages["dark"] / conversion).m_as("nW"), pulse.magnitude, atol=1e-13
     )
+
+
+@pytest.mark.parametrize(
+    "preset, lifetime_ns, quantum_yield, emission_nm, peak_area_m2",
+    [
+        (fitc, 4.1, 0.92, 518, 2.6765e-20),
+        (atto_647n, 3.5, 0.65, 664, 5.7353e-20),
+        (alexa_fluor_488, 4.1, 0.92, 519, 2.7912e-20),
+        (alexa_fluor_594, 3.9, 0.66, 617, 3.5178e-20),
+        (alexa_fluor_647, 1.0, 0.33, 668, 1.0324e-19),
+    ],
+)
+def test_dye_preset(preset, lifetime_ns, quantum_yield, emission_nm, peak_area_m2):
+    """Check the tabulated properties and Beer–Lambert conversion at half absorption."""
+    dye = preset(relative_absorption=0.5)
+    assert dye.absorption_cross_section.m_as("m²") == pytest.approx(0.5 * peak_area_m2, rel=1e-4, abs=0)
+    assert dye.lifetime.m_as("ns") == lifetime_ns
+    assert dye.quantum_yield == quantum_yield
+    np.testing.assert_array_equal(dye.emission_wavelengths.m_as("nm"), [emission_nm])
+    assert dye.photon_weights == (1.0,)
+
+
+def test_preset_rejects_absorption_above_peak():
+    with pytest.raises(ValueError, match="relative_absorption"):
+        alexa_fluor_488(relative_absorption=1.1)

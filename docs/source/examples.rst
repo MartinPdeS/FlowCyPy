@@ -22,6 +22,16 @@ Examples
 
       Inspect numerical and physical checks for the model.
 
+Choose a worked example
+-----------------------
+
+* Define a reusable laser and detector geometry in :doc:`gallery/tutorials/build_a_reusable_scatter_system`.
+* Assemble the fluidics and optical chain in :doc:`gallery/tutorials/assemble_a_flow_cytometer`.
+* Use peak heights from two detectors in :doc:`gallery/tutorials/cluster_particles_by_scatter`.
+* Define two custom fluorophores and check their channel ratios in :doc:`gallery/tutorials/define_custom_dye_spectra`.
+* Check dim-pulse resolution and bright-pulse clipping in :doc:`gallery/studies/choose_digitizer_voltage_range`.
+* Measure noise-triggered segments in :doc:`gallery/studies/measure_blank_trigger_rate`.
+
 .. toctree::
    :maxdepth: 2
    :hidden:

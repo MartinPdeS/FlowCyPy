@@ -44,7 +44,7 @@ for label, factory in (("BD FACSCanto II", facs_canto_ii), ("nanoFCM NanoAnalyze
     )
 
 axis.set(xlabel="Time (µs)", ylabel="Side-scatter voltage (µV)")
-axis.legend(loc="lower center", bbox_to_anchor=(0.5, 1), ncols=2, frameon=False)
+axis.legend()
 plt.show()
 
 # %%

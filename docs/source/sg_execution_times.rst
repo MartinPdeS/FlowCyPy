@@ -32,7 +32,7 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_gallery_tutorials_facs_canto.py` (``../examples/tutorials/facs_canto.py``)
+   * - :ref:`sphx_glr_gallery_tutorials_acquire_scatter_on_facs_canto.py` (``../examples/tutorials/acquire_scatter_on_facs_canto.py``)
      - 00:00.448
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_concentration_sweep.py` (``../examples/studies/concentration_sweep.py``)
@@ -41,16 +41,16 @@ Computation times
    * - :ref:`sphx_glr_gallery_studies_limit_of_detection.py` (``../examples/studies/limit_of_detection.py``)
      - 00:00.000
      - 0.0
-   * - :ref:`sphx_glr_gallery_studies_signal_processing.py` (``../examples/studies/signal_processing.py``)
+   * - :ref:`sphx_glr_gallery_studies_compare_analog_filters.py` (``../examples/studies/compare_analog_filters.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_threshold_sensitivity.py` (``../examples/studies/threshold_sensitivity.py``)
      - 00:00.000
      - 0.0
-   * - :ref:`sphx_glr_gallery_tutorials_workflow.py` (``../examples/tutorials/workflow.py``)
+   * - :ref:`sphx_glr_gallery_tutorials_assemble_a_flow_cytometer.py` (``../examples/tutorials/assemble_a_flow_cytometer.py``)
      - 00:00.000
      - 0.0
-   * - :ref:`sphx_glr_gallery_tutorials_workflow_1.py` (``../examples/tutorials/workflow_1.py``)
+   * - :ref:`sphx_glr_gallery_tutorials_cluster_particles_by_scatter.py` (``../examples/tutorials/cluster_particles_by_scatter.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_gallery_validation_j_estimator.py` (``../examples/validation/j_estimator.py``)

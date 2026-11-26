@@ -18,7 +18,7 @@ from FlowCyPy.opto_electronics import (
     source,
 )
 from FlowCyPy.units import ureg
-from FlowCyPy.workflow import Workflow
+from FlowCyPy.flow_cytometer import FlowCytometer
 
 
 def assemble(
@@ -28,7 +28,7 @@ def assemble(
     opto_electronics: OptoElectronics,
     digital_processing: DigitalProcessing,
     background_power: Power,
-) -> Workflow:
+) -> FlowCytometer:
     """Attach the acquisition chain to a fresh sample in the reference flow cell."""
     cell = FlowCell(
         sample_volume_flow=sample_volume_flow.value
@@ -40,7 +40,7 @@ def assemble(
         width=177 * ureg.micrometer,
         height=433 * ureg.micrometer,
     )
-    return Workflow.from_components(
+    return FlowCytometer(
         fluidics=Fluidics(flow_cell=cell, scatterer_collection=ScattererCollection()),
         opto_electronics=opto_electronics,
         digital_processing=digital_processing,
@@ -113,8 +113,8 @@ class ScatterSystem:
         sheath_volume_flow: SheathFlowRate | FlowRate = SheathFlowRate.DEFAULT,
         background_power: Power = 0 * ureg.watt,
         threshold: str | Voltage = "4sigma",
-    ) -> Workflow:
-        """Create an editable scattering workflow with an empty sample.
+    ) -> FlowCytometer:
+        """Create an editable scattering instrument with an empty sample.
 
         Parameters
         ----------
@@ -127,7 +127,7 @@ class ScatterSystem:
 
         Returns
         -------
-        Workflow
+        FlowCytometer
             Independent fluidics, optics and processing components.
         """
         optics = OptoElectronics(

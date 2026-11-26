@@ -87,7 +87,7 @@ figure, axes = plt.subplots(1, 3, figsize=(11, 3.3), layout="constrained")
 for axis, separation in zip(axes[:2], (2.0, 5.0)):
     voltage, statistics = simulate_pair(separation=separation)
     axis.plot(sample_times, voltage)
-    axis.axhline(threshold, color="0.4", linestyle="--", label="Threshold")
+    axis.axhline(threshold, linestyle="--", label="Threshold")
     axis.set(
         title=f'{separation:g} µs apart\nTrigger windows = {statistics["TotalTriggerSegments"]}',
         xlabel="Time (µs)",

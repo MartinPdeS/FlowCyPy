@@ -1,9 +1,8 @@
 """
-Size-exclusion chromatography
-=============================
+Compare size-exclusion cutoffs for vesicles and lipoproteins
+============================================================
 
 This example demonstrates how to simulate flow cytometry data for extracellular vesicles (EVs) and lipoproteins (LPs) under different Size Exclusion Chromatography (SEC) scenarios. The simulation includes the generation of scatterer populations, opto-electronic configurations, and digital processing to analyze the resulting data.
-
 """
 import numpy as np
 import pandas as pd
@@ -11,14 +10,12 @@ from typing import Optional
 from TypedUnit import ureg, AnyUnit
 import seaborn as sns
 import matplotlib.pyplot as plt
-from MPSPlots.styles import scientific
 
 
 from FlowCyPy import fluidics
 from FlowCyPy import opto_electronics
 from FlowCyPy import digital_processing
 from FlowCyPy import FlowCytometer
-import matplotlib.gridspec as gridspec
 
 # ----------------------------
 # Data geration flow cytometer
@@ -349,71 +346,16 @@ else:
 # --------------------------------
 # Each panel shows the detected peak heights for one separation scenario.
 
-with plt.style.context(scientific):
-    if not combined_df.empty:
-        fig = plt.figure(figsize=(12, 10), layout="constrained")
-        gs_main = gridspec.GridSpec(2, 2, figure=fig)
-
-        for i, title in enumerate(titles_map):
-            ax_scatter = fig.add_subplot(gs_main[i]) # Main scatter plot
-
-            # Filter data for the current Run_Title
-            df_facet = combined_df[combined_df['Run_Title'] == title]
-
-            # Scatter plot
-            sns.scatterplot(
-                x=x_col,
-                y=y_col,
-                data=df_facet,
-                s=10, alpha=0.35, color="black", rasterized=True,
-                ax=ax_scatter
-            )
-
-            # Set titles and labels
-            ax_scatter.set_title(title, fontsize=18, pad=10)
-            ax_scatter.set_xlabel(x_col)
-            ax_scatter.set_ylabel(y_col)
-
-            # Set limits for scatter plot
-            ax_scatter.set_xlim(1, 100000)
-            ax_scatter.set_ylim(1, 20000)
-
-            # Set log scale for scatter plot
-            ax_scatter.set_xscale("log")
-            ax_scatter.set_yscale("log")
-
-            # Apply common axis formatting for scatter plot
-            ax_scatter.tick_params(
-                axis="both",
-                which="major",
-                bottom=True, top=False, left=True, right=False,
-                labelbottom=True, labelleft=True,
-                labelsize=10, length=4
-            )
-            ax_scatter.tick_params(
-                axis="both",
-                which="minor",
-                bottom=True, top=False, left=True, right=False,
-                length=2
-            )
-            ax_scatter.grid(True, which="major", alpha=0.25)
-
-            # Ensure x-axis labels only for the bottom plots, y-axis for the left-most plots
-            if i > 0: # All plots except the first one
-                ax_scatter.set_ylabel("")
-                ax_scatter.tick_params(axis="y", labelleft=False)
-
-        # Removed plt.tight_layout() to avoid UserWarning as gridspec handles spacing
-        plt.savefig(
-            'measurements_scatter.png', # New filename without marginals
-            dpi=300,
-            transparent=False,
-            bbox_inches="tight",
-            facecolor=(0, 0, 0, 0)
-        )
-        plt.show()
-    else:
-        print("No data to plot for measurements_scatter.png. 'peaks_data' was None for all runs, or no suitable event data was found.")
+if not combined_df.empty:
+    figure, axes = plt.subplots(2, 2, sharex=True, sharey=True, layout="constrained")
+    for axis, title in zip(axes.flat, titles_map):
+        data = combined_df[combined_df["Run_Title"] == title]
+        axis.scatter(data[x_col], data[y_col])
+        axis.set(title=title, xscale="log", yscale="log", xlim=(1, 100000), ylim=(1, 20000))
+    figure.supxlabel(x_col)
+    figure.supylabel(y_col)
+    figure.savefig("measurements_scatter.png")
+    plt.show()
 
 # --------------------------------
 # plotting
@@ -446,105 +388,25 @@ combined_df = combined_df[
     (combined_df['Diameter_nm'] <= max_expected_diameter_nm)
 ].copy()
 
-with plt.style.context(scientific):
-    fig = plt.figure(figsize=(12, 12), layout="constrained")
-    gs_main = gridspec.GridSpec(2, 2, figure=fig)
-
-    for i, title in enumerate(titles_map):
-        gs_inner = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs_main[i],
-                                                 width_ratios=[0.2, 1, 0.2],
-                                                 height_ratios=[0.2, 1, 0.2],
-                                                 wspace=0.0, hspace=0.0)
-
-        ax_hist_x = fig.add_subplot(gs_inner[0, 1])
-        ax_scatter = fig.add_subplot(gs_inner[1, 1])
-        ax_hist_y = fig.add_subplot(gs_inner[1, 2])
-
-        df_facet = combined_df[combined_df['Run_Title'] == title]
-
-        populations = df_facet['Population'].unique()
-        colors = sns.color_palette(n_colors=len(populations))
-
-        for pop_idx, population in enumerate(populations):
-            df_pop = df_facet[df_facet['Population'] == population]
-            current_color = colors[pop_idx]
-
-            sns.scatterplot(
-                x="Diameter_nm",
-                y="Refractive Index",
-                data=df_pop,
-                s=15, alpha=0.35, rasterized=True, edgecolor=None,
-                ax=ax_scatter,
-                color=current_color,
-                label=population
-            )
-
-            sns.kdeplot(
-                x=df_pop["Diameter_nm"],
-                ax=ax_hist_x,
-                color=current_color,
-                linewidth=1.5,
-            )
-
-            sns.kdeplot(
-                y=df_pop["Refractive Index"],
-                ax=ax_hist_y,
-                color=current_color,
-                linewidth=1.5,
-            )
-
-        ax_scatter.set_title(title, fontsize=18, pad=10)
-        ax_scatter.set_xlabel("Diameter [nm]")
-        ax_scatter.set_ylabel("Refractive Index")
-
-        ax_scatter.set_xlim(0.0, max_expected_diameter_nm * 1.1)
-        ax_hist_x.set_xlim(ax_scatter.get_xlim())
-        ax_scatter.set_ylim(combined_df['Refractive Index'].min() * 0.99, combined_df['Refractive Index'].max() * 1.01)
-        ax_hist_y.set_ylim(ax_scatter.get_ylim())
-
-        ax_scatter.set_xscale("linear")
-        ax_hist_x.set_xscale("linear")
-
-        ax_hist_x.set_ylabel("")
-        ax_hist_x.set_xlabel("")
-        ax_hist_x.tick_params(axis="x", labelbottom=False)
-        ax_hist_x.tick_params(axis="y", labelleft=False)
-
-        ax_hist_y.set_ylabel("")
-        ax_hist_y.set_xlabel("")
-        ax_hist_y.tick_params(axis="x", labelbottom=False)
-        ax_hist_y.tick_params(axis="y", labelleft=False)
-
-        for ax in [ax_scatter, ax_hist_x, ax_hist_y]:
-            ax.tick_params(
-                axis="both",
-                which="major",
-                bottom=True, top=False, left=True, right=False,
-                labelbottom=True, labelleft=True,
-                labelsize=10, length=4
-            )
-            ax.tick_params(
-                axis="both",
-                which="minor",
-                bottom=True, top=False, left=True, right=False,
-                length=2
-            )
-            ax.grid(True, which="major", alpha=0.25)
-
-        ax_hist_x.spines[['top', 'right', 'left', 'bottom']].set_visible(False)
-        ax_hist_y.spines[['top', 'right', 'left', 'bottom']].set_visible(False)
-
-        if i > 0:
-            ax_scatter.set_ylabel("")
-            ax_scatter.tick_params(axis="y", labelleft=False)
-
-        ax_scatter.legend(title="Population", loc='upper right')
-
-    plt.savefig(
-        'scatterers_with_marginals.png',
-        dpi=300,
-        transparent=False,
-        bbox_inches="tight",
-        facecolor=(0, 0, 0, 0)
+figure = plt.figure(layout="constrained")
+for panel, title in zip(figure.subfigures(2, 2).flat, titles_map):
+    data = combined_df[combined_df["Run_Title"] == title]
+    axes = panel.subplot_mosaic(
+        [["x", "."], ["joint", "y"]], width_ratios=[4, 1], height_ratios=[1, 4]
     )
-    plt.show()
+    joint = axes["joint"]
+    axes["x"].sharex(joint)
+    axes["y"].sharey(joint)
+    sns.scatterplot(data=data, x="Diameter_nm", y="Refractive Index", hue="Population", ax=joint)
+    for _, population in data.groupby("Population", sort=False):
+        sns.kdeplot(data=population, x="Diameter_nm", ax=axes["x"])
+        sns.kdeplot(data=population, y="Refractive Index", ax=axes["y"])
+    joint.set(
+        xlabel="Diameter [nm]", xlim=(0, max_expected_diameter_nm * 1.1),
+        ylim=(combined_df["Refractive Index"].min() * 0.99, combined_df["Refractive Index"].max() * 1.01),
+    )
+    axes["x"].set_axis_off()
+    axes["y"].set_axis_off()
+    panel.suptitle(title)
+figure.savefig("scatterers_with_marginals.png")
+plt.show()

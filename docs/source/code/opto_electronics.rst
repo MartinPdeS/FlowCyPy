@@ -38,6 +38,19 @@ population event data and computes the detected optical response.
    :members:
    :show-inheritance:
 
+Fluorescence and spectral filtering
+-----------------------------------
+
+Attach a label to an explicit population and a bandpass to a detector channel.
+See :doc:`/fluorescence_model` for the power and time conventions.
+
+.. autoclass:: FlowCyPy.fluorescence.Fluorophore
+
+.. autoclass:: FlowCyPy.fluorescence.Label
+
+.. autoclass:: FlowCyPy.fluorescence.Bandpass
+   :members: transmits
+
 Light sources
 -------------
 

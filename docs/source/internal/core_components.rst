@@ -9,7 +9,7 @@ FlowCyPy models a simulation as four cooperating layers:
   configured source, detectors, amplifier, and digitizer.
 * ``digital_processing`` detects and characterizes events in the sampled
   traces.
-* ``FlowCytometer`` and ``Workflow`` connect the layers into a complete run.
+* ``FlowCytometer`` connects the layers into a complete run.
 
 Particle populations are stored in a
 ``ScattererCollection``. Add a population with

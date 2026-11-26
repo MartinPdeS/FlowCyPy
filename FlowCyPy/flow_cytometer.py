@@ -15,20 +15,16 @@ class FlowCytometer:
     """
     High level orchestrator for the flow cytometry simulation pipeline.
 
-    This class keeps only the persistent fluidic definition and the constant
-    optical background level. All other configuration objects are passed
-    explicitly to the methods that use them.
-
-    This design keeps the workflow fully visible to the caller and avoids any
-    ambiguity about which opto electronic or signal processing configuration is
-    active for a given computation.
-
     Parameters
     ----------
     fluidics : Fluidics
         Fluidic subsystem, including flow cell and population definitions.
     background_power : pint.Quantity, optional
         Constant optical background added to every detector channel.
+    opto_electronics : OptoElectronics, optional
+        Default optical and electronic components for acquisitions.
+    digital_processing : DigitalProcessing, optional
+        Default processing applied by run().
     """
 
     @validate_units
@@ -36,9 +32,25 @@ class FlowCytometer:
         self,
         fluidics: Fluidics,
         background_power: Power | None = 0 * ureg.milliwatt,
+        *,
+        opto_electronics: OptoElectronics | None = None,
+        digital_processing: DigitalProcessing | None = None,
     ):
+        self.opto_electronics = opto_electronics
+        self.digital_processing = digital_processing
         self.fluidics = fluidics
-        self.background_power = background_power
+        self.background_power = 0 * ureg.watt if background_power is None else background_power
+        if opto_electronics is not None:
+            self._validate_background_power()
+
+    def _validate_background_power(self) -> None:
+        """Require a finite, non-negative optical background for configured instruments."""
+        try:
+            watts = float(self.background_power.to("watt").magnitude)
+        except (AttributeError, TypeError, ValueError) as error:
+            raise TypeError("background_power must be a scalar power quantity.") from error
+        if not math.isfinite(watts) or watts < 0:
+            raise ValueError("background_power must be finite and non-negative.")
 
     def _add_explicit_model_signals(
         self,
@@ -296,7 +308,7 @@ class FlowCytometer:
     def acquire(
         self,
         run_time: Time,
-        opto_electronics: OptoElectronics,
+        opto_electronics: OptoElectronics | None = None,
         random_state: int | np.random.Generator | None = None,
     ) -> RunRecord:
         """
@@ -306,8 +318,8 @@ class FlowCytometer:
         ----------
         run_time : Time
             Acquisition duration.
-        opto_electronics : OptoElectronics
-            Opto electronic configuration.
+        opto_electronics : OptoElectronics, optional
+            Override the optics configured on this instrument for this acquisition.
 
         random_state : int or numpy.random.Generator, optional
             A non-negative integer repeats the events and noisy signals with the
@@ -321,6 +333,22 @@ class FlowCytometer:
             them.
         """
         self._validate_run_time(run_time)
+        if self.opto_electronics is not None:
+            self._validate_background_power()
+            sample = self.fluidics.scatterer_collection.populations
+            if not sample:
+                raise ValueError("Add at least one population before acquisition.")
+            names = [population.name for population in sample]
+            if any(not name or not name.strip() for name in names):
+                raise ValueError("Each population must have a non-empty name.")
+            if len(set(names)) != len(names):
+                raise ValueError("Population names must be unique.")
+        if opto_electronics is None:
+            opto_electronics = self.opto_electronics
+        if opto_electronics is None:
+            raise ValueError(
+                "Set opto_electronics on the instrument or pass it to acquire or run."
+            )
         self._validate_opto_electronics(opto_electronics)
         if isinstance(random_state, np.random.Generator):
             random_state = int(random_state.integers(0, np.iinfo(np.uint32).max))
@@ -383,7 +411,7 @@ class FlowCytometer:
     def run(
         self,
         run_time: Time,
-        opto_electronics: OptoElectronics,
+        opto_electronics: OptoElectronics | None = None,
         digital_processing: DigitalProcessing | None = None,
         random_state: int | np.random.Generator | None = None,
     ) -> RunRecord:
@@ -394,10 +422,11 @@ class FlowCytometer:
         ----------
         run_time : Time
             Acquisition duration.
-        opto_electronics : OptoElectronics
-            Opto electronic configuration.
+        opto_electronics : OptoElectronics, optional
+            Override the optics configured on this instrument for this acquisition.
         digital_processing : DigitalProcessing, optional
-            Signal processing configuration. If None, no digital processing is applied.
+            Override the configured processing for this run. If neither is supplied,
+            use the default DigitalProcessing settings.
 
         random_state : int or numpy.random.Generator, optional
             A non-negative integer repeats the events and noisy signals with the
@@ -408,6 +437,8 @@ class FlowCytometer:
         RunRecord
             Full run record containing all available stages.
         """
+        if digital_processing is None:
+            digital_processing = self.digital_processing
         if digital_processing is None:
             digital_processing = DigitalProcessing()
 

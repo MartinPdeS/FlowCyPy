@@ -28,7 +28,7 @@ is a useful first check before adding populations, optics and electronics.
    )
    print(flow_cell)
 
-For a complete acquisition, follow :doc:`gallery/tutorials/workflow_1`.
+For a complete acquisition, follow :doc:`gallery/tutorials/cluster_particles_by_scatter`.
 That tutorial adds particle populations, a laser source, detectors, electronics,
 triggering and classification. See :doc:`guide` to choose the relevant stage.
 

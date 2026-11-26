@@ -5,7 +5,7 @@ from FlowCyPy import opto_electronics, digital_processing
 from FlowCyPy.fluidics import SampleFlowRate, SheathFlowRate
 from FlowCyPy.systems._assembly import ScatterChannel, ScatterSystem, assemble
 from FlowCyPy.units import ureg
-from FlowCyPy.workflow import Workflow
+from FlowCyPy.flow_cytometer import FlowCytometer
 
 
 def reference(
@@ -17,7 +17,7 @@ def reference(
     threshold: str | Voltage = "4sigma",
     include_shot_noise: bool = True,
     include_rin_noise: bool = True,
-) -> Workflow:
+) -> FlowCytometer:
     """Build the original FlowCyPy Cytek simulation with editable components.
 
     Parameters
@@ -33,7 +33,7 @@ def reference(
 
     Returns
     -------
-    Workflow
+    FlowCytometer
         A fresh acquisition chain and an empty sample collection.
     """
     source = opto_electronics.source.Gaussian(

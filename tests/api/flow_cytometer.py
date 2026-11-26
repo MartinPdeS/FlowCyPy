@@ -36,7 +36,6 @@ from FlowCyPy.systems.bd import facs_canto_ii
 from FlowCyPy.systems.cytek import aurora
 from FlowCyPy.systems.sony import id7000_488
 from FlowCyPy.units import ureg
-from FlowCyPy.workflow import Workflow
 from tests.api.event_collection import make_population_events
 
 # ----------------- FIXTURES -----------------
@@ -210,51 +209,21 @@ def make_dynamic_window_discriminator() -> discriminator.DynamicWindow:
     )
 
 
-def make_workflow(detector_0, scatterer_collection, **overrides) -> Workflow:
-    configuration = {
-        "source": source.Gaussian(
-            waist_z=10 * ureg.micrometer,
-            waist_y=60 * ureg.micrometer,
-            wavelength=1550 * ureg.nanometer,
-            optical_power=100e-3 * ureg.watt,
-        ),
-        "sample_volume_flow": 1 * ureg.microliter / ureg.second,
-        "sheath_volume_flow": 6 * ureg.microliter / ureg.second,
-        "width": 10 * ureg.micrometer,
-        "height": 6 * ureg.micrometer,
-        "detectors": [detector_0],
-        "bit_depth": 12,
-        "sampling_rate": 5e6 * ureg.hertz,
-        "population_list": scatterer_collection.populations,
-        "gain": 100 * ureg.volt / ureg.ampere,
-        "bandwidth": 1 * ureg.megahertz,
-        "peak_locator": peak_locator.GlobalPeakLocator(),
-        "discriminator": make_dynamic_window_discriminator(),
-    }
-    configuration.update(overrides)
-    return Workflow(**configuration)
-
-
-# ----------------- UNIT TESTS -----------------
-
-
-@pytest.mark.parametrize("first_method", ["acquire", "run"])
-def test_workflow_initializes_once(detector_0, scatterer_collection, first_method):
-    workflow = make_workflow(detector_0, scatterer_collection)
-    settings = {"run_time": 0.05 * ureg.millisecond, "random_state": 123}
-    first = getattr(workflow, first_method)(**settings)
-    instrument = workflow.cytometer
-    second = workflow.run(**settings)
-    assert workflow.cytometer is instrument
-    if first_method == "acquire":
-        assert first.digital_processing is None
-        first = first.process(digital_processing=workflow.digital_processing)
-    np.testing.assert_array_equal(
-        first.signal.analog["default"].to("volt").magnitude,
-        second.signal.analog["default"].to("volt").magnitude,
+def test_configured_cytometer_reuses_acquisition_settings(flow_cytometer, opto_electronics):
+    instrument = FlowCytometer(
+        fluidics=flow_cytometer.fluidics,
+        opto_electronics=opto_electronics,
+        digital_processing=DigitalProcessing(discriminator=make_dynamic_window_discriminator()),
     )
-    workflow.initialize()
-    assert workflow.cytometer is not instrument
+    settings = {"run_time": 0.05 * ureg.millisecond, "random_state": 123}
+    acquisition = instrument.acquire(**settings)
+    processed = instrument.run(**settings)
+    assert acquisition.digital_processing is None
+    assert processed.digital_processing is instrument.digital_processing
+    np.testing.assert_array_equal(
+        acquisition.signal.analog["default"].to("volt").magnitude,
+        processed.signal.analog["default"].to("volt").magnitude,
+    )
 
 
 @pytest.mark.parametrize("use_filter", [False, True])
@@ -312,63 +281,39 @@ def test_process_thresholds_in_either_order(opto_electronics, use_filter):
         assert record.peaks.equals(repeated.peaks)
 
 
-def test_workflow_initialize_requires_a_population(detector_0, scatterer_collection):
-    workflow = make_workflow(
-        detector_0,
-        scatterer_collection,
-        population_list=[],
+def test_run_overrides_configured_components(flow_cytometer, opto_electronics):
+    instrument = facs_canto_ii()
+    instrument.fluidics = flow_cytometer.fluidics
+    original_optics = instrument.opto_electronics
+    processing = DigitalProcessing()
+    record = instrument.run(
+        run_time=0.05 * ureg.millisecond,
+        opto_electronics=opto_electronics,
+        digital_processing=processing,
+        random_state=123,
     )
+    assert record.opto_electronics is opto_electronics
+    assert record.digital_processing is processing
+    assert instrument.opto_electronics is original_optics
+    assert instrument.digital_processing is not processing
 
+
+@pytest.mark.parametrize("duplicate", [False, True])
+def test_acquisition_requires_distinct_detectors(flow_cytometer, opto_electronics, detector_0, duplicate):
+    opto_electronics.detectors = [detector_0, detector_0] if duplicate else []
+    message = "Detector names must be unique" if duplicate else "at least one detector"
+    with pytest.raises(ValueError, match=message):
+        flow_cytometer.acquire(run_time=1 * ureg.millisecond, opto_electronics=opto_electronics)
+
+
+def test_preset_requires_sample():
     with pytest.raises(ValueError, match="at least one population"):
-        workflow.initialize()
+        facs_canto_ii().acquire(run_time=1 * ureg.millisecond)
 
 
-def test_workflow_initialize_requires_a_detector(detector_0, scatterer_collection):
-    workflow = make_workflow(
-        detector_0,
-        scatterer_collection,
-        detectors=[],
-    )
-
-    with pytest.raises(ValueError, match="at least one detector"):
-        workflow.initialize()
-
-
-def test_workflow_rejects_duplicate_detector_names(detector_0, scatterer_collection):
-    workflow = make_workflow(
-        detector_0,
-        scatterer_collection,
-        detectors=[detector_0, detector_0],
-    )
-
-    with pytest.raises(ValueError, match="Detector names must be unique"):
-        workflow.initialize()
-
-
-@pytest.mark.parametrize(
-    "field, value, message",
-    [
-        ("dilution_factor", 0, "dilution_factor"),
-        ("bit_depth", -1, "bit_depth"),
-        ("sampling_rate", 0 * ureg.hertz, "sampling_rate"),
-        ("bandwidth", 3 * ureg.megahertz, "Nyquist"),
-    ],
-)
-def test_workflow_rejects_nonphysical_configuration(
-    detector_0,
-    scatterer_collection,
-    field,
-    value,
-    message,
-):
-    workflow = make_workflow(
-        detector_0,
-        scatterer_collection,
-        **{field: value},
-    )
-
-    with pytest.raises((ValueError, TypeError), match=message):
-        workflow.initialize()
+def test_acquisition_requires_optics(flow_cytometer):
+    with pytest.raises(ValueError, match="opto_electronics"):
+        flow_cytometer.acquire(run_time=1 * ureg.millisecond)
 
 
 @pytest.mark.parametrize(
@@ -480,18 +425,9 @@ def test_flow_cytometer_multiple_detectors(flow_cytometer, opto_electronics):
     assert not np.all(detector_1_signal == 0 * ureg.volt)
 
 
-def test_workflow_gamma_and_explicit_models_complete_acquisition(
-    detector_0,
-    scatterer_collection,
-):
-    explicit_workflow = make_workflow(
-        detector_0,
-        scatterer_collection,
-    )
-    explicit_workflow.initialize()
-    explicit_record = explicit_workflow.run(
-        0.05 * ureg.millisecond,
-        random_state=123,
+def test_gamma_and_explicit_models_complete_acquisition(flow_cytometer, opto_electronics):
+    explicit_record = flow_cytometer.acquire(
+        0.05 * ureg.millisecond, opto_electronics, random_state=123
     )
 
     gamma_population = populations.SpherePopulation(
@@ -502,16 +438,14 @@ def test_workflow_gamma_and_explicit_models_complete_acquisition(
         medium_refractive_index=1.33 * ureg.RIU,
         sampling_method=populations.GammaModel(number_of_samples=250),
     )
-    gamma_workflow = make_workflow(
-        detector_0,
-        scatterer_collection,
-        population_list=[gamma_population],
+    gamma_instrument = FlowCytometer(
+        fluidics=Fluidics(
+            flow_cell=flow_cytometer.fluidics.flow_cell,
+            scatterer_collection=ScattererCollection(populations=[gamma_population]),
+        ),
+        opto_electronics=opto_electronics,
     )
-    gamma_workflow.initialize()
-    gamma_record = gamma_workflow.run(
-        0.05 * ureg.millisecond,
-        random_state=123,
-    )
+    gamma_record = gamma_instrument.acquire(0.05 * ureg.millisecond, random_state=123)
 
     for record in (explicit_record, gamma_record):
         signal = record.signal.analog["default"].to("volt").magnitude
@@ -671,14 +605,14 @@ if __name__ == "__main__":
     pytest.main(["-W", "error", __file__])
 
 
-def test_component_workflow_uses_live_optics_and_sample(scatterer_collection):
+def test_preset_uses_live_optics_and_sample(scatterer_collection):
     """Use modified sampling settings on every acquisition and isolate samples."""
     first = facs_canto_ii()
     other = facs_canto_ii()
     first.fluidics.scatterer_collection.add_population(*scatterer_collection.populations)
     optics = first.opto_electronics
     optics.digitizer.sampling_rate = 5 * ureg.megahertz
-    first.initialize()
+    assert isinstance(first, FlowCytometer)
     assert first.opto_electronics is optics
     assert other.opto_electronics.digitizer.sampling_rate == 10 * ureg.megahertz
     assert not other.fluidics.scatterer_collection.populations

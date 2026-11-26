@@ -10,7 +10,6 @@ def test_top_level_public_api_is_explicit():
     assert FlowCyPy.__all__ == [
         "__version__",
         "FlowCytometer",
-        "Workflow",
         "EventCollection",
         "Fluidics",
         "distributions",
@@ -36,7 +35,7 @@ def test_top_level_import_is_lazy():
             "-c",
             (
                 "import sys; import FlowCyPy; "
-                "assert 'FlowCyPy.workflow' not in sys.modules; "
+                "assert 'FlowCyPy.flow_cytometer' not in sys.modules; "
                 "assert 'FlowCyPy.opto_electronics' not in sys.modules; "
                 "assert 'FlowCyPy.digital_processing' not in sys.modules"
             ),
@@ -75,24 +74,6 @@ def test_public_subsystems_initialize_native_units(export):
             sys.executable,
             "-c",
             f"import FlowCyPy; getattr(FlowCyPy, {export!r})",
-        ],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-
-
-def test_documented_workflow_convenience_exports():
-    """The workflow tutorial can import its public convenience names."""
-    subprocess.run(
-        [
-            sys.executable,
-            "-c",
-            (
-                "from FlowCyPy.workflow import Workflow, Detector, circuits, "
-                "FlatTop, peak_locator, discriminator, distributions, "
-                "populations, GammaModel, classifier"
-            ),
         ],
         check=True,
         capture_output=True,

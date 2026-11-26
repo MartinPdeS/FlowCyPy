@@ -169,21 +169,17 @@ def plot_j_estimation(medians: np.ndarray, robust_cvs: np.ndarray):
 
     figure, axes = plt.subplots(figsize=(8, 5))
 
-    axes.scatter(x, y, label="Robust CV", zorder=3, color='black')
+    axes.scatter(x, y, label="Robust CV")
     axes.plot(
         x_fit,
         y_fit,
         "--",
         label=rf"$RCV = {slope:.3e} \cdot x + {intercept:.3e}$",
-        zorder=2,
     )
     axes.set_title("J Parameter Estimation")
-    axes.set_xlabel(r"$1 / \sqrt{\mathrm{Median\ Signal}}$", fontsize=11)
-    axes.set_ylabel("Robust CV", fontsize=11)
-    axes.set_title("J Parameter Estimation", fontsize=14)
-    axes.tick_params(labelsize=9)
-    axes.legend(fontsize=9)
-    figure.tight_layout()
+    axes.set_xlabel(r"$1 / \sqrt{\mathrm{Median\ Signal}}$")
+    axes.set_ylabel("Robust CV")
+    axes.legend()
 
     return figure, slope, intercept
 
@@ -361,13 +357,11 @@ print(f"Linear intercept: {j_intercept:.6e}")
 # -------------------------------
 
 
-from MPSPlots.styles import scientific
 
-with plt.style.context(scientific):
-    figure_j, _, _ = plot_j_estimation(
-        medians=medians,
-        robust_cvs=robust_cvs,
-    )
+figure_j, _, _ = plot_j_estimation(
+    medians=medians,
+    robust_cvs=robust_cvs,
+)
 
 
 plt.show()
