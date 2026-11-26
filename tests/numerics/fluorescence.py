@@ -296,10 +296,16 @@ def test_preset_rejects_absorption_above_peak():
 
 
 @pytest.mark.parametrize("core_shell", [False, True])
-def test_surface_label_counts_follow_each_outer_diameter(core_shell):
+@pytest.mark.parametrize("loading", ["surface", "volume"])
+def test_label_counts_follow_each_outer_diameter(*, core_shell, loading):
+    """Check per-event Poisson means, variance and seeded repeatability."""
     instrument = facs_canto()
-    density = 2_000 / ureg.micrometer**2
-    label = Label(fluorophore=fitc(), molecules_per_area=density)
+    if loading == "surface":
+        density = 2_000 / ureg.micrometer**2
+        label = Label(fluorophore=fitc(), molecules_per_area=density)
+    else:
+        density = 100_000 / ureg.micrometer**3
+        label = Label(fluorophore=fitc(), molecules_per_volume=density)
     sample = {
         "name": "beads",
         "concentration": 2e9 * ureg.particle / ureg.mL,
@@ -322,7 +328,9 @@ def test_surface_label_counts_follow_each_outer_diameter(core_shell):
         diameter = events.get_quantity("CoreDiameter") + 2 * events.get_quantity("ShellThickness")
     else:
         diameter = events.get_quantity("Diameter")
-    expected = (np.pi * diameter**2 * density).m_as("")
+    radius = diameter / 2
+    geometry = 4 * np.pi * radius**2 if loading == "surface" else 4 * np.pi * radius**3 / 3
+    expected = (geometry * density).m_as("")
     residuals = (counts - expected) / np.sqrt(expected)
     assert np.all(counts >= 0)
     np.testing.assert_array_equal(counts, counts.astype(int))
@@ -337,6 +345,9 @@ def test_surface_label_counts_follow_each_outer_diameter(core_shell):
     {"molecules_per_particle": 1, "molecules_per_area": 1 / ureg.nm**2},
     {"molecules_per_area": -1 / ureg.nm**2},
     {"molecules_per_area": 1 * ureg.nm},
+    {"molecules_per_volume": 1 / ureg.nm**2},
+    {"molecules_per_volume": -1 / ureg.nm**3},
+    {"molecules_per_area": 1 / ureg.nm**2, "molecules_per_volume": 1 / ureg.nm**3},
 ])
 def test_label_requires_one_valid_loading(settings):
     with pytest.raises((ValueError, TypeError)):

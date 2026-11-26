@@ -122,26 +122,36 @@ class Label:
     molecules_per_area : inverse area quantity, optional
         Mean surface density of bound fluorophores. Counts are Poisson draws
         with mean density times the individual particle’s outer surface area.
-        Supply exactly one of molecules_per_particle and molecules_per_area.
+    molecules_per_volume : inverse volume quantity, optional
+        Mean density throughout the sphere enclosed by the outer diameter.
+        Counts are Poisson draws with mean density times particle volume.
+        Supply exactly one loading parameter per label.
     """
 
     fluorophore: Fluorophore
     molecules_per_particle: int | distributions.BaseDistribution | None = None
     molecules_per_area: ureg.Quantity | None = None
+    molecules_per_volume: ureg.Quantity | None = None
     _rng: np.random.Generator | None = field(default=None, init=False, repr=False, compare=False)
 
     def __post_init__(self):
         """Check dye and count configuration before sampling."""
         if not isinstance(self.fluorophore, Fluorophore):
             raise TypeError("fluorophore must be a Fluorophore.")
-        if (self.molecules_per_area is None) == (self.molecules_per_particle is None):
-            raise ValueError("Specify exactly one of molecules_per_particle and molecules_per_area.")
-        if self.molecules_per_area is not None:
-            if not hasattr(self.molecules_per_area, "m_as"):
-                raise TypeError("molecules_per_area requires an inverse area quantity.")
-            density = np.asarray(self.molecules_per_area.m_as("1 / meter**2"))
-            if density.ndim or not np.isfinite(density) or density < 0:
-                raise ValueError("molecules_per_area must be a finite nonnegative scalar.")
+        loadings = (self.molecules_per_particle, self.molecules_per_area, self.molecules_per_volume)
+        if sum(value is not None for value in loadings) != 1:
+            raise ValueError("Specify exactly one of molecules_per_particle, molecules_per_area and molecules_per_volume.")
+        for name, density, unit in (
+            ("molecules_per_area", self.molecules_per_area, "1 / meter**2"),
+            ("molecules_per_volume", self.molecules_per_volume, "1 / meter**3"),
+        ):
+            if density is None:
+                continue
+            if not hasattr(density, "m_as"):
+                raise TypeError(f"{name} requires a quantity convertible to {unit}.")
+            magnitude = np.asarray(density.m_as(unit))
+            if magnitude.ndim or not np.isfinite(magnitude) or magnitude < 0:
+                raise ValueError(f"{name} must be a finite nonnegative scalar.")
             object.__setattr__(self, "_rng", np.random.default_rng())
             return
         count = self.molecules_per_particle
@@ -161,24 +171,27 @@ class Label:
 
     def _seed(self, *, value):
         """Seed a stochastic molecule count for a repeatable acquisition."""
-        if self.molecules_per_area is not None:
+        if self._rng is not None:
             object.__setattr__(self, "_rng", np.random.default_rng(value))
         elif isinstance(self.molecules_per_particle, distributions.BaseDistribution):
             self.molecules_per_particle.seed(value)
 
     def _sample(self, *, size, properties=None):
         """Return dimensionless molecule counts for a block of events."""
-        if self.molecules_per_area is not None:
+        if self._rng is not None:
             if properties is None:
-                raise RuntimeError("Surface labeling requires sampled geometry. Rebuild the FlowCyPy fluidics extension.")
+                raise RuntimeError("Geometry-dependent labeling requires sampled geometry. Rebuild the FlowCyPy fluidics extension.")
             if "Diameter" in properties:
                 diameter = properties["Diameter"]
             else:
                 diameter = properties["CoreDiameter"] + 2 * properties["ShellThickness"]
             if np.any(diameter.magnitude < 0):
-                raise ValueError("Surface labeling requires nonnegative outer diameters.")
-            expected = (np.pi * diameter**2 * self.molecules_per_area).m_as("")
-            counts = self._rng.poisson(expected)
+                raise ValueError("Geometry-dependent labeling requires nonnegative outer diameters.")
+            if self.molecules_per_area is not None:
+                expected = self.molecules_per_area * np.pi * diameter**2
+            else:
+                expected = self.molecules_per_volume * (np.pi / 6) * diameter**3
+            counts = self._rng.poisson(expected.m_as(""))
         elif isinstance(self.molecules_per_particle, distributions.BaseDistribution):
             counts = self.molecules_per_particle.sample(size).m_as("")
             if not np.isfinite(counts).all() or np.any(counts < 0):

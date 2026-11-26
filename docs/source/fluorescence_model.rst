@@ -64,16 +64,17 @@ Choosing physical inputs
   For radiant power per nm, also divide by the photon energy before integrating.
   Use a response-corrected spectrum if detector sensitivity shaped the measurement.
 
-Stochastic surface labeling
+Surface and volume labeling
 ---------------------------
 
-To model independent binding on a spherical particle, give a label its mean
-surface density. For each particle FlowCyPy draws a molecule count once,
+To model a surface coating or dye distributed throughout a spherical bead,
+give a label its mean surface density or volume density. For each particle FlowCyPy draws a molecule count once,
 using the same sampled outer diameter :math:`D` used to define that particle:
 
 .. math::
 
-   N \mid D \sim \mathrm{Poisson}(\rho \pi D^2).
+   N \mid D \sim \mathrm{Poisson}(\rho_A \pi D^2) \quad \text{or} \quad
+   N \mid D \sim \mathrm{Poisson}(\rho_V \pi D^3 / 6).
 
 .. code-block:: python
 
@@ -83,10 +84,13 @@ using the same sampled outer diameter :math:`D` used to define that particle:
 
    coating = Label(fluorophore=fitc(), molecules_per_area=0.02 / ureg.nm**2)
 
-For a core-shell particle the outer diameter is the core diameter plus twice
+   bulk_dye = Label(fluorophore=fitc(), molecules_per_volume=1_000 / ureg.micrometer**3)
+
+Pass either label in the population’s ``labels`` argument. For a core-shell
+particle, volume loading includes both core and shell. The outer diameter is the core diameter plus twice
 the radial shell thickness. Even equal-sized beads fluctuate: at a fixed
 diameter, the count variance equals its mean. Size dispersion adds variation
-through the area. All channels use the stored event count, and an acquisition
+through the sampled area or volume. All channels use the stored event count, and an acquisition
 seed reproduces the draws. The model assumes independent occupancy and has no
 finite binding-site capacity. Use ``molecules_per_particle`` for a fixed
 count or a count distribution independent of geometry.
