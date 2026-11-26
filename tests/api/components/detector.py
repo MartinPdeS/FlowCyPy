@@ -1,8 +1,27 @@
 import numpy as np
 import pytest
 from PyMieSim.units import ureg
-
+from FlowCyPy.detectors.photodiodes import apd, pin
+from FlowCyPy.detectors.photomultipliers import pmt
 from FlowCyPy.opto_electronics import Detector
+
+
+@pytest.mark.parametrize(
+    ("factory", "responsivity", "dark_current_na"),
+    [(pmt, 0.2, 1), (pin, 0.5, 10), (apd, 0.7, 5)],
+)
+def test_detector_preset(factory, responsivity, dark_current_na):
+    """Each channel receives its own electrical and optical settings."""
+    geometry = {"name": "side", "phi_angle": 90 * ureg.degree, "numerical_aperture": 0.4}
+    green = factory(**geometry, dark_current=0 * ureg.ampere, signals=("fluorescence",))
+    scatter = factory(**geometry)
+    assert isinstance(scatter, Detector)
+    assert scatter.responsivity.m_as("ampere / watt") == pytest.approx(responsivity)
+    assert scatter.dark_current.m_as("nanoampere") == pytest.approx(dark_current_na)
+    assert scatter.current_noise_density.m_as("ampere / hertz**0.5") == 0
+    assert scatter.signals == ["scatter"]
+    assert green.signals == ["fluorescence"]
+    assert green.dark_current.m_as("ampere") == 0
 
 
 def test_constructor_with_quantity_inputs():

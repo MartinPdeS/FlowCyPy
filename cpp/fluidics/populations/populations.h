@@ -3,6 +3,7 @@
 #include <vector>
 #include <complex>
 #include <string>
+#include <pybind11/pybind11.h>
 #include <unordered_map>
 #include <memory>
 #include <cstdint>
@@ -16,6 +17,7 @@ class BasePopulation {
 public:
     std::string name;
     double concentration;
+    pybind11::tuple labels;
     std::shared_ptr<BaseSamplingMethod> sampling_method;
 
     BasePopulation() = default;

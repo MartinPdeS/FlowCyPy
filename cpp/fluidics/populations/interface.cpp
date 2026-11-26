@@ -122,6 +122,7 @@ PYBIND11_MODULE(populations, module) {
         )pdoc";
 
     py::class_<BasePopulation, std::shared_ptr<BasePopulation>>(module, "BasePopulation")
+        .def_readonly("labels", &BasePopulation::labels)
         .def_readwrite(
             "name",
             &BasePopulation::name
@@ -186,7 +187,13 @@ PYBIND11_MODULE(populations, module) {
                         )
         .def(
             "seed",
-            &BasePopulation::seed,
+            [](BasePopulation& population, std::uint64_t value) {
+                population.seed(value);
+                std::uint64_t label_seed = value + 17;
+                for (auto label : population.labels) {
+                    label.attr("_seed")(py::arg("value") = label_seed++);
+                }
+            },
             py::arg("value"),
             "Seed all random distributions used by the population."
         )
@@ -230,7 +237,8 @@ PYBIND11_MODULE(populations, module) {
                     py::object &medium,
                     py::object &material,
                     py::object &diameter_obj,
-                    std::shared_ptr<BaseSamplingMethod> sampling_method
+                    std::shared_ptr<BaseSamplingMethod> sampling_method,
+                    const py::sequence& labels
                 ) {
                     std::shared_ptr<BaseDistribution> medium_refractive_index = as_distribution(medium);
 
@@ -238,7 +246,7 @@ PYBIND11_MODULE(populations, module) {
 
                     std::shared_ptr<BaseDistribution> diameter = as_distribution(diameter_obj, "meter");
 
-                    return std::make_shared<SpherePopulation>(
+                    auto population = std::make_shared<SpherePopulation>(
                         name,
                         concentration.attr("to")("particle / liter").attr("magnitude").cast<double>(),
                         std::move(medium_refractive_index),
@@ -246,6 +254,12 @@ PYBIND11_MODULE(populations, module) {
                         std::move(diameter),
                         std::move(sampling_method)
                     );
+                    if (py::len(labels)) {
+                        population->labels = py::module_::import("FlowCyPy.fluorescence")
+                            .attr("_validate_labels")(py::arg("labels") = labels,
+                                                      py::arg("sampling_method") = population->sampling_method).cast<py::tuple>();
+                    }
+                    return population;
                 }
             ),
             py::arg("name"),
@@ -254,6 +268,7 @@ PYBIND11_MODULE(populations, module) {
             py::arg("refractive_index"),
             py::arg("diameter"),
             py::arg("sampling_method") = std::make_shared<ExplicitModel>(),
+            py::kw_only(), py::arg("labels") = py::tuple(),
             R"pdoc(
                 Spherical particle population.
 
@@ -275,6 +290,8 @@ PYBIND11_MODULE(populations, module) {
                     Distribution for the particle refractive index (RIU).
                 diameter : BaseDistribution
                     Distribution for particle diameter (length).
+                labels : sequence of Label, optional
+                    Fluorescent labels with per-particle molecule counts for explicit sampling.
                 sampling_method : BaseSamplingMethod
                     Strategy controlling how the population contributes to simulated signals.
             )pdoc"
@@ -350,7 +367,8 @@ PYBIND11_MODULE(populations, module) {
                     const py::object& shell_material_py,
                     const py::object& core_diameter_py,
                     const py::object& shell_thickness_py,
-                    const std::shared_ptr<BaseSamplingMethod> &sampling_method
+                    const std::shared_ptr<BaseSamplingMethod> &sampling_method,
+                    const py::sequence& labels
                 ) {
                     std::shared_ptr<BaseDistribution> medium_refractive_index = as_distribution(medium_py);
 
@@ -361,7 +379,7 @@ PYBIND11_MODULE(populations, module) {
 
                     std::shared_ptr<BaseDistribution> shell_thickness = as_distribution(shell_thickness_py, "meter");
 
-                    return std::make_shared<CoreShellPopulation>(
+                    auto population = std::make_shared<CoreShellPopulation>(
                         name,
                         concentration.attr("to")("particle / liter").attr("magnitude").cast<double>(),
                         std::move(medium_refractive_index),
@@ -371,6 +389,12 @@ PYBIND11_MODULE(populations, module) {
                         std::move(shell_thickness),
                         std::move(sampling_method)
                     );
+                    if (py::len(labels)) {
+                        population->labels = py::module_::import("FlowCyPy.fluorescence")
+                            .attr("_validate_labels")(py::arg("labels") = labels,
+                                                      py::arg("sampling_method") = population->sampling_method).cast<py::tuple>();
+                    }
+                    return population;
                 }
             ),
             py::arg("name"),
@@ -381,6 +405,7 @@ PYBIND11_MODULE(populations, module) {
             py::arg("core_diameter"),
             py::arg("shell_thickness"),
             py::arg("sampling_method") = std::make_shared<ExplicitModel>(),
+            py::kw_only(), py::arg("labels") = py::tuple(),
             R"pdoc(
                 Core shell spherical particle population.
 
@@ -408,6 +433,8 @@ PYBIND11_MODULE(populations, module) {
                     Distribution for core diameter (length).
                 shell_thickness : BaseDistribution
                     Distribution for shell thickness (length).
+                labels : sequence of Label, optional
+                    Fluorescent labels with per-particle molecule counts for explicit sampling.
                 sampling_method : BaseSamplingMethod
                     Strategy controlling how the population contributes to simulated signals.
             )pdoc"

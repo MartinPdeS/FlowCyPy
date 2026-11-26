@@ -67,10 +67,21 @@ struct OptoElectronics {
         if (py::len(events) == 0) {
             return;
         }
+        for (auto block : events) {
+            block.attr("metadata").attr("pop")("FluorescencePower", py::none());
+        }
         auto model = py::module_::import("FlowCyPy.opto_electronics.coupling_model").attr("ScatteringModel");
         for (auto detector : detectors) {
-            model("source"_a = source, "detector"_a = detector).attr("run")(
-                events, "compute_cross_section"_a = compute_cross_section);
+            if (detector.attr("optical_filter").is_none() &&
+                py::len(detector.attr("signals")) == 1 &&
+                detector.attr("signals")[py::int_(0)].cast<std::string>() == "scatter") {
+                model("source"_a = source, "detector"_a = detector).attr("run")(
+                    events, "compute_cross_section"_a = compute_cross_section);
+            } else {
+                py::module_::import("FlowCyPy.fluorescence").attr("_couple_channel")(
+                    "events"_a = events, "source"_a = source, "detector"_a = detector,
+                    "compute_cross_section"_a = compute_cross_section);
+            }
         }
     }
 
@@ -84,11 +95,18 @@ struct OptoElectronics {
         return signals;
     }
 
-    py::dict convert_optical_power_to_voltage(py::dict signals, const py::object& generator) const {
+    py::dict convert_optical_power_to_voltage(py::dict signals, const py::object& generator,
+                                             const py::dict& emission) const {
         py::sequence streams = generator.is_none()
             ? py::make_tuple(py::none(), py::none(), py::none()).cast<py::sequence>()
             : generator.attr("spawn")(3).cast<py::sequence>();
-        signals = apply_source_noise_to_optical_signals(signals, streams[0]);
+        if (emission.empty()) {
+            signals = apply_source_noise_to_optical_signals(signals, streams[0]);
+        } else {
+            signals = py::module_::import("FlowCyPy.fluorescence").attr("_apply_spectral_noise")(
+                "source"_a = source, "detectors"_a = detectors, "power"_a = signals,
+                "emission"_a = emission, "generator"_a = streams[0]).cast<py::dict>();
+        }
         signals = convert_optical_power_to_photocurrent(signals);
         signals = apply_detector_current_noise(signals, streams[1]);
         return convert_photocurrent_to_voltage(signals, streams[2]);
@@ -278,7 +296,7 @@ Returns
 dict
     Analog voltage signal dictionary.)doc")
         .def("convert_optical_power_to_voltage", &OptoElectronics::convert_optical_power_to_voltage,
-             "power_signal_dict"_a, py::kw_only(), "random_generator"_a = py::none(), R"doc(Convert optical power traces to analog voltage traces by applying the full optoelectronic chain.
+             "power_signal_dict"_a, py::kw_only(), "random_generator"_a = py::none(), "emission"_a = py::dict(), R"doc(Convert optical power traces to analog voltage traces by applying the full optoelectronic chain.
 
 Parameters
 ----------
@@ -287,6 +305,11 @@ power_signal_dict : dict
 
 random_generator : numpy.random.Generator, optional
     Generator supplying independent seeds for native noise realizations.
+
+emission : dict, optional
+    Additional optical power traces keyed by (detector name, wavelength in nm).
+    An optional third key element gives the exponential lifetime in seconds.
+    Emission is averaged over each acquisition bin before wavelength-dependent shot noise.
 
 Returns
 -------

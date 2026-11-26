@@ -3,6 +3,7 @@
 #include <utils/noise_seed.h>
 
 #include <string>
+#include <pybind11/pybind11.h>
 #include <vector>
 #include <cmath>
 #include <limits>
@@ -23,6 +24,8 @@ public:
     double current_noise_density;
     double bandwidth;
     std::string name;
+    std::vector<std::string> signals{"scatter"};
+    pybind11::object optical_filter = pybind11::none();
 
     Detector(
         const double phi_angle,

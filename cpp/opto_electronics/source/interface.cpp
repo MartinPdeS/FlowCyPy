@@ -213,7 +213,7 @@ PYBIND11_MODULE(source, module) {
         )
         .def(
             "add_shot_noise_to_signal",
-            [ureg](const BaseSource& source, const py::object& signal, const py::object& time_array, noise::Seed seed) {
+            [ureg](const BaseSource& source, const py::object& signal, const py::object& time_array, noise::Seed seed, const py::object& wavelength) {
                 const double time_step = source.get_time_step_from_time_array(
                     time_array.attr("to")("second").attr("magnitude").cast<std::vector<double>>()
                 );
@@ -221,7 +221,11 @@ PYBIND11_MODULE(source, module) {
                 std::vector<double> signal_values =
                     signal.attr("to")("watt").attr("magnitude").cast<std::vector<double>>();
 
-                source.add_shot_noise_to_signal(signal_values, time_step, seed);
+                std::optional<double> photon_wavelength;
+                if (!wavelength.is_none()) {
+                    photon_wavelength = wavelength.attr("m_as")("meter").cast<double>();
+                }
+                source.add_shot_noise_to_signal(signal_values, time_step, seed, photon_wavelength);
 
                 py::array_t<double> output(signal_values.size());
                 auto mutable_view = output.mutable_unchecked<1>();
@@ -234,7 +238,7 @@ PYBIND11_MODULE(source, module) {
             },
             py::arg("signal"),
             py::arg("time"),
-            py::kw_only(), py::arg("seed") = py::none(),
+            py::kw_only(), py::arg("seed") = py::none(), py::arg("wavelength") = py::none(),
             R"doc(
                 Add shot noise to an optical power trace.
 
@@ -244,6 +248,8 @@ PYBIND11_MODULE(source, module) {
                     Input optical power trace.
                 time : pint.Quantity
                     Time array associated with the signal samples.
+                wavelength : length quantity, optional
+                    Photon wavelength. Defaults to the laser wavelength.
 
                 seed : int, optional
                     Seed for this realization with a fixed worker count.
@@ -484,6 +490,18 @@ PYBIND11_MODULE(source, module) {
                     Electric field amplitude sampled along the requested trajectory.
             )doc"
         )
+        .def("get_irradiance_signal", [ureg](const BaseSource& source, const py::object& x,
+                const py::object& y, const py::object& z) {
+            auto field = source.get_amplitude_signal(
+                x.attr("m_as")("meter").cast<std::vector<double>>(),
+                y.attr("m_as")("meter").cast<std::vector<double>>(),
+                z.attr("m_as")("meter").cast<std::vector<double>>());
+            for (double& value : field) {
+                value = 0.5 * Constants::vacuum_permitivity * Constants::light_speed * value * value;
+            }
+            return py::cast(field) * ureg.attr("watt / meter ** 2");
+        }, py::kw_only(), py::arg("x"), py::arg("y"), py::arg("z"),
+        "Return time-averaged local irradiance for arrays of particle positions.")
         .def(
             "get_power_signal",
             [ureg](

@@ -224,12 +224,18 @@ void BaseSource::add_common_rin_to_signals(std::vector<std::vector<double>>& sig
 
 
 
-void BaseSource::add_shot_noise_to_signal(std::vector<double>& power_values, const double time_step, noise::Seed seed) const {
+void BaseSource::add_shot_noise_to_signal(std::vector<double>& power_values, const double time_step,
+                                          noise::Seed seed, std::optional<double> photon_wavelength) const {
     if (time_step <= 0.0) {
         throw std::runtime_error("time_step must be strictly positive.");
     }
 
-    const double photon_energy = this->get_photon_energy();
+    if (photon_wavelength && (!std::isfinite(*photon_wavelength) || *photon_wavelength <= 0.0)) {
+        throw std::invalid_argument("Photon wavelength must be finite and positive.");
+    }
+    const double photon_energy = photon_wavelength
+        ? Constants::plank * Constants::light_speed / *photon_wavelength
+        : this->get_photon_energy();
     const double watt_to_photon = time_step / photon_energy;
 
     if (debug_mode && !power_values.empty()) {

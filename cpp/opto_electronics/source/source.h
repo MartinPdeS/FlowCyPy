@@ -3,6 +3,7 @@
 #include <utils/noise_seed.h>
 
 #include <vector>
+#include <optional>
 #include <random>
 #include <cmath>
 #include <stdexcept>
@@ -206,7 +207,9 @@ public:
      *
      * @throws std::runtime_error If time_step is non positive or if a power sample is negative.
      */
-    void add_shot_noise_to_signal(std::vector<double>& power_values, const double time_step, noise::Seed seed = std::nullopt) const;
+    void add_shot_noise_to_signal(std::vector<double>& power_values, double time_step,
+                                  noise::Seed seed = std::nullopt,
+                                  std::optional<double> photon_wavelength = std::nullopt) const;
 
 
 

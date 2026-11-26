@@ -83,3 +83,105 @@ Import both from ``FlowCyPy.systems``. The first channel is the default trigger.
 Follow :doc:`gallery/tutorials/sony_id7000` to select a laser and change its
 sampling rate. See :doc:`gallery/studies/compare_scatter_systems` to compare
 side-scatter traces from two systems using the same bead sample.
+
+Choose a population preset
+--------------------------
+
+Select an instrument by manufacturer and a population by sample family.
+
+.. code-block:: python
+
+   from FlowCyPy.samples.vesicles import exosome
+   from FlowCyPy.systems.bd import facs_canto
+   from FlowCyPy.units import ureg
+
+   instrument = facs_canto()
+   vesicles = exosome(name="EV sample", concentration=1e8 * ureg.particle / ureg.milliliter)
+   instrument.fluidics.scatterer_collection.add_population(vesicles)
+
+The vesicles module also includes microvesicles and apoptotic bodies. Use
+FlowCyPy.samples.lipoproteins for HDL, LDL and VLDL, FlowCyPy.samples.cells
+for platelets and cellular debris, and FlowCyPy.samples.beads for monodisperse
+beads. Each call builds a fresh population. The biological presets retain
+the project's reference diameter and refractive-index distributions.
+
+Choose a detector preset
+------------------------
+
+Use ``pmt`` from ``FlowCyPy.detectors.photomultipliers`` for a photomultiplier
+tube, or ``pin`` and ``apd`` from ``FlowCyPy.detectors.photodiodes`` for PIN and
+avalanche photodiodes. Each factory creates a fresh channel with its reference
+responsivity and dark current. Supply the collection geometry and override
+electrical settings for a particular detector.
+
+Add fluorescence to an acquisition
+----------------------------------
+
+Label a sphere or core-shell population and select the optical contributions
+on each detector. This example adds a fluorescence PMT alongside the existing
+scatter-only PMTs on a 488 nm instrument. The dye parameters are illustrative.
+
+.. code-block:: python
+
+   import numpy as np
+   from FlowCyPy.detectors.photomultipliers import pmt
+   from FlowCyPy.fluorescence import Bandpass, Fluorophore, Label
+   from FlowCyPy.samples.beads import microbeads
+   from FlowCyPy.systems.bd import facs_canto
+   from FlowCyPy.units import ureg
+
+   instrument = facs_canto()
+   dye = Fluorophore(
+       name="green dye",
+       absorption_cross_section=2e-20 * ureg.meter**2,
+       quantum_yield=0.8,
+       lifetime=4 * ureg.nanosecond,
+       emission_wavelengths=np.array([510, 520, 530, 550]) * ureg.nm,
+       photon_weights=(1, 4, 3, 2),
+   )
+   beads = microbeads(
+       name="labeled beads", diameter=300 * ureg.nm, refractive_index=1.59,
+       medium_refractive_index=1.33, concentration=1e9 * ureg.particle / ureg.mL,
+       labels=[Label(fluorophore=dye, molecules_per_particle=20_000)],
+   )
+   instrument.fluidics.scatterer_collection.add_population(beads)
+   green = pmt(
+       name="green", phi_angle=90 * ureg.degree, numerical_aperture=0.8,
+       signals=("fluorescence",),
+       optical_filter=Bandpass(center=530 * ureg.nm, width=30 * ureg.nm),
+   )
+   optics = instrument.opto_electronics
+   optics.detectors = [*optics.detectors, green]
+   record = instrument.acquire(run_time=1 * ureg.millisecond, random_state=42)
+   voltage = record.signal.analog["green"]
+
+The bandpass transmits all light from 515 through 545 nm inclusive. Here it
+accepts the 520 and 530 nm bins, or 70% of emitted photons before geometric
+collection. Supply integrated photon counts per spectral bin and use finer bins
+near a passband edge. A detector defaults to scatter only. Select both scatter
+and fluorescence for a mixed channel. Its filter applies to elastic scatter at
+the laser wavelength as well as to emission.
+
+Use a molecular absorption cross section measured at the acquisition wavelength.
+The model assumes weak excitation, isotropic emission, collection in air
+with an optional central obscuration, and constant detector responsivity across
+the band. Shot noise uses the photon energy of each emission bin. Background
+power represents in-channel background at the laser wavelength. Fluorescent
+populations use explicit event sampling. A dimensionless FlowCyPy distribution
+can supply molecule counts, sampled once per particle and shared across channels.
+The event column for this example is named "Label:green dye".
+
+A fluorophore's optional lifetime is the mean delay from absorption to emission.
+Omit it or supply zero for prompt emission. For a positive lifetime, FlowCyPy
+applies a single exponential decay to each dye after laser intensity noise and
+before photon shot noise and detector electronics. The simulation treats the
+excitation as constant within each sampling interval and computes the mean
+emitted power in that bin. Choose a sampling interval that resolves the
+excitation pulse. The existing periodic acquisition boundary carries the decay
+tail into the beginning of the trace, conserving energy over a complete window.
+Event-frame power columns describe prompt coupling amplitudes. Read the analog
+waveforms for the delayed signal.
+
+See :doc:`gallery/tutorials/fluorescence_acquisition` to compare labeled and
+unlabeled beads in one acquisition and :doc:`gallery/studies/fluorescence_bandpass`
+to calculate spectral spillover.

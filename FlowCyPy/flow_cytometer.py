@@ -1,9 +1,10 @@
 import math
+from functools import partial
 import numpy as np
 from TypedUnit import Power, Time, ureg, validate_units
 from FlowCyPy.digital_processing import DigitalProcessing
-from FlowCyPy.fluidics import Fluidics, populations
 from FlowCyPy.event_collection import EventCollection
+from FlowCyPy.fluidics import Fluidics, populations
 from FlowCyPy.opto_electronics import OptoElectronics
 from FlowCyPy.opto_electronics.system import _next_noise_seed
 from FlowCyPy.run_record import RunRecord
@@ -44,7 +45,7 @@ class FlowCytometer:
         event_collection: EventCollection,
         signal_dict: dict,
         opto_electronics: OptoElectronics,
-    ) -> None:
+    ) -> dict:
         """
         Add explicit model detector signals to the optical power dictionary.
 
@@ -58,10 +59,18 @@ class FlowCytometer:
             in place.
         opto_electronics : OptoElectronics
             Opto electronic configuration.
+
+        Returns
+        -------
+        dict
+            Separate optical traces for wavelength-dependent shot noise or
+            delayed emission. Keys identify channel, wavelength in nm and,
+            for delayed emission, lifetime in seconds.
         """
         sample_times = signal_dict["Time"]
+        spectral_traces = {}
         if sample_times.size == 0:
-            return
+            return spectral_traces
 
         if sample_times.size == 1:
             acquisition_window = sample_times[0]
@@ -95,17 +104,36 @@ class FlowCytometer:
             event_indices = np.concatenate(
                 (late_events, np.arange(event_times.size), early_events)
             )
-            pulse_velocities = velocities[event_indices]
-
+            generate_pulse = partial(
+                opto_electronics.source.generate_pulses,
+                velocities=velocities[event_indices],
+                pulse_centers=pulse_centers,
+                time_array=sample_times,
+                base_level=0 * ureg.watt,
+            )
             for detector in opto_electronics.detectors:
-                amplitudes = events.get_quantity(detector.name)
-                signal_dict[detector.name] += opto_electronics.source.generate_pulses(
-                    velocities=pulse_velocities,
-                    pulse_centers=pulse_centers,
-                    pulse_amplitudes=amplitudes[event_indices],
-                    time_array=sample_times,
-                    base_level=0 * ureg.watt,
+                name = detector.name
+                components = events.metadata.get("FluorescencePower", {}).get(name)
+                needs_spectral_trace = components is not None and (
+                    opto_electronics.source.include_shot_noise
+                    or any(len(dye) == 3 for dye in components[1])
                 )
+                if not needs_spectral_trace:
+                    amplitude = events.get_quantity(name)
+                    signal_dict[name] += generate_pulse(pulse_amplitudes=amplitude[event_indices])
+                    continue
+
+                scatter, dyes = components
+                signal_dict[name] += generate_pulse(pulse_amplitudes=scatter[event_indices])
+                for dye_amplitude, spectral_weights, *delay in dyes:
+                    pulse = generate_pulse(pulse_amplitudes=dye_amplitude[event_indices])
+                    for wavelength, weight in spectral_weights.items():
+                        key = (name, wavelength, *delay)
+                        if key in spectral_traces:
+                            spectral_traces[key] += pulse * weight
+                        else:
+                            spectral_traces[key] = pulse * weight
+        return spectral_traces
 
     def _add_gamma_model_signals(
         self,
@@ -144,11 +172,13 @@ class FlowCytometer:
             if len(opto_electronics.detectors) == 0:
                 raise ValueError("opto_electronics must contain at least one detector.")
 
-            reference_detector = opto_electronics.detectors[0]
-
-            reference_mean_amplitude = events.get_quantity(
-                reference_detector.name
-            ).mean()
+            for detector in opto_electronics.detectors:
+                reference_mean_amplitude = events.get_quantity(detector.name).mean()
+                if reference_mean_amplitude > 0 * ureg.watt:
+                    break
+            else:
+                # A population invisible to every channel still has an occupancy trace.
+                reference_mean_amplitude = 1 * ureg.watt
 
             reference_power_trace = opto_electronics.source.get_gamma_trace(
                 time_array=signal_dict["Time"],
@@ -157,11 +187,6 @@ class FlowCytometer:
                 mean_velocity=events.metadata["VelocityMean"],
                 seed=_next_noise_seed(generator=random_generator),
             )
-
-            if reference_mean_amplitude == 0 * ureg.watt:
-                raise ValueError(
-                    "Gamma Model reference mean amplitude is zero, cannot normalize."
-                )
 
             particle_trace = reference_power_trace / reference_mean_amplitude
 
@@ -206,7 +231,7 @@ class FlowCytometer:
             background_power=self.background_power,
         )
 
-        self._add_explicit_model_signals(
+        spectral_traces = self._add_explicit_model_signals(
             event_collection=event_collection,
             signal_dict=power_signal_dict,
             opto_electronics=opto_electronics,
@@ -223,7 +248,7 @@ class FlowCytometer:
         )
 
         return opto_electronics.convert_optical_power_to_voltage(
-            power_signal_dict, random_generator=noise_rng
+            power_signal_dict, random_generator=noise_rng, emission=spectral_traces
         )
 
     def process_analog(

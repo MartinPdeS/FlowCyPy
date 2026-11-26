@@ -2,8 +2,8 @@
 
 from TypedUnit import FlowRate, Power, Voltage
 from FlowCyPy import opto_electronics, digital_processing
+from FlowCyPy.detectors.photomultipliers import pmt
 from FlowCyPy.fluidics import SampleFlowRate, SheathFlowRate
-from FlowCyPy.presets.detector import PMT
 from FlowCyPy.systems._assembly import ScatterChannel, ScatterSystem, assemble
 from FlowCyPy.units import ureg
 from FlowCyPy.workflow import Workflow
@@ -57,14 +57,14 @@ def facs_canto(
         sampling_rate=10 * ureg.megahertz,
     )
 
-    detector_0 = PMT(
+    detector_0 = pmt(
         name="forward",
         phi_angle=0 * ureg.degree,
         numerical_aperture=1.2 * ureg.AU,
         dark_current=0 * ureg.picoampere,
     )
 
-    detector_1 = PMT(
+    detector_1 = pmt(
         name="side",
         phi_angle=0 * ureg.degree,
         numerical_aperture=0.3 * ureg.AU,

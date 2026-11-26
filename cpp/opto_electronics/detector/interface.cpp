@@ -112,7 +112,9 @@ PYBIND11_MODULE(detector, module) {
                 const py::object& dark_current,
                 const py::object& current_noise_density,
                 const py::object& bandwidth,
-                const py::object& name
+                const py::object& name,
+                const std::vector<std::string>& signals,
+                const py::object& optical_filter
             ) {
                 const double phi_angle_value = Casting::cast_py_to_scalar<double>(
                     phi_angle,
@@ -165,7 +167,7 @@ PYBIND11_MODULE(detector, module) {
                     ? std::string("")
                     : py::cast<std::string>(name);
 
-                return Detector(
+                auto detector = Detector(
                     phi_angle_value,
                     numerical_aperture,
                     cache_numerical_aperture,
@@ -177,6 +179,22 @@ PYBIND11_MODULE(detector, module) {
                     bandwidth_value,
                     detector_name
                 );
+                if (signals.empty() || signals.size() > 2 ||
+                    (signals.size() == 2 && signals[0] == signals[1])) {
+                    throw py::value_error("signals must contain distinct optical contributions.");
+                }
+                for (const auto& signal : signals) {
+                    if (signal != "scatter" && signal != "fluorescence") {
+                        throw py::value_error("signals accepts scatter and fluorescence.");
+                    }
+                }
+                if (!optical_filter.is_none() && !py::isinstance(optical_filter,
+                        py::module_::import("FlowCyPy.fluorescence").attr("Bandpass"))) {
+                    throw py::type_error("optical_filter must be a Bandpass.");
+                }
+                detector.signals = signals;
+                detector.optical_filter = optical_filter;
+                return detector;
             }),
             py::arg("phi_angle"),
             py::arg("numerical_aperture"),
@@ -188,6 +206,8 @@ PYBIND11_MODULE(detector, module) {
             py::arg("current_noise_density") = py::none(),
             py::arg("bandwidth") = py::none(),
             py::arg("name") = py::none(),
+            py::kw_only(), py::arg("signals") = std::vector<std::string>{"scatter"},
+            py::arg("optical_filter") = py::none(),
             R"pbdoc(
                 Initialize a detector channel.
 
@@ -212,6 +232,10 @@ PYBIND11_MODULE(detector, module) {
                     Additional detector current-noise density in ``ampere / sqrt(hertz)``. If omitted, a value of ``0 ampere / sqrt(hertz)`` is used.
                 bandwidth : pint.Quantity or None, optional
                     Detector bandwidth used by bandwidth dependent noise calculations. If omitted, no bandwidth is stored on the detector.
+                signals : sequence of str, optional
+                    Collect scatter (default), fluorescence, or both.
+                optical_filter : FlowCyPy.fluorescence.Bandpass, optional
+                    Ideal rectangular filter applied to the collected contributions.
                 name : str or None, optional
                     Detector name. If omitted, the detector is created with an empty name.
 
@@ -247,6 +271,8 @@ PYBIND11_MODULE(detector, module) {
             )pbdoc"
         )
 
+        .def_readonly("signals", &Detector::signals)
+        .def_readonly("optical_filter", &Detector::optical_filter)
         .def_readwrite(
             "numerical_aperture",
             &Detector::numerical_aperture,

@@ -3,6 +3,7 @@ set(NAME "populations")
 set(LIB_NAME "${NAME}_lib")
 
 add_library("${LIB_NAME}" STATIC "${NAME}.cpp")
+target_link_libraries("${LIB_NAME}" PUBLIC pybind11::module)
 target_link_libraries("${LIB_NAME}" PRIVATE distributions_lib)
 target_include_directories("${LIB_NAME}" PUBLIC ${FFTW_INCLUDE_DIRS})
 
