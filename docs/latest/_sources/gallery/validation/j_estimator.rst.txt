@@ -84,7 +84,7 @@ Setup and configuration
 Helper functions
 ----------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 54-191
+.. GENERATED FROM PYTHON SOURCE LINES 54-187
 
 .. code-block:: Python
 
@@ -206,21 +206,17 @@ Helper functions
 
         figure, axes = plt.subplots(figsize=(8, 5))
 
-        axes.scatter(x, y, label="Robust CV", zorder=3, color='black')
+        axes.scatter(x, y, label="Robust CV")
         axes.plot(
             x_fit,
             y_fit,
             "--",
             label=rf"$RCV = {slope:.3e} \cdot x + {intercept:.3e}$",
-            zorder=2,
         )
         axes.set_title("J Parameter Estimation")
-        axes.set_xlabel(r"$1 / \sqrt{\mathrm{Median\ Signal}}$", fontsize=11)
-        axes.set_ylabel("Robust CV", fontsize=11)
-        axes.set_title("J Parameter Estimation", fontsize=14)
-        axes.tick_params(labelsize=9)
-        axes.legend(fontsize=9)
-        figure.tight_layout()
+        axes.set_xlabel(r"$1 / \sqrt{\mathrm{Median\ Signal}}$")
+        axes.set_ylabel("Robust CV")
+        axes.legend()
 
         return figure, slope, intercept
 
@@ -232,12 +228,12 @@ Helper functions
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 192-194
+.. GENERATED FROM PYTHON SOURCE LINES 188-190
 
 Construct simulation components
 -------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 194-277
+.. GENERATED FROM PYTHON SOURCE LINES 190-273
 
 .. code-block:: Python
 
@@ -314,7 +310,7 @@ Construct simulation components
 
 
     digital_processing = DigitalProcessing(
-        peak_algorithm=peak_algorithm,
+        peak_locator=peak_algorithm,
         discriminator=dynamic_window_discriminator,
     )
 
@@ -331,12 +327,12 @@ Construct simulation components
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 278-280
+.. GENERATED FROM PYTHON SOURCE LINES 274-276
 
 Run J estimation simulation
 ---------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 280-342
+.. GENERATED FROM PYTHON SOURCE LINES 276-338
 
 .. code-block:: Python
 
@@ -439,12 +435,12 @@ Run J estimation simulation
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 343-345
+.. GENERATED FROM PYTHON SOURCE LINES 339-341
 
 Estimate J
 ----------
 
-.. GENERATED FROM PYTHON SOURCE LINES 345-359
+.. GENERATED FROM PYTHON SOURCE LINES 341-355
 
 .. code-block:: Python
 
@@ -472,30 +468,28 @@ Estimate J
 
 
     J estimation results
-    Estimated J: 0.12074219231576476 dimensionless
-    Linear intercept: 4.750137e-05
+    Estimated J: 0.11017963850605912 dimensionless
+    Linear intercept: 6.496586e-05
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 360-362
+.. GENERATED FROM PYTHON SOURCE LINES 356-358
 
 Plot estimation and diagnostics
 -------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 362-374
+.. GENERATED FROM PYTHON SOURCE LINES 358-368
 
 .. code-block:: Python
 
 
 
-    from MPSPlots.styles import scientific
 
-    with plt.style.context(scientific):
-        figure_j, _, _ = plot_j_estimation(
-            medians=medians,
-            robust_cvs=robust_cvs,
-        )
+    figure_j, _, _ = plot_j_estimation(
+        medians=medians,
+        robust_cvs=robust_cvs,
+    )
 
 
     plt.show()
@@ -514,7 +508,7 @@ Plot estimation and diagnostics
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 27.065 seconds)
+   **Total running time of the script:** (0 minutes 34.523 seconds)
 
 
 .. _sphx_glr_download_gallery_validation_j_estimator.py:

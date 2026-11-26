@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" data-theme="dark">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Fluorescence from a labeled particle &#8212; FlowCyPy 1.5.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "dark";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=c83e6b79" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=6a604523" />
+    <link rel="stylesheet" type="text/css" href="_static/default.css?v=1ada29a2" />
+    <link rel="stylesheet" type="text/css" href="_static/martinpdes_layout.css?v=a8cc01cd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
+
+    <script src="_static/documentation_options.js?v=623e1633"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/sg-tags.js?v=d80f6fa4"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="_static/design-tabs.js?v=fcb327ea"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'fluorescence_model';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.5.0';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            true;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="prev" title="Theory" href="theory.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.5.0" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="dark">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation" aria-expanded="false" aria-controls="pst-primary-sidebar-modal">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="_static/logo.png" class="logo__image only-dark" alt="FlowCyPy logo"/>
+    <img src="_static/logo.png" class="logo__image only-light pst-js-only" alt="FlowCyPy logo"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="getting_started.html">
+    Start
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="guide.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="examples.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="code.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="resources.html">
+    Resources
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/FlowCyPy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/MartinPdeS/FlowCyPy" title="Anaconda" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">Anaconda</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page" aria-expanded="false" aria-controls="pst-secondary-sidebar-modal">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal" tabindex="-1"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="getting_started.html">
+    Start
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="guide.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="examples.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="code.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="resources.html">
+    Resources
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/FlowCyPy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/MartinPdeS/FlowCyPy" title="Anaconda" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">Anaconda</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="theory.html">Theory</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">Fluorescence from a labeled particle</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-house"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="guide.html" class="nav-link">Choose a workflow</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="theory.html" class="nav-link">Theory</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Fluorescence from a labeled particle</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="fluorescence-from-a-labeled-particle">
+<h1>Fluorescence from a labeled particle<a class="headerlink" href="#fluorescence-from-a-labeled-particle" title="Link to this heading">#</a></h1>
+<p>FlowCyPy predicts how much optical power a labeled particle delivers to each
+detector and when that power arrives. Three measurements in the output answer
+different questions. The event column <code class="docutils literal notranslate"><span class="pre">Label:&lt;dye</span> <span class="pre">name&gt;</span></code> gives molecules per
+particle. The event column named for the detector gives its prompt-equivalent
+power amplitude in watts. The same channel in <code class="docutils literal notranslate"><span class="pre">record.signal.analog</span></code> gives
+voltage versus time, including overlapping particles, lifetime, and electronics.</p>
+<section id="from-molecule-count-to-optical-power">
+<h2>From molecule count to optical power<a class="headerlink" href="#from-molecule-count-to-optical-power" title="Link to this heading">#</a></h2>
+<p>For one particle, let <span class="math notranslate nohighlight">\(I(t)\)</span> be the local laser irradiance in W/m²,
+<span class="math notranslate nohighlight">\(N\)</span> the number of molecules of one dye and <span class="math notranslate nohighlight">\(\sigma_a\)</span> the
+absorption cross section in m² per molecule at laser wavelength
+<span class="math notranslate nohighlight">\(\lambda_L\)</span>. The source sets the peak irradiance at the event’s
+transverse position and generates the transit pulse from its arrival time
+and velocity. In the weak-excitation limit the absorbed photon rate is</p>
+<div class="math notranslate nohighlight">
+\[\dot n_{\rm abs}(t) = \frac{N \sigma_a I(t)}{hc/\lambda_L}.\]</div>
+<p>Quantum yield <span class="math notranslate nohighlight">\(\Phi\)</span> gives the mean number of emitted photons per
+absorbed photon. The dye’s normalized photon weights <span class="math notranslate nohighlight">\(p_j\)</span> sum to one
+over emission bins with representative wavelengths <span class="math notranslate nohighlight">\(\lambda_j\)</span>.
+For detector <span class="math notranslate nohighlight">\(d\)</span>, let <span class="math notranslate nohighlight">\(f_d\)</span> be the collected fraction of solid
+angle and <span class="math notranslate nohighlight">\(T_d(\lambda_j)\)</span> its filter transmission. Multiplying each
+bin’s photon rate by its photon energy gives the prompt-equivalent power</p>
+<div class="math notranslate nohighlight">
+\[P^0_{dj}(t) =
+N \sigma_a I(t)\,\Phi\, f_d\,p_j\,T_d(\lambda_j)
+\frac{\lambda_L}{\lambda_j}.\]</div>
+<p>The wavelength ratio matters when predicting voltage from a spectrum. At equal
+photon rates, the shorter-wavelength bin delivers more watts. For example, at
+an irradiance of <span class="math notranslate nohighlight">\(10^6\)</span> W/m², 20,000 molecules with a cross section of
+<span class="math notranslate nohighlight">\(2\times10^{-20}\)</span> m² absorb 400 pW. For excitation at 488 nm, yield 0.8,
+20% geometric collection and all photons emitted and transmitted at 520 nm,
+the detector receives about 60 pW. Doubling the molecule count doubles this
+power. These values illustrate the calculation.</p>
+<section id="choosing-physical-inputs">
+<h3>Choosing physical inputs<a class="headerlink" href="#choosing-physical-inputs" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Particle and dye.</strong> Sphere and core-shell populations support labels with
+explicit particle sampling. A dimensionless distribution supplies one
+nonnegative count per particle and dye, rounded to the nearest integer.
+Every detector sees that same draw. Multiple dyes add independently.</p></li>
+<li><p><strong>Absorption.</strong> Supply a molecular cross section at the configured laser
+wavelength. If a dye datasheet gives molar extinction coefficient in
+L mol⁻¹ cm⁻¹, multiply its numerical value by 0.1 ln(10) and divide by
+the Avogadro constant to obtain m² per molecule (Beer–Lambert conversion).
+The model uses one local irradiance for every label on a particle.
+It treats cross section and quantum yield as constant through the transit.
+Saturation, bleaching, energy transfer, self-quenching and internal optical
+fields would require additional physics. The linear model can overpredict
+brightness at high excitation or high labeling density.</p></li>
+<li><p><strong>Spectrum.</strong> Supply integrated photon counts per bin as <code class="docutils literal notranslate"><span class="pre">photon_weights</span></code>.
+For measured photon density per nm, integrate over each bin width first.
+For radiant power per nm, also divide by the photon energy before integrating.
+Use a response-corrected spectrum if detector sensitivity shaped the measurement.</p></li>
+</ul>
+</section>
+</section>
+<section id="surface-and-volume-labeling">
+<h2>Surface and volume labeling<a class="headerlink" href="#surface-and-volume-labeling" title="Link to this heading">#</a></h2>
+<p>To model a surface coating or dye distributed throughout a spherical bead,
+give a label its mean surface density or volume density. For each particle FlowCyPy draws a molecule count once,
+using the same sampled outer diameter <span class="math notranslate nohighlight">\(D\)</span> used to define that particle:</p>
+<div class="math notranslate nohighlight">
+\[N \mid D \sim \mathrm{Poisson}(\rho_A \pi D^2) \quad \text{or} \quad
+N \mid D \sim \mathrm{Poisson}(\rho_V \pi D^3 / 6).\]</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.dyes</span><span class="w"> </span><span class="kn">import</span> <span class="n">fitc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluorescence</span><span class="w"> </span><span class="kn">import</span> <span class="n">Label</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">ureg</span>
+
+<span class="n">coating</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">fluorophore</span><span class="o">=</span><span class="n">fitc</span><span class="p">(),</span> <span class="n">molecules_per_area</span><span class="o">=</span><span class="mf">0.02</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nm</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">bulk_dye</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">fluorophore</span><span class="o">=</span><span class="n">fitc</span><span class="p">(),</span> <span class="n">molecules_per_volume</span><span class="o">=</span><span class="mi">1_000</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">micrometer</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Pass either label in the population’s <code class="docutils literal notranslate"><span class="pre">labels</span></code> argument. For a core-shell
+particle, volume loading includes both core and shell. The outer diameter is the core diameter plus twice
+the radial shell thickness. Even equal-sized beads fluctuate: at a fixed
+diameter, the count variance equals its mean. Size dispersion adds variation
+through the sampled area or volume. All channels use the stored event count, and an acquisition
+seed reproduces the draws. The model assumes independent occupancy and has no
+finite binding-site capacity. Use <code class="docutils literal notranslate"><span class="pre">molecules_per_particle</span></code> for a fixed
+count or a count distribution independent of geometry.</p>
+</section>
+<section id="predefined-dyes">
+<h2>Predefined dyes<a class="headerlink" href="#predefined-dyes" title="Link to this heading">#</a></h2>
+<p>Import a dye from <code class="docutils literal notranslate"><span class="pre">FlowCyPy.dyes</span></code> and call it to create a fluorophore. Set
+the labeling density separately for each population.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.dyes</span><span class="w"> </span><span class="kn">import</span> <span class="n">alexa_fluor_488</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluorescence</span><span class="w"> </span><span class="kn">import</span> <span class="n">Label</span>
+
+<span class="n">label</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">fluorophore</span><span class="o">=</span><span class="n">alexa_fluor_488</span><span class="p">(),</span> <span class="n">molecules_per_particle</span><span class="o">=</span><span class="mi">20_000</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="pst-scrollable-table-container"><table class="table" id="id1">
+<caption><span class="caption-text">Reference optical properties</span><a class="headerlink" href="#id1" title="Link to this table">#</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Preset</p></th>
+<th class="head"><p>Absorption max (nm)</p></th>
+<th class="head"><p>Emission max (nm)</p></th>
+<th class="head"><p>Peak extinction (L mol⁻¹ cm⁻¹)</p></th>
+<th class="head"><p>Quantum yield</p></th>
+<th class="head"><p>Lifetime (ns)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">alexa_fluor_488</span></code></p></td>
+<td><p>495</p></td>
+<td><p>519</p></td>
+<td><p>73,000</p></td>
+<td><p>0.92</p></td>
+<td><p>4.1</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">alexa_fluor_594</span></code></p></td>
+<td><p>590</p></td>
+<td><p>617</p></td>
+<td><p>92,000</p></td>
+<td><p>0.66</p></td>
+<td><p>3.9</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">alexa_fluor_647</span></code></p></td>
+<td><p>650</p></td>
+<td><p>668</p></td>
+<td><p>270,000</p></td>
+<td><p>0.33</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fitc</span></code></p></td>
+<td><p>494</p></td>
+<td><p>518</p></td>
+<td><p>70,000</p></td>
+<td><p>0.92</p></td>
+<td><p>4.1</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">atto_647n</span></code></p></td>
+<td><p>646</p></td>
+<td><p>664</p></td>
+<td><p>150,000</p></td>
+<td><p>0.65</p></td>
+<td><p>3.5</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For the Alexa Fluor presets, the spectral maxima describe conjugates, and the extinction coefficients describe
+reactive dyes at peak absorption. Yield and lifetime were measured on free
+succinimidyl ester derivatives. Yield was measured in PBS at pH 7.2 and 22 °C.
+The handbook reports the 647 lifetime in water at 22 °C and credits separate
+measurements for 488 and 594. A different conjugate or medium can change these
+values. See Thermo Fisher’s <a class="reference external" href="https://www.thermofisher.com/us/en/home/references/molecular-probes-the-handbook/technical-notes-and-product-highlights/the-alexa-fluor-dye-series.html">spectral properties table</a>
+and <a class="reference external" href="https://www.thermofisher.com/us/en/home/references/molecular-probes-the-handbook/tables/fluorescence-quantum-yields-and-lifetimes-for-alexa-fluor-dyes.html">quantum yield and lifetime table</a>.</p>
+<p><strong>FITC</strong> represents fluorescein isothiocyanate. The preset combines spectral
+maxima and an extinction coefficient measured in aqueous buffer at pH 9
+with a supplier-reported quantum yield and a lifetime measured in phosphate
+buffer at pH 7.8. These reference values come from different preparations.
+For an antibody conjugate, use measurements at the relevant labeling density
+and pH when available. Sources: <a class="reference external" href="https://documents.thermofisher.com/TFS-Assets/LSG/manuals/MAN0011646_FITC_TRITC_UG.pdf">Thermo Scientific FITC guide</a>,
+<a class="reference external" href="https://www.rndsystems.com/products/fitc_5440">Tocris FITC photophysical data</a>,
+and <a class="reference external" href="https://iss.com/resources/data-sheets">ISS lifetime data</a>.</p>
+<p><strong>ATTO 647N</strong> uses measurements of the carboxy derivative in PBS at pH 7.4
+and 22 °C. See the <a class="reference external" href="https://www.atto-tec.com/images/ATTO/Katalog_Preisliste/Katalog_2023_2024.pdf">ATTO-TEC catalogue, pp. 28–29</a>.</p>
+<p><strong>Excitation.</strong> The default uses the peak extinction coefficient. For another
+laser line, pass <code class="docutils literal notranslate"><span class="pre">relative_absorption</span></code> equal to the ratio of absorbance at
+that line to absorbance at the maximum, taken from the same spectrum. Rebuild
+the dye with the appropriate ratio when changing lasers.</p>
+<p><strong>Emission.</strong> Each preset places all photons in one bin at its emission maximum.
+A hard filter therefore accepts either all or none of its emission. This
+approximation is useful for lifetime demonstrations. For filter throughput or
+spectral spillover, provide measured emission bins, for example with
+<code class="docutils literal notranslate"><span class="pre">dataclasses.replace(dye,</span> <span class="pre">emission_wavelengths=wavelengths,</span> <span class="pre">photon_weights=counts)</span></code>.
+See <a class="reference internal" href="gallery/tutorials/detect_labeled_beads.html"><span class="doc">Detect fluorescent beads alongside unlabeled beads</span></a> for a complete acquisition.</p>
+</section>
+<section id="collection-filters-and-spillover">
+<h2>Collection, filters and spillover<a class="headerlink" href="#collection-filters-and-spillover" title="Link to this heading">#</a></h2>
+<p>Emission is isotropic. In the air collection geometry,
+<span class="math notranslate nohighlight">\(0 \leq \mathrm{NA}_{\rm inner} \leq \mathrm{NA}_{\rm outer} \leq 1\)</span>.
+The central obscuration excludes the inner cone. Integrating over the remaining
+annulus gives the fraction of all emitted photons reaching the channel</p>
+<div class="math notranslate nohighlight">
+\[f_d = \frac{\sqrt{1-\mathrm{NA}_{\rm inner}^2}
+               -\sqrt{1-\mathrm{NA}_{\rm outer}^2}}{2}.\]</div>
+<p>An unobscured NA of 0.8 collects 20%. Rotating that cone leaves its fluorescence
+fraction unchanged. Elastic scatter has its own angular dependence. Detectors
+default to scatter only. Select fluorescence only or both contributions using
+<code class="docutils literal notranslate"><span class="pre">signals</span></code>. A mixed channel applies its filter at the laser wavelength for
+scatter and at each emission wavelength for fluorescence.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">Bandpass(center=530</span> <span class="pre">*</span> <span class="pre">ureg.nm,</span> <span class="pre">width=30</span> <span class="pre">*</span> <span class="pre">ureg.nm)</span></code> transmits unity from
+515 through 545 nm inclusive and zero elsewhere. Omitting the filter accepts
+all wavelengths for the selected contributions. The entire weight of a bin is
+assigned to its representative wavelength. Split bins near a filter edge and
+repeat the calculation to check convergence. Real filter slopes, finite
+stopband leakage and other wavelength-dependent optical losses are outside
+this idealization. Spectral spillover still occurs whenever two dyes emit in
+the same passband. See <a class="reference internal" href="gallery/tutorials/define_custom_dye_spectra.html"><span class="doc">Define custom dyes and predict spectral spillover</span></a>.</p>
+</section>
+<section id="lifetime-transit-and-sampling">
+<h2>Lifetime, transit and sampling<a class="headerlink" href="#lifetime-transit-and-sampling" title="Link to this heading">#</a></h2>
+<p>Each dye can have its own lifetime <span class="math notranslate nohighlight">\(\tau\)</span>. Zero or omitted lifetime gives
+prompt emission. For positive lifetime, the emitted power <span class="math notranslate nohighlight">\(P_{dj}\)</span> obeys</p>
+<div class="math notranslate nohighlight">
+\[\tau \frac{dP_{dj}}{dt} + P_{dj} = P^0_{dj}(t).\]</div>
+<p>This is a single exponential relaxation with unit integrated response. A
+finite lifetime shifts light into later bins. The area under a complete optical
+pulse is conserved, while the peak height and the energy inside a short trigger
+window can change. For an instantaneous excitation, the fraction collected in a
+gate of duration <span class="math notranslate nohighlight">\(T\)</span> starting at excitation is
+<span class="math notranslate nohighlight">\(1-\exp(-T/\tau)\)</span>. A laser that stays on throughout the gate gives a
+different result because molecules continue to be excited inside the gate.</p>
+<p>The digitizer sets the time grid, <span class="math notranslate nohighlight">\(\Delta t=1/f_s\)</span>. FlowCyPy holds
+excitation constant within each bin and calculates the exact mean emitted power
+over that bin for the assumed excitation. Resolve the fastest change in the
+<strong>excitation</strong> and refine the grid to check your gate fraction or pulse shape.
+The solution starts in periodic steady state. A tail near the end of the
+acquisition continues at the start. To approximate an isolated pulse, leave
+enough dark time for its tail to decay before the next period.</p>
+<p>The amplifier and analog circuits also shape the measured voltage. A faster
+digitizer can sample a bandwidth-limited waveform more densely, while its
+measured delay still includes the electronics. The worked example isolates
+the dye using a known excitation and idealized electronics. For an experimental
+comparison using scatter and fluorescence pulse delays, see
+<a class="reference external" href="https://doi.org/10.1002/cyto.a.22574">Cao et al. (2014)</a>.
+See <a class="reference internal" href="gallery/studies/measure_fluorescence_gate_loss.html"><span class="doc">How much fluorescence arrives after the gate closes?</span></a>.</p>
+</section>
+<section id="noise-and-comparison-with-measurements">
+<h2>Noise and comparison with measurements<a class="headerlink" href="#noise-and-comparison-with-measurements" title="Link to this heading">#</a></h2>
+<p>When enabled, laser relative intensity noise supplies a common excitation
+fluctuation across channels. Lifetime acts on this fluctuating excitation.
+Photon shot noise is then drawn using the energy of each wavelength component.
+For mean counts below 100 photons per bin the sampler uses a Poisson draw.
+At higher counts it uses a nonnegative Gaussian approximation with the same
+nominal mean and variance. Configured in-channel background uses the laser
+photon energy for this calculation.</p>
+<p>Each detector sums optical powers and applies one responsivity in A/W across
+its entire band. Detector current noise and amplification follow. Run processing
+can then apply analog circuits, triggering, digitization and peak measurement.
+For an instrument comparison, match the laser irradiance, collection geometry,
+bandpass, responsivity, gain and bandwidth. Unlabeled controls establish the
+baseline and single-color controls reveal how much of each dye enters the
+other channels. Absolute intensity alone constrains a product of label count,
+absorption, yield and detection efficiency. Independent calibration is needed
+to infer molecule counts from voltage.</p>
+<p>Follow <a class="reference internal" href="gallery/tutorials/detect_labeled_beads.html"><span class="doc">Detect fluorescent beads alongside unlabeled beads</span></a> to compare the event
+record, analog waveform and green-triggered segments for the same sample.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="theory.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Theory</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="examples.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Examples</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal" tabindex="-1"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#from-molecule-count-to-optical-power">From molecule count to optical power</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-physical-inputs">Choosing physical inputs</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#surface-and-volume-labeling">Surface and volume labeling</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#predefined-dyes">Predefined dyes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#collection-filters-and-spillover">Collection, filters and spillover</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lifetime-transit-and-sampling">Lifetime, transit and sampling</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#noise-and-comparison-with-measurements">Noise and comparison with measurements</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.5.0/docs/source/fluorescence_model.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/fluorescence_model.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright Martin Poinsinet de Sivry-Houle.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

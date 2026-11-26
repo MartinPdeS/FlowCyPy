@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Limit of Detection &#8212; FlowCyPy 1.2.14 documentation</title>
+    <title>Limit of Detection &#8212; FlowCyPy 1.5.0 documentation</title>
   
   
   
@@ -26,34 +26,34 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=c83e6b79" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/default.css?v=1ada29a2" />
     <link rel="stylesheet" type="text/css" href="../../_static/martinpdes_layout.css?v=a8cc01cd" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=9df0433b"></script>
+    <script src="../../_static/documentation_options.js?v=623e1633"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'gallery/studies/limit_of_detection';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.2.14';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.5.0';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
@@ -61,12 +61,12 @@
     <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Size-exclusion chromatography" href="sec_results.html" />
-    <link rel="prev" title="Flow-cell sampling" href="flowcell_sampling.html" />
+    <link rel="next" title="Map particle velocities across a focused flow cell" href="map_particle_velocities_in_the_flow_cell.html" />
+    <link rel="prev" title="Concentration and coincidence" href="concentration_sweep.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.2.14" />
+  <meta name="docsearch:version" content="1.5.0" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -114,7 +114,7 @@
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation" aria-expanded="false" aria-controls="pst-primary-sidebar-modal">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -229,14 +229,14 @@
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
   <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
-    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
   </ul>
 </div></div>
       
@@ -293,7 +293,7 @@
   
 
   
-    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page" aria-expanded="false" aria-controls="pst-secondary-sidebar-modal">
       <span class="fa-solid fa-outdent"></span>
     </button>
   
@@ -307,7 +307,7 @@
       
       
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <dialog id="pst-primary-sidebar-modal" tabindex="-1"></dialog>
       <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
@@ -391,14 +391,14 @@
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
   <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
-    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
   </ul>
 </div></div>
         
@@ -458,19 +458,29 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Examples: Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/facs_canto.html">FACSCanto simulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow.html">Full system simulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow_1.html">Workflow API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/acquire_scatter_on_facs_canto.html">Acquire bead scatter on the FACSCanto</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/assemble_a_flow_cytometer.html">Assemble a flow cytometer from components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/build_a_reusable_scatter_system.html">Build a reusable two-channel scatter system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/cluster_particles_by_scatter.html">Cluster particles by forward and side scatter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/define_custom_dye_spectra.html">Define custom dyes and predict spectral spillover</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/detect_labeled_beads.html">Detect fluorescent beads alongside unlabeled beads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/select_a_laser_on_sony_id7000.html">Choose a laser on the Sony ID7000</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: Studies</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="choose_digitizer_voltage_range.html">Choose a digitizer range for dim and bright pulses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compare_analog_filters.html">Compare baseline restoration and low-pass filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compare_scatter_systems.html">Compare side-scatter collection at 488 nm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compare_scatter_with_cytek_bead_data.html">Compare simulated scatter with Cytek bead measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compare_size_exclusion_cutoffs.html">Compare size-exclusion cutoffs for vesicles and lipoproteins</a></li>
 <li class="toctree-l2"><a class="reference internal" href="concentration_sweep.html">Concentration and coincidence</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cytek_comparison.html">Cytek bead comparison</a></li>
-<li class="toctree-l2"><a class="reference internal" href="flowcell_sampling.html">Flow-cell sampling</a></li>
 <li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">Limit of Detection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sec_results.html">Size-exclusion chromatography</a></li>
-<li class="toctree-l2"><a class="reference internal" href="signal_processing.html">Signal processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="map_particle_velocities_in_the_flow_cell.html">Map particle velocities across a focused flow cell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="measure_blank_trigger_rate.html">Measure false triggers with particle-free blanks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="measure_fluorescence_gate_loss.html">How much fluorescence arrives after the gate closes?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reproduce_rosetta_mix_markers.html">Compare Rosetta Mix marker peaks with CAL003</a></li>
 <li class="toctree-l2"><a class="reference internal" href="threshold_sensitivity.html">Threshold sensitivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="two_particle_resolution.html">Resolving two overlapping particle pulses</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../validation/index.html">Examples: Validation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -515,7 +525,7 @@
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="../../index.html" class="nav-link" aria-label="Home">
-        <i class="fa-solid fa-home"></i>
+        <i class="fa-solid fa-house"></i>
       </a>
     </li>
     
@@ -550,52 +560,18 @@ to download the full example code.</p>
 <span id="sphx-glr-gallery-studies-limit-of-detection-py"></span><h1>Limit of Detection<a class="headerlink" href="#limit-of-detection" title="Link to this heading">#</a></h1>
 <p>This example simulates the detection of small nanoparticles (50-150 nm diameter)
 in a flow cytometry setup using a dual-detector configuration (side and forward scatter).
-The simulation includes noise models, realistic fluidics, analog signal conditioning,
+The simulation includes noise models, realistic fluidics, analog amplification,
 digitization, triggering, and peak detection.</p>
 <p>The main goal is to evaluate whether such particles produce detectable and distinguishable
 scatter signals in the presence of system noise and fluidic variability.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="nn">.</span><span class="nn">units</span><span class="w"> </span><span class="kn">import</span> <span class="n">ureg</span><span class="w">
-</span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class reference internal" href="../../code/flow_cytometer.html#FlowCyPy.flow_cytometer.FlowCytometer" title="FlowCyPy.FlowCytometer"><span class="n">FlowCytometer</span></a><span class="w">
-</span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="nn">.</span><a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.system.Fluidics" title="FlowCyPy.Fluidics"><span class="nn">fluidics</span></a><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="w">
-</span>    <span class="n">distributions</span><span class="p">,</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.flow_cell.FlowCell" title="FlowCyPy.fluidics.FlowCell"><span class="n">FlowCell</span></a><span class="p">,</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.system.Fluidics" title="FlowCyPy.Fluidics"><span class="n">Fluidics</span></a><span class="p">,</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="FlowCyPy.fluidics.ScattererCollection"><span class="n">ScattererCollection</span></a><span class="p">,</span><span class="w">
-</span>    <span class="n">populations</span><span class="p">,</span><span class="w">
-</span><span class="p">)</span><span class="w">
-</span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="nn">.</span><a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics" title="FlowCyPy.OptoElectronics"><span class="nn">opto_electronics</span></a><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.Detector"><span class="n">Detector</span></a><span class="p">,</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics" title="FlowCyPy.OptoElectronics"><span class="n">OptoElectronics</span></a><span class="p">,</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.Digitizer"><span class="n">Digitizer</span></a><span class="p">,</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.amplifier.Amplifier" title="FlowCyPy.opto_electronics.Amplifier"><span class="n">Amplifier</span></a><span class="p">,</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics-source sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.source.Gaussian" title="FlowCyPy.opto_electronics.source.Gaussian"><span class="n">source</span></a><span class="p">,</span><span class="w">
-</span>    <span class="n">circuits</span><span class="p">,</span><span class="w">
-</span><span class="p">)</span><span class="w">
-</span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="nn">.</span><a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.DigitalProcessing" title="FlowCyPy.DigitalProcessing"><span class="nn">digital_processing</span></a><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.DigitalProcessing" title="FlowCyPy.DigitalProcessing"><span class="n">DigitalProcessing</span></a><span class="p">,</span><span class="w">
-</span>    <span class="n">peak_locator</span><span class="p">,</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy-digital_processing-discriminator sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.discriminator.FixedWindow" title="FlowCyPy.digital_processing.discriminator.FixedWindow"><span class="n">discriminator</span></a><span class="p">,</span><span class="w">
-</span><span class="p">)</span><span class="w">
-</span><span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="nn">.</span><span class="nn">ticker</span><span class="w"> </span><span class="kn">import</span> <span class="n">FuncFormatter</span><span class="w">
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="nn">.</span><span class="nn">fluidics</span><span class="w"> </span><span class="kn">import</span> <span class="n">distributions</span><span class="p">,</span> <span class="n">populations</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="nn">.</span><span class="nn">systems</span><span class="nn">.</span><span class="nn">cytek</span><span class="w"> </span><span class="kn">import</span> <span class="n">aurora</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="nn">.</span><span class="nn">units</span><span class="w"> </span><span class="kn">import</span> <span class="n">ureg</span><span class="w">
 </span></pre></div></div>
-<p>Optical Source</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-FlowCyPy-opto_electronics-source sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.source.Gaussian" title="FlowCyPy.opto_electronics.source.Gaussian"><span class="n">source</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics-source sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.source.Gaussian" title="FlowCyPy.opto_electronics.source.Gaussian"><span class="n">source</span><span class="o">.</span><span class="n">Gaussian</span></a><span class="p">(</span><span class="w">
-</span>    <span class="n">waist_z</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span><span class="w">
-</span>    <span class="n">waist_y</span><span class="o">=</span><span class="mi">60</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span><span class="w">
-</span>    <span class="n">wavelength</span><span class="o">=</span><span class="mi">405</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span><span class="w">
-</span>    <span class="n">optical_power</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliwatt</span><span class="p">,</span><span class="w">
-</span><span class="p">)</span><span class="w">
-</span></pre></div></div>
-<p>Flow Cell Configuration</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.flow_cell.FlowCell" title="FlowCyPy.fluidics.FlowCell"><span class="n">flow_cell</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.flow_cell.FlowCell" title="FlowCyPy.fluidics.FlowCell"><span class="n">FlowCell</span></a><span class="p">(</span><span class="w">
-</span>    <span class="n">sample_volume_flow</span><span class="o">=</span><span class="mf">0.02</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">microliter</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">second</span><span class="p">,</span><span class="w">
-</span>    <span class="n">sheath_volume_flow</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">microliter</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">second</span><span class="p">,</span><span class="w">
-</span>    <span class="n">width</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span><span class="w">
-</span>    <span class="n">height</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span><span class="w">
-</span><span class="p">)</span><span class="w">
-</span></pre></div></div>
-<p>Define Scatterer Populations (50–150 nm spheres)</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="FlowCyPy.fluidics.ScattererCollection"><span class="n">scatterer_collection</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="FlowCyPy.fluidics.ScattererCollection"><span class="n">ScattererCollection</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+<section id="load-five-nanoparticle-sizes-on-the-405-nm-aurora-scatter-preset">
+<h2>Load five nanoparticle sizes on the 405 nm Aurora scatter preset<a class="headerlink" href="#load-five-nanoparticle-sizes-on-the-405-nm-aurora-scatter-preset" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/flow_cytometer.html#FlowCyPy.flow_cytometer.FlowCytometer" title="FlowCyPy.FlowCytometer"><span class="n">instrument</span></a> <span class="o">=</span> <span class="n">aurora</span><span class="p">(</span><span class="n">optical_power</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliwatt</span><span class="p">,</span> <span class="n">background_power</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanowatt</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="FlowCyPy.fluidics.ScattererCollection"><span class="n">scatterer_collection</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-property reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.system.Fluidics.scatterer_collection" title="FlowCyPy.Fluidics.scatterer_collection"><span class="n">instrument</span><span class="o">.</span><span class="n">fluidics</span><span class="o">.</span><span class="n">scatterer_collection</span></a><span class="w">
 </span><span class="w">
 </span><span class="k">for</span> <span class="n">size</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">150</span><span class="p">,</span> <span class="mi">125</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">50</span><span class="p">]</span><span class="p">:</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-FlowCyPy-fluidics-populations sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.populations.SpherePopulation" title="FlowCyPy.fluidics.populations.SpherePopulation"><span class="n">pop</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-fluidics-populations sphx-glr-backref-type-py-class reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.populations.SpherePopulation" title="FlowCyPy.fluidics.populations.SpherePopulation"><span class="n">populations</span><span class="o">.</span><span class="n">SpherePopulation</span></a><span class="p">(</span><span class="w">
@@ -608,92 +584,27 @@ scatter signals in the presence of system noise and fluidic variability.</p>
 </span>    <a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-method reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.add_population" title="FlowCyPy.fluidics.ScattererCollection.add_population"><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span></a><span class="p">(</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics-populations sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.populations.SpherePopulation" title="FlowCyPy.fluidics.populations.SpherePopulation"><span class="n">pop</span></a><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-method reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.dilute" title="FlowCyPy.fluidics.ScattererCollection.dilute"><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dilute</span></a><span class="p">(</span><span class="n">factor</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span><span class="w">
-</span><span class="w">
-</span><a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.system.Fluidics" title="FlowCyPy.Fluidics"><span class="n">fluidics</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.system.Fluidics" title="FlowCyPy.Fluidics"><span class="n">Fluidics</span></a><span class="p">(</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="FlowCyPy.fluidics.ScattererCollection"><span class="n">scatterer_collection</span></a><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="FlowCyPy.fluidics.ScattererCollection"><span class="n">scatterer_collection</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.flow_cell.FlowCell" title="FlowCyPy.fluidics.FlowCell"><span class="n">flow_cell</span></a><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.flow_cell.FlowCell" title="FlowCyPy.fluidics.FlowCell"><span class="n">flow_cell</span></a><span class="p">)</span><span class="w">
-</span><span class="w">
-</span><a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.Digitizer"><span class="n">digitizer</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.Digitizer"><span class="n">Digitizer</span></a><span class="p">(</span><span class="w">
-</span>    <span class="n">bit_depth</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">use_auto_range</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="o">=</span><span class="mi">60</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="w">
-</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<p>Detectors</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.Detector"><span class="n">detector_side</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.Detector"><span class="n">Detector</span></a><span class="p">(</span><span class="w">
-</span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">side</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
-</span>    <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span><span class="w">
-</span>    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span><span class="w">
-</span>    <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span><span class="w">
-</span>    <span class="n">dark_current</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanoampere</span><span class="p">,</span><span class="w">
-</span><span class="p">)</span><span class="w">
-</span><span class="w">
-</span><a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.Detector"><span class="n">detector_forward</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.Detector"><span class="n">Detector</span></a><span class="p">(</span><span class="w">
-</span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">forward</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
-</span>    <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span><span class="w">
-</span>    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span><span class="w">
-</span>    <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span><span class="w">
-</span>    <span class="n">dark_current</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanoampere</span><span class="p">,</span><span class="w">
-</span><span class="p">)</span><span class="w">
-</span></pre></div></div>
-<p>Opto-Electronics Processing Pipeline</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.amplifier.Amplifier" title="FlowCyPy.opto_electronics.Amplifier"><span class="n">amplifier</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.amplifier.Amplifier" title="FlowCyPy.opto_electronics.Amplifier"><span class="n">Amplifier</span></a><span class="p">(</span><span class="w">
-</span>    <span class="n">gain</span><span class="o">=</span><span class="mi">10_000</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">volt</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span><span class="p">,</span> <span class="n">bandwidth</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="w">
-</span><span class="p">)</span><span class="w">
-</span><span class="w">
-</span><span class="n">analog_processing</span> <span class="o">=</span> <span class="p">[</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics-circuits sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.circuits.BesselLowPass" title="FlowCyPy.opto_electronics.circuits.BesselLowPass"><span class="n">circuits</span><span class="o">.</span><span class="n">BesselLowPass</span></a><span class="p">(</span><span class="n">cutoff_frequency</span><span class="o">=</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="p">,</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics-circuits sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.circuits.BaselineRestorationServo" title="FlowCyPy.opto_electronics.circuits.BaselineRestorationServo"><span class="n">circuits</span><span class="o">.</span><span class="n">BaselineRestorationServo</span></a><span class="p">(</span><span class="n">time_constant</span><span class="o">=</span><span class="mi">50</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">microsecond</span><span class="p">)</span><span class="p">,</span><span class="w">
-</span><span class="p">]</span><span class="w">
-</span><span class="w">
-</span><a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics" title="FlowCyPy.OptoElectronics"><span class="n">opto_electronics</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics" title="FlowCyPy.OptoElectronics"><span class="n">OptoElectronics</span></a><span class="p">(</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.Digitizer"><span class="n">digitizer</span></a><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.Digitizer"><span class="n">digitizer</span></a><span class="p">,</span><span class="w">
-</span>    <span class="n">analog_processing</span><span class="o">=</span><span class="n">analog_processing</span><span class="p">,</span><span class="w">
-</span>    <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.Detector"><span class="n">detector_side</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.Detector"><span class="n">detector_forward</span></a><span class="p">]</span><span class="p">,</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics-source sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.source.Gaussian" title="FlowCyPy.opto_electronics.source.Gaussian"><span class="n">source</span></a><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-opto_electronics-source sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.source.Gaussian" title="FlowCyPy.opto_electronics.source.Gaussian"><span class="n">source</span></a><span class="p">,</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.amplifier.Amplifier" title="FlowCyPy.opto_electronics.Amplifier"><span class="n">amplifier</span></a><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.amplifier.Amplifier" title="FlowCyPy.opto_electronics.Amplifier"><span class="n">amplifier</span></a><span class="p">,</span><span class="w">
-</span><span class="p">)</span><span class="w">
-</span></pre></div></div>
-<p>Digital Processing Pipeline</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-FlowCyPy-digital_processing-discriminator sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.discriminator.FixedWindow" title="FlowCyPy.digital_processing.discriminator.FixedWindow"><span class="n">discriminator</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-digital_processing-discriminator sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.discriminator.FixedWindow" title="FlowCyPy.digital_processing.discriminator.FixedWindow"><span class="n">discriminator</span><span class="o">.</span><span class="n">FixedWindow</span></a><span class="p">(</span><span class="w">
-</span>    <span class="n">trigger_channel</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">side</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
-</span>    <span class="n">threshold</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">4sigma</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
-</span>    <span class="n">max_triggers</span><span class="o">=</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w">
-</span>    <span class="n">pre_buffer</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span><span class="w">
-</span>    <span class="n">post_buffer</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span><span class="w">
-</span><span class="p">)</span><span class="w">
-</span><span class="w">
-</span><a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.DigitalProcessing" title="FlowCyPy.DigitalProcessing"><span class="n">digital_processing</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.DigitalProcessing" title="FlowCyPy.DigitalProcessing"><span class="n">DigitalProcessing</span></a><span class="p">(</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy-digital_processing-discriminator sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.discriminator.FixedWindow" title="FlowCyPy.digital_processing.discriminator.FixedWindow"><span class="n">discriminator</span></a><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-digital_processing-discriminator sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.discriminator.FixedWindow" title="FlowCyPy.digital_processing.discriminator.FixedWindow"><span class="n">discriminator</span></a><span class="p">,</span><span class="w">
-</span>    <span class="n">peak_algorithm</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-digital_processing-peak_locator sphx-glr-backref-type-py-class reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator" title="FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator"><span class="n">peak_locator</span><span class="o">.</span><span class="n">GlobalPeakLocator</span></a><span class="p">(</span><span class="p">)</span><span class="p">,</span><span class="w">
-</span><span class="p">)</span><span class="w">
-</span></pre></div></div>
-<section id="run-the-acquisition">
-<h2>Run the acquisition<a class="headerlink" href="#run-the-acquisition" title="Link to this heading">#</a></h2>
-<p>Simulate the nanoparticle mixture with the configured noise and processing.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/flow_cytometer.html#FlowCyPy.flow_cytometer.FlowCytometer" title="FlowCyPy.FlowCytometer"><span class="n">cytometer</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class reference internal" href="../../code/flow_cytometer.html#FlowCyPy.flow_cytometer.FlowCytometer" title="FlowCyPy.FlowCytometer"><span class="n">FlowCytometer</span></a><span class="p">(</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.system.Fluidics" title="FlowCyPy.Fluidics"><span class="n">fluidics</span></a><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.system.Fluidics" title="FlowCyPy.Fluidics"><span class="n">fluidics</span></a><span class="p">,</span><span class="w">
-</span>    <span class="n">background_power</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanowatt</span><span class="p">,</span><span class="w">
-</span><span class="p">)</span><span class="w">
-</span><span class="w">
-</span><span class="n">run_record</span> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-method reference internal" href="../../code/flow_cytometer.html#FlowCyPy.flow_cytometer.FlowCytometer.run" title="FlowCyPy.FlowCytometer.run"><span class="n">cytometer</span><span class="o">.</span><span class="n">run</span></a><span class="p">(</span><span class="w">
-</span>    <span class="n">run_time</span><span class="o">=</span><span class="mf">10.0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">millisecond</span><span class="p">,</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.DigitalProcessing" title="FlowCyPy.DigitalProcessing"><span class="n">digital_processing</span></a><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.DigitalProcessing" title="FlowCyPy.DigitalProcessing"><span class="n">digital_processing</span></a><span class="p">,</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics" title="FlowCyPy.OptoElectronics"><span class="n">opto_electronics</span></a><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics" title="FlowCyPy.OptoElectronics"><span class="n">opto_electronics</span></a><span class="p">,</span><span class="w">
-</span><span class="p">)</span><span class="w">
+</section>
+<section id="acquire-ten-milliseconds-with-the-preset-s-side-scatter-trigger">
+<h2>Acquire ten milliseconds with the preset’s side-scatter trigger<a class="headerlink" href="#acquire-ten-milliseconds-with-the-preset-s-side-scatter-trigger" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">run_record</span> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-method reference internal" href="../../code/flow_cytometer.html#FlowCyPy.flow_cytometer.FlowCytometer.run" title="FlowCyPy.FlowCytometer.run"><span class="n">instrument</span><span class="o">.</span><span class="n">run</span></a><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">millisecond</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
 </section>
 <section id="plot-raw-analog-signal">
 <h2>Plot Raw Analog Signal<a class="headerlink" href="#plot-raw-analog-signal" title="Link to this heading">#</a></h2>
 <p>Zoom to the strongest triggered window so the pulse shape remains visible
-instead of compressing the entire 600,000-sample acquisition into a dense band.</p>
+instead of compressing the entire acquisition into a dense band.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">digital_signal</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">digital</span><span class="w">
 </span><span class="n">analog_signal</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">analog</span><span class="w">
 </span><span class="n">plot_time_unit</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">run_time</span><span class="o">.</span><span class="n">to_compact</span><span class="p">(</span><span class="p">)</span><span class="o">.</span><span class="n">units</span><span class="w">
-</span><span class="n">time_scale</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="n">plot_time_unit</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">microsecond</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="w">
 </span><span class="n">time_window</span> <span class="o">=</span> <span class="kc">None</span><span class="w">
 </span><span class="n">plot_title</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s2">Strongest signal (no triggered windows)</span><span class="s2">&quot;</span><span class="w">
 </span><span class="w">
 </span><span class="k">if</span> <span class="n">digital_signal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">digital_signal</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span><span class="w">
 </span>    <span class="n">strongest_segment</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="w">
 </span>        <span class="n">digital_signal</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">SegmentID</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">,</span><span class="w">
-</span>        <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">segment</span><span class="p">:</span> <span class="n">segment</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">side</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>        <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">segment</span><span class="p">:</span> <span class="n">segment</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">SSC</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="p">)</span><span class="p">,</span><span class="w">
 </span>    <span class="p">)</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w">
 </span>    <span class="n">segment_time_unit</span> <span class="o">=</span> <span class="n">digital_signal</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">units</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">Time</span><span class="s2">&quot;</span><span class="p">]</span><span class="w">
 </span>    <span class="n">segment_start</span> <span class="o">=</span> <span class="p">(</span><span class="w">
@@ -708,7 +619,7 @@ instead of compressing the entire 600,000-sample acquisition into a dense band.<
 </span>    <span class="n">time_window</span> <span class="o">=</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">segment_start</span> <span class="o">-</span> <span class="n">padding</span><span class="p">)</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">run_end</span><span class="p">,</span> <span class="n">segment_end</span> <span class="o">+</span> <span class="n">padding</span><span class="p">)</span><span class="p">)</span><span class="w">
 </span>    <span class="n">plot_title</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s2">Strongest triggered event and detector noise</span><span class="s2">&quot;</span><span class="w">
 </span><span class="k">else</span><span class="p">:</span><span class="w">
-</span>    <span class="n">strongest_sample</span> <span class="o">=</span> <span class="n">analog_signal</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">side</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="p">)</span><span class="o">.</span><span class="n">idxmax</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span>    <span class="n">strongest_sample</span> <span class="o">=</span> <span class="n">analog_signal</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">SSC</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="p">)</span><span class="o">.</span><span class="n">idxmax</span><span class="p">(</span><span class="p">)</span><span class="w">
 </span>    <span class="n">signal_time_unit</span> <span class="o">=</span> <span class="n">analog_signal</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">units</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">Time</span><span class="s2">&quot;</span><span class="p">]</span><span class="w">
 </span>    <span class="n">peak_time</span> <span class="o">=</span> <span class="p">(</span><span class="w">
 </span>        <span class="n">analog_signal</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">strongest_sample</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">Time</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">signal_time_unit</span><span class="w">
@@ -718,65 +629,26 @@ instead of compressing the entire 600,000-sample acquisition into a dense band.<
 </span><span class="w">
 </span>    <span class="n">time_window</span> <span class="o">=</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">peak_time</span> <span class="o">-</span> <span class="n">padding</span><span class="p">)</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">run_end</span><span class="p">,</span> <span class="n">peak_time</span> <span class="o">+</span> <span class="n">padding</span><span class="p">)</span><span class="p">)</span><span class="w">
 </span><span class="w">
-</span><span class="n">figure</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">plot_analog</span><span class="p">(</span><span class="w">
-</span>    <span class="n">figure_size</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mf">6.5</span><span class="p">)</span><span class="p">,</span><span class="w">
-</span>    <span class="n">xlim</span><span class="o">=</span><span class="n">time_window</span><span class="p">,</span><span class="w">
-</span>    <span class="n">include_scatterer</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="w">
-</span><span class="p">)</span><span class="w">
-</span><span class="n">figure</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">plot_title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">)</span><span class="w">
-</span><span class="w">
-</span><span class="n">voltage_unit</span> <span class="o">=</span> <span class="nb">format</span><span class="p">(</span><span class="n">run_record</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">analog</span><span class="o">.</span><span class="n">signal_units</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">~</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
-</span><span class="w">
-</span><span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">figure</span><span class="o">.</span><span class="n">axes</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;</span><span class="s2">SSC</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">FSC</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">)</span><span class="p">:</span><span class="w">
-</span>    <span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">voltage_unit</span><span class="si">}</span><span class="s2">]</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">labelpad</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span><span class="w">
-</span>    <span class="n">axis</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_label_position</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">left</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
-</span>    <span class="n">axis</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_ticks_position</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">left</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
-</span>    <span class="n">axis</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span><span class="w">
-</span>    <span class="n">axis</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span><span class="w">
-</span>    <span class="k">if</span> <span class="n">axis</span><span class="o">.</span><span class="n">lines</span><span class="p">:</span><span class="w">
-</span>        <span class="n">axis</span><span class="o">.</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_linewidth</span><span class="p">(</span><span class="mf">0.8</span><span class="p">)</span><span class="w">
-</span>        <span class="n">axis</span><span class="o">.</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="mf">0.85</span><span class="p">)</span><span class="w">
-</span><span class="w">
-</span><span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">figure</span><span class="o">.</span><span class="n">axes</span><span class="p">:</span><span class="w">
-</span>    <span class="n">axis</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="w">
-</span>        <span class="n">FuncFormatter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">value</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">time_scale</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
-</span>    <span class="p">)</span><span class="w">
-</span><span class="w">
-</span><span class="n">figure</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Time [µs]</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span><span class="w">
-</span><span class="w">
-</span><span class="n">legend</span> <span class="o">=</span> <span class="n">figure</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_legend</span><span class="p">(</span><span class="p">)</span><span class="w">
-</span><span class="k">if</span> <span class="n">legend</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span><span class="w">
-</span>    <span class="n">handles</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">figure</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_legend_handles_labels</span><span class="p">(</span><span class="p">)</span><span class="w">
-</span>    <span class="n">legend</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="p">)</span><span class="w">
-</span>    <span class="n">figure</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="w">
-</span>        <span class="n">handles</span><span class="p">,</span><span class="w">
-</span>        <span class="p">[</span><span class="s2">&quot;</span><span class="s2">Analog signal</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">4-sigma trigger threshold</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span><span class="w">
-</span>        <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">upper center</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
-</span>        <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.93</span><span class="p">)</span><span class="p">,</span><span class="w">
-</span>        <span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="w">
-</span>        <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="w">
-</span>        <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span><span class="w">
-</span>    <span class="p">)</span><span class="w">
-</span><span class="w">
-</span><span class="n">figure</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">rect</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.88</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="n">run_record</span><span class="o">.</span><span class="n">plot_analog</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="n">time_window</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">plot_title</span><span class="p">,</span> <span class="n">include_scatterer</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_limit_of_detection_001.png" srcset="../../_images/sphx_glr_limit_of_detection_001.png" alt="Strongest triggered event and detector noise" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/matplotlib/cbook.py:1355: UnitStrippedWarning: The unit of the quantity is stripped when downcasting to ndarray.
+<img src="../../_images/sphx_glr_limit_of_detection_001.png" srcset="../../_images/sphx_glr_limit_of_detection_001.png" alt="Strongest triggered event and detector noise" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.18/x64/lib/python3.11/site-packages/matplotlib/cbook.py:1355: UnitStrippedWarning: The unit of the quantity is stripped when downcasting to ndarray.
   return np.asarray(x, float)
+
+&lt;Figure size 640x480 with 2 Axes&gt;
 </pre></div>
 </div>
 </section>
 <section id="plot-triggered-analog-signal-segments">
 <h2>Plot Triggered Analog Signal Segments<a class="headerlink" href="#plot-triggered-analog-signal-segments" title="Link to this heading">#</a></h2>
 <p>Inspect which weak pulses survived the discriminator threshold.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">run_record</span><span class="o">.</span><span class="n">plot_digital</span><span class="p">(</span><span class="p">)</span><span class="w">
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="k">if</span> <span class="n">digital_signal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">digital_signal</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span><span class="w">
+</span>    <span class="n">run_record</span><span class="o">.</span><span class="n">plot_digital</span><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_limit_of_detection_002.png" srcset="../../_images/sphx_glr_limit_of_detection_002.png" alt="limit of detection" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/matplotlib/cbook.py:1044: UnitStrippedWarning: The unit of the quantity is stripped when downcasting to ndarray.
+<img src="../../_images/sphx_glr_limit_of_detection_002.png" srcset="../../_images/sphx_glr_limit_of_detection_002.png" alt="limit of detection" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.18/x64/lib/python3.11/site-packages/matplotlib/cbook.py:1044: UnitStrippedWarning: The unit of the quantity is stripped when downcasting to ndarray.
   x = np.asanyarray(x)
-
-&lt;Figure size 640x480 with 3 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.079 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 7.562 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-studies-limit-of-detection-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/be524809f26c23719161c1cb685afdb6/limit_of_detection.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">limit_of_detection.ipynb</span></code></a></p>
@@ -803,20 +675,20 @@ instead of compressing the entire 600,000-sample acquisition into a dense band.<
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="flowcell_sampling.html"
+       href="concentration_sweep.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Flow-cell sampling</p>
+        <p class="prev-next-title">Concentration and coincidence</p>
       </div>
     </a>
     <a class="right-next"
-       href="sec_results.html"
+       href="map_particle_velocities_in_the_flow_cell.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Size-exclusion chromatography</p>
+        <p class="prev-next-title">Map particle velocities across a focused flow cell</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -827,7 +699,7 @@ instead of compressing the entire 600,000-sample acquisition into a dense band.<
             
             
               
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <dialog id="pst-secondary-sidebar-modal" tabindex="-1"></dialog>
                 <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
@@ -839,7 +711,8 @@ instead of compressing the entire 600,000-sample acquisition into a dense band.<
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-the-acquisition">Run the acquisition</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-five-nanoparticle-sizes-on-the-405-nm-aurora-scatter-preset">Load five nanoparticle sizes on the 405 nm Aurora scatter preset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#acquire-ten-milliseconds-with-the-preset-s-side-scatter-trigger">Acquire ten milliseconds with the preset’s side-scatter trigger</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-raw-analog-signal">Plot Raw Analog Signal</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-triggered-analog-signal-segments">Plot Triggered Analog Signal Segments</a></li>
 </ul>
@@ -849,7 +722,7 @@ instead of compressing the entire 600,000-sample acquisition into a dense band.<
 
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.2.14/docs/source/gallery/studies/limit_of_detection.rst">
+    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.5.0/docs/source/gallery/studies/limit_of_detection.rst">
       <i class="fa-solid fa-pencil"></i>
       
       
@@ -883,8 +756,8 @@ instead of compressing the entire 600,000-sample acquisition into a dense band.<
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">

@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**01:53.846** total execution time for 7 files **from gallery/studies**:
+**01:13.824** total execution time for 13 files **from gallery/studies**:
 
 .. container::
 
@@ -32,24 +32,42 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_gallery_studies_sec_results.py` (``sec_results.py``)
-     - 01:16.958
+   * - :ref:`sphx_glr_gallery_studies_compare_size_exclusion_cutoffs.py` (``compare_size_exclusion_cutoffs.py``)
+     - 00:29.781
+     - 0.0
+   * - :ref:`sphx_glr_gallery_studies_reproduce_rosetta_mix_markers.py` (``reproduce_rosetta_mix_markers.py``)
+     - 00:13.388
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_concentration_sweep.py` (``concentration_sweep.py``)
-     - 00:12.589
-     - 0.0
-   * - :ref:`sphx_glr_gallery_studies_cytek_comparison.py` (``cytek_comparison.py``)
-     - 00:09.031
-     - 0.0
-   * - :ref:`sphx_glr_gallery_studies_threshold_sensitivity.py` (``threshold_sensitivity.py``)
-     - 00:06.401
+     - 00:07.946
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_limit_of_detection.py` (``limit_of_detection.py``)
-     - 00:05.079
+     - 00:07.562
      - 0.0
-   * - :ref:`sphx_glr_gallery_studies_signal_processing.py` (``signal_processing.py``)
-     - 00:01.949
+   * - :ref:`sphx_glr_gallery_studies_compare_scatter_with_cytek_bead_data.py` (``compare_scatter_with_cytek_bead_data.py``)
+     - 00:04.563
      - 0.0
-   * - :ref:`sphx_glr_gallery_studies_flowcell_sampling.py` (``flowcell_sampling.py``)
-     - 00:01.840
+   * - :ref:`sphx_glr_gallery_studies_threshold_sensitivity.py` (``threshold_sensitivity.py``)
+     - 00:03.726
+     - 0.0
+   * - :ref:`sphx_glr_gallery_studies_compare_scatter_systems.py` (``compare_scatter_systems.py``)
+     - 00:02.143
+     - 0.0
+   * - :ref:`sphx_glr_gallery_studies_measure_fluorescence_gate_loss.py` (``measure_fluorescence_gate_loss.py``)
+     - 00:01.148
+     - 0.0
+   * - :ref:`sphx_glr_gallery_studies_measure_blank_trigger_rate.py` (``measure_blank_trigger_rate.py``)
+     - 00:01.133
+     - 0.0
+   * - :ref:`sphx_glr_gallery_studies_compare_analog_filters.py` (``compare_analog_filters.py``)
+     - 00:01.121
+     - 0.0
+   * - :ref:`sphx_glr_gallery_studies_map_particle_velocities_in_the_flow_cell.py` (``map_particle_velocities_in_the_flow_cell.py``)
+     - 00:01.005
+     - 0.0
+   * - :ref:`sphx_glr_gallery_studies_two_particle_resolution.py` (``two_particle_resolution.py``)
+     - 00:00.207
+     - 0.0
+   * - :ref:`sphx_glr_gallery_studies_choose_digitizer_voltage_range.py` (``choose_digitizer_voltage_range.py``)
+     - 00:00.100
      - 0.0

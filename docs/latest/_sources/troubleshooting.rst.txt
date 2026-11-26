@@ -14,6 +14,16 @@ a source build did not finish. Confirm your Python version and platform before
 changing the simulation. Source builds need the repository's compiler and native
 library dependencies.
 
+OpenMP crash on macOS
+---------------------
+
+A Mie acquisition can segfault or report ``OMP: Error #15`` when an editable
+FlowCyPy build loads Homebrew's ``libomp.dylib`` and a PyMieSim wheel loads a
+second copy. A macOS crash report can show both library paths in the OpenMP
+worker stack. For that configuration, rebuild the installed PyMieSim version
+from source against the same Homebrew libomp used to build FlowCyPy, then
+install that build into the interpreter running the acquisition.
+
 Plots on a server
 -----------------
 

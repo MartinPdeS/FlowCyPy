@@ -16,7 +16,7 @@ Pre-Tasks
      .. code-block:: bash
 
         cd docs/examples/tutorials
-        python workflow.py
+        python assemble_a_flow_cytometer.py
 
      Confirm the script executes without errors and produces expected visualizations.
 

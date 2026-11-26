@@ -23,40 +23,20 @@ Limit of Detection
 
 This example simulates the detection of small nanoparticles (50-150 nm diameter)
 in a flow cytometry setup using a dual-detector configuration (side and forward scatter).
-The simulation includes noise models, realistic fluidics, analog signal conditioning,
+The simulation includes noise models, realistic fluidics, analog amplification,
 digitization, triggering, and peak detection.
 
 The main goal is to evaluate whether such particles produce detectable and distinguishable
 scatter signals in the presence of system noise and fluidic variability.
 
-.. GENERATED FROM PYTHON SOURCE LINES 13-38
+.. GENERATED FROM PYTHON SOURCE LINES 13-18
 
 .. code-block:: Python
 
 
+    from FlowCyPy.fluidics import distributions, populations
+    from FlowCyPy.systems.cytek import aurora
     from FlowCyPy.units import ureg
-    from FlowCyPy import FlowCytometer
-    from FlowCyPy.fluidics import (
-        distributions,
-        FlowCell,
-        Fluidics,
-        ScattererCollection,
-        populations,
-    )
-    from FlowCyPy.opto_electronics import (
-        Detector,
-        OptoElectronics,
-        Digitizer,
-        Amplifier,
-        source,
-        circuits,
-    )
-    from FlowCyPy.digital_processing import (
-        DigitalProcessing,
-        peak_locator,
-        discriminator,
-    )
-    from matplotlib.ticker import FuncFormatter
 
 
 
@@ -65,59 +45,17 @@ scatter signals in the presence of system noise and fluidic variability.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 39-40
+.. GENERATED FROM PYTHON SOURCE LINES 19-21
 
-Optical Source
+Load five nanoparticle sizes on the 405 nm Aurora scatter preset
+----------------------------------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 40-47
+.. GENERATED FROM PYTHON SOURCE LINES 21-36
 
 .. code-block:: Python
 
-    source = source.Gaussian(
-        waist_z=10 * ureg.micrometer,
-        waist_y=60 * ureg.micrometer,
-        wavelength=405 * ureg.nanometer,
-        optical_power=100 * ureg.milliwatt,
-    )
-
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 48-49
-
-Flow Cell Configuration
-
-.. GENERATED FROM PYTHON SOURCE LINES 49-56
-
-.. code-block:: Python
-
-    flow_cell = FlowCell(
-        sample_volume_flow=0.02 * ureg.microliter / ureg.second,
-        sheath_volume_flow=0.1 * ureg.microliter / ureg.second,
-        width=20 * ureg.micrometer,
-        height=10 * ureg.micrometer,
-    )
-
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 57-58
-
-Define Scatterer Populations (50–150 nm spheres)
-
-.. GENERATED FROM PYTHON SOURCE LINES 58-78
-
-.. code-block:: Python
-
-    scatterer_collection = ScattererCollection()
+    instrument = aurora(optical_power=100 * ureg.milliwatt, background_power=0.1 * ureg.nanowatt)
+    scatterer_collection = instrument.fluidics.scatterer_collection
 
     for size in [150, 125, 100, 75, 50]:
         pop = populations.SpherePopulation(
@@ -131,11 +69,6 @@ Define Scatterer Populations (50–150 nm spheres)
 
     scatterer_collection.dilute(factor=100)
 
-    fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
-
-    digitizer = Digitizer(
-        bit_depth=14, use_auto_range=True, sampling_rate=60 * ureg.megahertz
-    )
 
 
 
@@ -143,30 +76,16 @@ Define Scatterer Populations (50–150 nm spheres)
 
 
 
+.. GENERATED FROM PYTHON SOURCE LINES 37-39
 
-.. GENERATED FROM PYTHON SOURCE LINES 79-80
+Acquire ten milliseconds with the preset's side-scatter trigger
+---------------------------------------------------------------
 
-Detectors
-
-.. GENERATED FROM PYTHON SOURCE LINES 80-96
+.. GENERATED FROM PYTHON SOURCE LINES 39-41
 
 .. code-block:: Python
 
-    detector_side = Detector(
-        name="side",
-        phi_angle=90 * ureg.degree,
-        numerical_aperture=0.2,
-        responsivity=1 * ureg.ampere / ureg.watt,
-        dark_current=0.1 * ureg.nanoampere,
-    )
-
-    detector_forward = Detector(
-        name="forward",
-        phi_angle=0 * ureg.degree,
-        numerical_aperture=0.2,
-        responsivity=1 * ureg.ampere / ureg.watt,
-        dark_current=0.1 * ureg.nanoampere,
-    )
+    run_record = instrument.run(run_time=10 * ureg.millisecond, random_state=42)
 
 
 
@@ -175,116 +94,27 @@ Detectors
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 97-98
-
-Opto-Electronics Processing Pipeline
-
-.. GENERATED FROM PYTHON SOURCE LINES 98-115
-
-.. code-block:: Python
-
-    amplifier = Amplifier(
-        gain=10_000 * ureg.volt / ureg.ampere, bandwidth=10 * ureg.megahertz
-    )
-
-    analog_processing = [
-        circuits.BesselLowPass(cutoff_frequency=0.4 * ureg.megahertz, order=4, gain=2),
-        circuits.BaselineRestorationServo(time_constant=50 * ureg.microsecond),
-    ]
-
-    opto_electronics = OptoElectronics(
-        digitizer=digitizer,
-        analog_processing=analog_processing,
-        detectors=[detector_side, detector_forward],
-        source=source,
-        amplifier=amplifier,
-    )
-
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 116-117
-
-Digital Processing Pipeline
-
-.. GENERATED FROM PYTHON SOURCE LINES 117-130
-
-.. code-block:: Python
-
-    discriminator = discriminator.FixedWindow(
-        trigger_channel="side",
-        threshold="4sigma",
-        max_triggers=-1,
-        pre_buffer=128,
-        post_buffer=128,
-    )
-
-    digital_processing = DigitalProcessing(
-        discriminator=discriminator,
-        peak_algorithm=peak_locator.GlobalPeakLocator(),
-    )
-
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 131-134
-
-Run the acquisition
--------------------
-Simulate the nanoparticle mixture with the configured noise and processing.
-
-.. GENERATED FROM PYTHON SOURCE LINES 134-145
-
-.. code-block:: Python
-
-    cytometer = FlowCytometer(
-        fluidics=fluidics,
-        background_power=0.1 * ureg.nanowatt,
-    )
-
-    run_record = cytometer.run(
-        run_time=10.0 * ureg.millisecond,
-        digital_processing=digital_processing,
-        opto_electronics=opto_electronics,
-    )
-
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 146-150
+.. GENERATED FROM PYTHON SOURCE LINES 42-46
 
 Plot Raw Analog Signal
 ----------------------
 Zoom to the strongest triggered window so the pulse shape remains visible
-instead of compressing the entire 600,000-sample acquisition into a dense band.
+instead of compressing the entire acquisition into a dense band.
 
-.. GENERATED FROM PYTHON SOURCE LINES 150-227
+.. GENERATED FROM PYTHON SOURCE LINES 46-82
 
 .. code-block:: Python
 
     digital_signal = run_record.signal.digital
     analog_signal = run_record.signal.analog
     plot_time_unit = run_record.run_time.to_compact().units
-    time_scale = (1 * plot_time_unit).to(ureg.microsecond).magnitude
     time_window = None
     plot_title = "Strongest signal (no triggered windows)"
 
     if digital_signal is not None and not digital_signal.empty:
         strongest_segment = max(
             digital_signal.groupby(level="SegmentID"),
-            key=lambda segment: segment[1]["side"].max(),
+            key=lambda segment: segment[1]["SSC"].max(),
         )[1]
         segment_time_unit = digital_signal.attrs["units"]["Time"]
         segment_start = (
@@ -299,7 +129,7 @@ instead of compressing the entire 600,000-sample acquisition into a dense band.
         time_window = (max(0.0, segment_start - padding), min(run_end, segment_end + padding))
         plot_title = "Strongest triggered event and detector noise"
     else:
-        strongest_sample = analog_signal["side"].abs().idxmax()
+        strongest_sample = analog_signal["SSC"].abs().idxmax()
         signal_time_unit = analog_signal.attrs["units"]["Time"]
         peak_time = (
             analog_signal.loc[strongest_sample, "Time"] * signal_time_unit
@@ -309,47 +139,7 @@ instead of compressing the entire 600,000-sample acquisition into a dense band.
 
         time_window = (max(0.0, peak_time - padding), min(run_end, peak_time + padding))
 
-    figure = run_record.plot_analog(
-        figure_size=(11, 6.5),
-        xlim=time_window,
-        include_scatterer=False,
-    )
-    figure.suptitle(plot_title, fontsize=13)
-
-    voltage_unit = format(run_record.signal.analog.signal_units, "~")
-
-    for axis, label in zip(figure.axes, ("SSC", "FSC")):
-        axis.set_ylabel(f"{label} [{voltage_unit}]", fontsize=12, labelpad=8)
-        axis.yaxis.set_label_position("left")
-        axis.yaxis.set_ticks_position("left")
-        axis.tick_params(labelsize=9)
-        axis.grid(True, alpha=0.2)
-        if axis.lines:
-            axis.lines[0].set_linewidth(0.8)
-            axis.lines[0].set_alpha(0.85)
-
-    for axis in figure.axes:
-        axis.xaxis.set_major_formatter(
-            FuncFormatter(lambda value, _: f"{value * time_scale:.1f}")
-        )
-
-    figure.axes[-1].set_xlabel("Time [µs]", fontsize=12)
-
-    legend = figure.axes[0].get_legend()
-    if legend is not None:
-        handles, _ = figure.axes[0].get_legend_handles_labels()
-        legend.remove()
-        figure.legend(
-            handles,
-            ["Analog signal", "4-sigma trigger threshold"],
-            loc="upper center",
-            bbox_to_anchor=(0.5, 0.93),
-            ncol=2,
-            frameon=False,
-            fontsize=9,
-        )
-
-    figure.tight_layout(rect=(0, 0, 1, 0.88))
+    run_record.plot_analog(xlim=time_window, title=plot_title, include_scatterer=False)
 
 
 
@@ -364,23 +154,25 @@ instead of compressing the entire 600,000-sample acquisition into a dense band.
 
  .. code-block:: none
 
-    /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/matplotlib/cbook.py:1355: UnitStrippedWarning: The unit of the quantity is stripped when downcasting to ndarray.
+    /opt/hostedtoolcache/Python/3.11.18/x64/lib/python3.11/site-packages/matplotlib/cbook.py:1355: UnitStrippedWarning: The unit of the quantity is stripped when downcasting to ndarray.
       return np.asarray(x, float)
 
+    <Figure size 640x480 with 2 Axes>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 228-231
+.. GENERATED FROM PYTHON SOURCE LINES 83-86
 
 Plot Triggered Analog Signal Segments
 -------------------------------------
 Inspect which weak pulses survived the discriminator threshold.
 
-.. GENERATED FROM PYTHON SOURCE LINES 231-232
+.. GENERATED FROM PYTHON SOURCE LINES 86-88
 
 .. code-block:: Python
 
-    run_record.plot_digital()
+    if digital_signal is not None and not digital_signal.empty:
+        run_record.plot_digital()
 
 
 
@@ -394,17 +186,16 @@ Inspect which weak pulses survived the discriminator threshold.
 
  .. code-block:: none
 
-    /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/matplotlib/cbook.py:1044: UnitStrippedWarning: The unit of the quantity is stripped when downcasting to ndarray.
+    /opt/hostedtoolcache/Python/3.11.18/x64/lib/python3.11/site-packages/matplotlib/cbook.py:1044: UnitStrippedWarning: The unit of the quantity is stripped when downcasting to ndarray.
       x = np.asanyarray(x)
 
-    <Figure size 640x480 with 3 Axes>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.079 seconds)
+   **Total running time of the script:** (0 minutes 7.562 seconds)
 
 
 .. _sphx_glr_download_gallery_studies_limit_of_detection.py:

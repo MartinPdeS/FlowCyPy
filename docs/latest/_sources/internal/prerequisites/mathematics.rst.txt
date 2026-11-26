@@ -34,18 +34,20 @@ Noise in flow cytometry signals can originate from various sources, including:
   - :math:`I` is the photocurrent,
   - :math:`B` is the bandwidth.
 
-- **Thermal Noise**: Also known as Johnson-Nyquist noise, is given by:
+- **Thermal noise**. The RMS Johnson–Nyquist voltage across a resistor is
+  obtained by integrating its one-sided voltage noise spectrum over the
+  equivalent noise bandwidth:
 
   .. math::
 
-     \sigma_{\text{thermal}} = \sqrt{\frac{4 k_B T R}{B}}
+     \sigma_{\text{thermal}} = \sqrt{4 k_B T R B}
 
   where:
 
   - :math:`k_B` is Boltzmann's constant,
   - :math:`T` is the temperature,
   - :math:`R` is the resistance,
-  - :math:`B` is the bandwidth.
+  - :math:`B` is the equivalent noise bandwidth in hertz.
 
 Application in FlowCyPy
 ***********************

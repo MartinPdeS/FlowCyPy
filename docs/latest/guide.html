@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Choose a workflow &#8212; FlowCyPy 1.2.14 documentation</title>
+    <title>Choose a workflow &#8212; FlowCyPy 1.5.0 documentation</title>
   
   
   
@@ -26,34 +26,34 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=c83e6b79" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="_static/default.css?v=1ada29a2" />
     <link rel="stylesheet" type="text/css" href="_static/martinpdes_layout.css?v=a8cc01cd" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <script defer src="_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="_static/documentation_options.js?v=9df0433b"></script>
+    <script src="_static/documentation_options.js?v=623e1633"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
-    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="_static/design-tabs.js?v=fcb327ea"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.2.14';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.5.0';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
@@ -66,7 +66,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.2.14" />
+  <meta name="docsearch:version" content="1.5.0" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -114,7 +114,7 @@
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation" aria-expanded="false" aria-controls="pst-primary-sidebar-modal">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -229,14 +229,14 @@
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
   <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
-    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
   </ul>
 </div></div>
       
@@ -293,7 +293,7 @@
   
 
   
-    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page" aria-expanded="false" aria-controls="pst-secondary-sidebar-modal">
       <span class="fa-solid fa-outdent"></span>
     </button>
   
@@ -307,7 +307,7 @@
       
       
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <dialog id="pst-primary-sidebar-modal" tabindex="-1"></dialog>
       <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
@@ -391,14 +391,14 @@
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
   <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
-    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
   </ul>
 </div></div>
         
@@ -457,7 +457,10 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="theory.html">Theory</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="theory.html">Theory</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="fluorescence_model.html">Fluorescence from a labeled particle</a></li>
+</ul>
+</details></li>
 </ul>
 </div>
 </nav></div>
@@ -495,7 +498,7 @@
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="index.html" class="nav-link" aria-label="Home">
-        <i class="fa-solid fa-home"></i>
+        <i class="fa-solid fa-house"></i>
       </a>
     </li>
     <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Choose a workflow</span></li>
@@ -563,6 +566,122 @@ Understand the model</div>
 </div>
 <div class="toctree-wrapper compound">
 </div>
+<section id="start-with-a-named-instrument">
+<h2>Start with a named instrument<a class="headerlink" href="#start-with-a-named-instrument" title="Link to this heading">#</a></h2>
+<p>Import a factory from its lowercase manufacturer module. Each call returns
+a fresh FlowCytometer. Edit its components, add your sample and run the acquisition.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluidics.populations</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpherePopulation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.systems.bd</span><span class="w"> </span><span class="kn">import</span> <span class="n">facs_canto_ii</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">ureg</span>
+
+<span class="n">system</span> <span class="o">=</span> <span class="n">facs_canto_ii</span><span class="p">(</span><span class="n">optical_power</span><span class="o">=</span><span class="mi">30</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliwatt</span><span class="p">)</span>
+<span class="n">system</span><span class="o">.</span><span class="n">opto_electronics</span><span class="o">.</span><span class="n">digitizer</span><span class="o">.</span><span class="n">bit_depth</span> <span class="o">=</span> <span class="mi">16</span>
+<span class="n">beads</span> <span class="o">=</span> <span class="n">SpherePopulation</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"beads"</span><span class="p">,</span> <span class="n">diameter</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span> <span class="n">refractive_index</span><span class="o">=</span><span class="mf">1.59</span><span class="p">,</span>
+    <span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span><span class="p">,</span> <span class="n">concentration</span><span class="o">=</span><span class="mf">1e8</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">system</span><span class="o">.</span><span class="n">fluidics</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">beads</span><span class="p">)</span>
+<span class="n">record</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">millisecond</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The original FlowCyPy configurations are available as <code class="docutils literal notranslate"><span class="pre">bd.facs_canto</span></code> and
+<code class="docutils literal notranslate"><span class="pre">cytek.reference</span></code>. The latter uses the signed ADC voltage ranges from the
+Cytek bead comparison example.</p>
+<p>The RosettaX-derived configurations use the wavelength, channel names, collection
+angles, apertures and detector sampling in <code class="docutils literal notranslate"><span class="pre">RosettaX/assets/instrument_catalog.toml</span></code>.
+They simulate scatter channels. The common flow cell, beam waists, detector
+electrical response, amplifier and 14-bit digitizer are FlowCyPy reference
+settings. Replace them with measured components for instrument-specific predictions.</p>
+<p>Browse the agilent, bd, beckman_coulter, cytek, miltenyi, nanofcm, sony,
+stratedigm and thermo_fisher modules. When scatter channels use different lasers,
+a wavelength suffix selects a single-laser acquisition, for example <code class="docutils literal notranslate"><span class="pre">sony.id7000_405</span></code>.
+Apogee geometries require angular weighting and a rectangular blocker that the
+detector model does not implement.</p>
+<p>For your own instrument, pass the fluidics, opto_electronics and digital_processing
+components to <code class="docutils literal notranslate"><span class="pre">FlowCytometer</span></code>. To use the shared reference electronics,
+define a <code class="docutils literal notranslate"><span class="pre">ScatterSystem</span></code> with a wavelength and a tuple of <code class="docutils literal notranslate"><span class="pre">ScatterChannel</span></code> objects.
+The first channel is the default trigger. Follow <a class="reference internal" href="gallery/tutorials/build_a_reusable_scatter_system.html"><span class="doc">Build a reusable two-channel scatter system</span></a>
+to define the geometry or <a class="reference internal" href="gallery/tutorials/assemble_a_flow_cytometer.html"><span class="doc">Assemble a flow cytometer from components</span></a>
+to choose the flow cell, optics and electronics individually.</p>
+<p>Follow <a class="reference internal" href="gallery/tutorials/select_a_laser_on_sony_id7000.html"><span class="doc">Choose a laser on the Sony ID7000</span></a> to select a laser and change its
+sampling rate. See <a class="reference internal" href="gallery/studies/compare_scatter_systems.html"><span class="doc">Compare side-scatter collection at 488 nm</span></a> to compare
+side-scatter traces from two systems using the same bead sample.</p>
+</section>
+<section id="choose-a-population-preset">
+<h2>Choose a population preset<a class="headerlink" href="#choose-a-population-preset" title="Link to this heading">#</a></h2>
+<p>Select an instrument by manufacturer and a population by sample family.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.samples.vesicles</span><span class="w"> </span><span class="kn">import</span> <span class="n">exosome</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.systems.bd</span><span class="w"> </span><span class="kn">import</span> <span class="n">facs_canto</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">ureg</span>
+
+<span class="n">instrument</span> <span class="o">=</span> <span class="n">facs_canto</span><span class="p">()</span>
+<span class="n">vesicles</span> <span class="o">=</span> <span class="n">exosome</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"EV sample"</span><span class="p">,</span> <span class="n">concentration</span><span class="o">=</span><span class="mf">1e8</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span><span class="p">)</span>
+<span class="n">instrument</span><span class="o">.</span><span class="n">fluidics</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">vesicles</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The vesicles module also includes microvesicles and apoptotic bodies. Use
+FlowCyPy.samples.lipoproteins for HDL, LDL and VLDL, FlowCyPy.samples.cells
+for platelets and cellular debris, and FlowCyPy.samples.beads for monodisperse
+beads. Each call builds a fresh population. The biological presets retain
+the project’s reference diameter and refractive-index distributions.</p>
+</section>
+<section id="choose-a-detector-preset">
+<h2>Choose a detector preset<a class="headerlink" href="#choose-a-detector-preset" title="Link to this heading">#</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">pmt</span></code> from <code class="docutils literal notranslate"><span class="pre">FlowCyPy.detectors.photomultipliers</span></code> for a photomultiplier
+tube, or <code class="docutils literal notranslate"><span class="pre">pin</span></code> and <code class="docutils literal notranslate"><span class="pre">apd</span></code> from <code class="docutils literal notranslate"><span class="pre">FlowCyPy.detectors.photodiodes</span></code> for PIN and
+avalanche photodiodes. Each factory creates a fresh channel with its reference
+responsivity and dark current. Supply the collection geometry and override
+electrical settings for a particular detector.</p>
+</section>
+<section id="add-fluorescence-to-an-acquisition">
+<h2>Add fluorescence to an acquisition<a class="headerlink" href="#add-fluorescence-to-an-acquisition" title="Link to this heading">#</a></h2>
+<p>Label a sphere or core-shell population and select the optical contributions
+on each detector. This example adds a fluorescence PMT alongside the existing
+scatter-only PMTs on a 488 nm instrument. For this example, approximate
+FITC absorption at 488 nm by its peak value at 494 nm.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.detectors.photomultipliers</span><span class="w"> </span><span class="kn">import</span> <span class="n">pmt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.dyes</span><span class="w"> </span><span class="kn">import</span> <span class="n">fitc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluorescence</span><span class="w"> </span><span class="kn">import</span> <span class="n">Bandpass</span><span class="p">,</span> <span class="n">Label</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.samples.beads</span><span class="w"> </span><span class="kn">import</span> <span class="n">microbeads</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.systems.bd</span><span class="w"> </span><span class="kn">import</span> <span class="n">facs_canto</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">ureg</span>
+
+<span class="n">instrument</span> <span class="o">=</span> <span class="n">facs_canto</span><span class="p">()</span>
+<span class="n">beads</span> <span class="o">=</span> <span class="n">microbeads</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"labeled beads"</span><span class="p">,</span> <span class="n">diameter</span><span class="o">=</span><span class="mi">300</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nm</span><span class="p">,</span> <span class="n">refractive_index</span><span class="o">=</span><span class="mf">1.59</span><span class="p">,</span>
+    <span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span><span class="p">,</span> <span class="n">concentration</span><span class="o">=</span><span class="mf">1e9</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">mL</span><span class="p">,</span>
+    <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="n">Label</span><span class="p">(</span><span class="n">fluorophore</span><span class="o">=</span><span class="n">fitc</span><span class="p">(),</span> <span class="n">molecules_per_particle</span><span class="o">=</span><span class="mi">20_000</span><span class="p">)],</span>
+<span class="p">)</span>
+<span class="n">instrument</span><span class="o">.</span><span class="n">fluidics</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">beads</span><span class="p">)</span>
+<span class="n">green</span> <span class="o">=</span> <span class="n">pmt</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"green"</span><span class="p">,</span> <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span> <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+    <span class="n">signals</span><span class="o">=</span><span class="p">(</span><span class="s2">"fluorescence"</span><span class="p">,),</span>
+    <span class="n">optical_filter</span><span class="o">=</span><span class="n">Bandpass</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="mi">530</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nm</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">30</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nm</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">optics</span> <span class="o">=</span> <span class="n">instrument</span><span class="o">.</span><span class="n">opto_electronics</span>
+<span class="n">optics</span><span class="o">.</span><span class="n">detectors</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="n">optics</span><span class="o">.</span><span class="n">detectors</span><span class="p">,</span> <span class="n">green</span><span class="p">]</span>
+<span class="n">record</span> <span class="o">=</span> <span class="n">instrument</span><span class="o">.</span><span class="n">acquire</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">millisecond</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">voltage</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">analog</span><span class="p">[</span><span class="s2">"green"</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The bandpass transmits all light from 515 through 545 nm inclusive. Here it
+accepts the preset’s single 518 nm emission bin. To model partial transmission,
+use a spectrum with multiple bins. Supply integrated photon counts per spectral bin and use finer bins
+near a passband edge. A detector defaults to scatter only. Select both scatter
+and fluorescence for a mixed channel. Its filter applies to elastic scatter at
+the laser wavelength as well as to emission.</p>
+<p>Use the event collection to inspect molecule counts and prompt optical powers.
+Use the analog record for pulse timing and measured voltage. The
+<a class="reference internal" href="fluorescence_model.html"><span class="doc">Fluorescence from a labeled particle</span></a> explains the units, scope and approximations.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="gallery/tutorials/detect_labeled_beads.html"><span class="doc">Detect fluorescent beads alongside unlabeled beads</span></a> follows labeled and unlabeled
+beads through optical detection, triggering and peak extraction.</p></li>
+<li><p><a class="reference internal" href="gallery/tutorials/define_custom_dye_spectra.html"><span class="doc">Define custom dyes and predict spectral spillover</span></a> predicts two channel power
+ratios and checks them against simulated single-color controls.</p></li>
+<li><p><a class="reference internal" href="gallery/studies/measure_fluorescence_gate_loss.html"><span class="doc">How much fluorescence arrives after the gate closes?</span></a> measures the fraction
+of a short pulse captured in a nanosecond gate.</p></li>
+</ul>
+</section>
 </section>
 
 
@@ -600,15 +719,30 @@ Understand the model</div>
             
             
               
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <dialog id="pst-secondary-sidebar-modal" tabindex="-1"></dialog>
                 <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#start-with-a-named-instrument">Start with a named instrument</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choose-a-population-preset">Choose a population preset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choose-a-detector-preset">Choose a detector preset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#add-fluorescence-to-an-acquisition">Add fluorescence to an acquisition</a></li>
+</ul>
+  </nav></div>
 
   <div class="sidebar-secondary-item">
 
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.2.14/docs/source/guide.rst">
+    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.5.0/docs/source/guide.rst">
       <i class="fa-solid fa-pencil"></i>
       
       
@@ -642,8 +776,8 @@ Understand the model</div>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
-<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">

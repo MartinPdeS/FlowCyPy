@@ -11,6 +11,14 @@ This section explains the theoretical foundation behind the main components of t
 - **Detection Scheme**, including forward and side scatter, and angular dependence
 - **Acquisition**, including population sampling, waveform digitization, triggering, and event analysis.
 
+For a labeled particle, the fluorescence model follows absorption, emission,
+spectral collection and the detector response through the same acquisition.
+
+.. toctree::
+   :maxdepth: 1
+
+   fluorescence_model
+
 Mie Scattering Theory
 ---------------------
 

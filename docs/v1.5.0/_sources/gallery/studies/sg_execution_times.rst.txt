@@ -1,0 +1,73 @@
+
+:orphan:
+
+.. _sphx_glr_gallery_studies_sg_execution_times:
+
+
+Computation times
+=================
+**01:13.824** total execution time for 13 files **from gallery/studies**:
+
+.. container::
+
+  .. raw:: html
+
+    <style scoped>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+    </style>
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script type="text/javascript" class="init">
+    $(document).ready( function () {
+        $('table.sg-datatable').DataTable({order: [[1, 'desc']]});
+    } );
+    </script>
+
+  .. list-table::
+   :header-rows: 1
+   :class: table table-striped sg-datatable
+
+   * - Example
+     - Time
+     - Mem (MB)
+   * - :ref:`sphx_glr_gallery_studies_compare_size_exclusion_cutoffs.py` (``compare_size_exclusion_cutoffs.py``)
+     - 00:29.781
+     - 0.0
+   * - :ref:`sphx_glr_gallery_studies_reproduce_rosetta_mix_markers.py` (``reproduce_rosetta_mix_markers.py``)
+     - 00:13.388
+     - 0.0
+   * - :ref:`sphx_glr_gallery_studies_concentration_sweep.py` (``concentration_sweep.py``)
+     - 00:07.946
+     - 0.0
+   * - :ref:`sphx_glr_gallery_studies_limit_of_detection.py` (``limit_of_detection.py``)
+     - 00:07.562
+     - 0.0
+   * - :ref:`sphx_glr_gallery_studies_compare_scatter_with_cytek_bead_data.py` (``compare_scatter_with_cytek_bead_data.py``)
+     - 00:04.563
+     - 0.0
+   * - :ref:`sphx_glr_gallery_studies_threshold_sensitivity.py` (``threshold_sensitivity.py``)
+     - 00:03.726
+     - 0.0
+   * - :ref:`sphx_glr_gallery_studies_compare_scatter_systems.py` (``compare_scatter_systems.py``)
+     - 00:02.143
+     - 0.0
+   * - :ref:`sphx_glr_gallery_studies_measure_fluorescence_gate_loss.py` (``measure_fluorescence_gate_loss.py``)
+     - 00:01.148
+     - 0.0
+   * - :ref:`sphx_glr_gallery_studies_measure_blank_trigger_rate.py` (``measure_blank_trigger_rate.py``)
+     - 00:01.133
+     - 0.0
+   * - :ref:`sphx_glr_gallery_studies_compare_analog_filters.py` (``compare_analog_filters.py``)
+     - 00:01.121
+     - 0.0
+   * - :ref:`sphx_glr_gallery_studies_map_particle_velocities_in_the_flow_cell.py` (``map_particle_velocities_in_the_flow_cell.py``)
+     - 00:01.005
+     - 0.0
+   * - :ref:`sphx_glr_gallery_studies_two_particle_resolution.py` (``two_particle_resolution.py``)
+     - 00:00.207
+     - 0.0
+   * - :ref:`sphx_glr_gallery_studies_choose_digitizer_voltage_range.py` (``choose_digitizer_voltage_range.py``)
+     - 00:00.100
+     - 0.0

@@ -17,52 +17,120 @@ Examples: Tutorials
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial demonstrates how to set up and run a flow cytometry simulation using the FacsCanto instance from the FlowCyPy library. It includes defining a particle population, configuring the flow cytometer, running the simulation, and visualizing the results.">
+    <div class="sphx-glr-thumbcontainer" tooltip="Add a bead population to the FACSCanto preset, dilute the sample and inspect its forward- and side-scatter voltage traces.">
 
 .. only:: html
 
-  .. image:: /gallery/tutorials/images/thumb/sphx_glr_facs_canto_thumb.png
+  .. image:: /gallery/tutorials/images/thumb/sphx_glr_acquire_scatter_on_facs_canto_thumb.png
     :alt:
 
-  :doc:`/gallery/tutorials/facs_canto`
+  :doc:`/gallery/tutorials/acquire_scatter_on_facs_canto`
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">FACSCanto simulation</div>
+      <div class="sphx-glr-thumbnail-title">Acquire bead scatter on the FACSCanto</div>
     </div>
 
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial demonstrates a complete flow cytometry simulation using the FlowCyPy library. It models fluidics, optics, signal processing, and classification of multiple particle populations.">
+    <div class="sphx-glr-thumbcontainer" tooltip="Build the flow cell, illumination, collection optics and acquisition electronics individually. Follow a particle mixture from its diameter distribution to forward-scatter voltages, triggered segments and peak heights.">
 
 .. only:: html
 
-  .. image:: /gallery/tutorials/images/thumb/sphx_glr_workflow_thumb.png
+  .. image:: /gallery/tutorials/images/thumb/sphx_glr_assemble_a_flow_cytometer_thumb.png
     :alt:
 
-  :doc:`/gallery/tutorials/workflow`
+  :doc:`/gallery/tutorials/assemble_a_flow_cytometer`
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Full system simulation</div>
+      <div class="sphx-glr-thumbnail-title">Assemble a flow cytometer from components</div>
     </div>
 
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial demonstrates a complete flow cytometry simulation using the FlowCyPy library. It models fluidics, optics, signal processing, and classification of multiple particle populations.">
+    <div class="sphx-glr-thumbcontainer" tooltip="Define the collection geometry once, then use it to create instruments with different laser powers. This approach uses FlowCyPy&#x27;s reference flow cell and electronics. The component assembly tutorial shows how to choose those too.">
 
 .. only:: html
 
-  .. image:: /gallery/tutorials/images/thumb/sphx_glr_workflow_1_thumb.png
+  .. image:: /gallery/tutorials/images/thumb/sphx_glr_build_a_reusable_scatter_system_thumb.png
     :alt:
 
-  :doc:`/gallery/tutorials/workflow_1`
+  :doc:`/gallery/tutorials/build_a_reusable_scatter_system`
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Workflow API</div>
+      <div class="sphx-glr-thumbnail-title">Build a reusable two-channel scatter system</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Configure a two-population acquisition on the FACSCanto preset. Extract paired peak heights and use k-means to divide the measured events into two clusters. The cluster labels describe similarity in scatter space.">
+
+.. only:: html
+
+  .. image:: /gallery/tutorials/images/thumb/sphx_glr_cluster_particles_by_scatter_thumb.png
+    :alt:
+
+  :doc:`/gallery/tutorials/cluster_particles_by_scatter`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Cluster particles by forward and side scatter</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="A nominal 530/30 channel has a center wavelength of 530 nm and a full width of 30 nm. Use two illustrative dye spectra to calculate how much of each dye&#x27;s emission enters that channel, including spillover from an orange-emitting dye.">
+
+.. only:: html
+
+  .. image:: /gallery/tutorials/images/thumb/sphx_glr_define_custom_dye_spectra_thumb.png
+    :alt:
+
+  :doc:`/gallery/tutorials/define_custom_dye_spectra`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Define custom dyes and predict spectral spillover</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Run two populations of 300 nm beads through a 488 nm laser. Both scatter light. Only the labeled population emits fluorescence. Compare the two PMT voltages against the simulated particle arrival times in the same acquisition.">
+
+.. only:: html
+
+  .. image:: /gallery/tutorials/images/thumb/sphx_glr_detect_labeled_beads_thumb.png
+    :alt:
+
+  :doc:`/gallery/tutorials/detect_labeled_beads`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Detect fluorescent beads alongside unlabeled beads</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The two ID7000 factories model different scatter channels. Use the 405 nm factory for side scatter (SSC) and the 488 nm factory for forward scatter (FSC). Here we configure the violet channel for a faster acquisition and inspect the analog voltage trace from each configuration.">
+
+.. only:: html
+
+  .. image:: /gallery/tutorials/images/thumb/sphx_glr_select_a_laser_on_sony_id7000_thumb.png
+    :alt:
+
+  :doc:`/gallery/tutorials/select_a_laser_on_sony_id7000`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Choose a laser on the Sony ID7000</div>
     </div>
 
 
@@ -76,9 +144,13 @@ Examples: Tutorials
 .. toctree::
    :hidden:
 
-   /gallery/tutorials/facs_canto
-   /gallery/tutorials/workflow
-   /gallery/tutorials/workflow_1
+   /gallery/tutorials/acquire_scatter_on_facs_canto
+   /gallery/tutorials/assemble_a_flow_cytometer
+   /gallery/tutorials/build_a_reusable_scatter_system
+   /gallery/tutorials/cluster_particles_by_scatter
+   /gallery/tutorials/define_custom_dye_spectra
+   /gallery/tutorials/detect_labeled_beads
+   /gallery/tutorials/select_a_laser_on_sony_id7000
 
 
 

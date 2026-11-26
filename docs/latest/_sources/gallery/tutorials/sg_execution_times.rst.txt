@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:12.149** total execution time for 3 files **from gallery/tutorials**:
+**00:13.268** total execution time for 7 files **from gallery/tutorials**:
 
 .. container::
 
@@ -32,12 +32,24 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_gallery_tutorials_workflow.py` (``workflow.py``)
-     - 00:04.946
+   * - :ref:`sphx_glr_gallery_tutorials_assemble_a_flow_cytometer.py` (``assemble_a_flow_cytometer.py``)
+     - 00:02.475
      - 0.0
-   * - :ref:`sphx_glr_gallery_tutorials_workflow_1.py` (``workflow_1.py``)
-     - 00:04.681
+   * - :ref:`sphx_glr_gallery_tutorials_build_a_reusable_scatter_system.py` (``build_a_reusable_scatter_system.py``)
+     - 00:02.427
      - 0.0
-   * - :ref:`sphx_glr_gallery_tutorials_facs_canto.py` (``facs_canto.py``)
-     - 00:02.522
+   * - :ref:`sphx_glr_gallery_tutorials_cluster_particles_by_scatter.py` (``cluster_particles_by_scatter.py``)
+     - 00:02.331
+     - 0.0
+   * - :ref:`sphx_glr_gallery_tutorials_select_a_laser_on_sony_id7000.py` (``select_a_laser_on_sony_id7000.py``)
+     - 00:02.182
+     - 0.0
+   * - :ref:`sphx_glr_gallery_tutorials_acquire_scatter_on_facs_canto.py` (``acquire_scatter_on_facs_canto.py``)
+     - 00:01.463
+     - 0.0
+   * - :ref:`sphx_glr_gallery_tutorials_detect_labeled_beads.py` (``detect_labeled_beads.py``)
+     - 00:01.226
+     - 0.0
+   * - :ref:`sphx_glr_gallery_tutorials_define_custom_dye_spectra.py` (``define_custom_dye_spectra.py``)
+     - 00:01.163
      - 0.0

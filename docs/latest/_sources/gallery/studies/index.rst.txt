@@ -17,7 +17,92 @@ Examples: Studies
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial studies how increasing particle concentration changes the detector signal and the extracted event statistics. % Using the same optical, electronic, and digital processing configuration, we run a series of simulations at progressively higher concentrations and compare the resulting analog traces, trigger counts, and peak distributions.">
+    <div class="sphx-glr-thumbcontainer" tooltip="A narrow voltage range resolves small changes but can clip bright peaks. Digitize the same two pulses with three settings to see which peak information survives. Known input voltages let us measure the errors directly.">
+
+.. only:: html
+
+  .. image:: /gallery/studies/images/thumb/sphx_glr_choose_digitizer_voltage_range_thumb.png
+    :alt:
+
+  :doc:`/gallery/studies/choose_digitizer_voltage_range`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Choose a digitizer range for dim and bright pulses</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Acquire one forward-scatter waveform on the FACSCanto preset and apply two analog filters to it. Using the same waveform keeps particle arrivals and detector noise identical across the comparison.">
+
+.. only:: html
+
+  .. image:: /gallery/studies/images/thumb/sphx_glr_compare_analog_filters_thumb.png
+    :alt:
+
+  :doc:`/gallery/studies/compare_analog_filters`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Compare baseline restoration and low-pass filtering</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The BD FACSCanto II and nanoFCM NanoAnalyzer presets both illuminate the sample at 488 nm. How does the same bead pulse appear on their modeled side-scatter detectors? These presets share FlowCyPy reference fluidics and electronics, so the comparison describes their modeled collection optics.">
+
+.. only:: html
+
+  .. image:: /gallery/studies/images/thumb/sphx_glr_compare_scatter_systems_thumb.png
+    :alt:
+
+  :doc:`/gallery/studies/compare_scatter_systems`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Compare side-scatter collection at 488 nm</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example compares simulated and experimental flow cytometry measurements for Rosetta bead populations.">
+
+.. only:: html
+
+  .. image:: /gallery/studies/images/thumb/sphx_glr_compare_scatter_with_cytek_bead_data_thumb.png
+    :alt:
+
+  :doc:`/gallery/studies/compare_scatter_with_cytek_bead_data`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Compare simulated scatter with Cytek bead measurements</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to simulate flow cytometry data for extracellular vesicles (EVs) and lipoproteins (LPs) under different Size Exclusion Chromatography (SEC) scenarios. The simulation includes the generation of scatterer populations, opto-electronic configurations, and digital processing to analyze the resulting data.">
+
+.. only:: html
+
+  .. image:: /gallery/studies/images/thumb/sphx_glr_compare_size_exclusion_cutoffs_thumb.png
+    :alt:
+
+  :doc:`/gallery/studies/compare_size_exclusion_cutoffs`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Compare size-exclusion cutoffs for vesicles and lipoproteins</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial studies how increasing particle concentration changes the detector signal and the extracted event statistics.">
 
 .. only:: html
 
@@ -34,41 +119,7 @@ Examples: Studies
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This example compares simulated and experimental flow cytometry measurements for Rosetta bead populations.">
-
-.. only:: html
-
-  .. image:: /gallery/studies/images/thumb/sphx_glr_cytek_comparison_thumb.png
-    :alt:
-
-  :doc:`/gallery/studies/cytek_comparison`
-
-.. raw:: html
-
-      <div class="sphx-glr-thumbnail-title">Cytek bead comparison</div>
-    </div>
-
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="This example shows how to simulate particle trajectories in a rectangular flow cell and visualize their transverse positions.">
-
-.. only:: html
-
-  .. image:: /gallery/studies/images/thumb/sphx_glr_flowcell_sampling_thumb.png
-    :alt:
-
-  :doc:`/gallery/studies/flowcell_sampling`
-
-.. raw:: html
-
-      <div class="sphx-glr-thumbnail-title">Flow-cell sampling</div>
-    </div>
-
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="This example simulates the detection of small nanoparticles (50-150 nm diameter) in a flow cytometry setup using a dual-detector configuration (side and forward scatter). The simulation includes noise models, realistic fluidics, analog signal conditioning, digitization, triggering, and peak detection.">
+    <div class="sphx-glr-thumbcontainer" tooltip="This example simulates the detection of small nanoparticles (50-150 nm diameter) in a flow cytometry setup using a dual-detector configuration (side and forward scatter). The simulation includes noise models, realistic fluidics, analog amplification, digitization, triggering, and peak detection.">
 
 .. only:: html
 
@@ -85,35 +136,69 @@ Examples: Studies
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to simulate flow cytometry data for extracellular vesicles (EVs) and lipoproteins (LPs) under different Size Exclusion Chromatography (SEC) scenarios. The simulation includes the generation of scatterer populations, opto-electronic configurations, and digital processing to analyze the resulting data.">
+    <div class="sphx-glr-thumbcontainer" tooltip="This example shows how to simulate particle trajectories in a rectangular flow cell and visualize their transverse positions.">
 
 .. only:: html
 
-  .. image:: /gallery/studies/images/thumb/sphx_glr_sec_results_thumb.png
+  .. image:: /gallery/studies/images/thumb/sphx_glr_map_particle_velocities_in_the_flow_cell_thumb.png
     :alt:
 
-  :doc:`/gallery/studies/sec_results`
+  :doc:`/gallery/studies/map_particle_velocities_in_the_flow_cell`
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Size-exclusion chromatography</div>
+      <div class="sphx-glr-thumbnail-title">Map particle velocities across a focused flow cell</div>
     </div>
 
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to apply signal processing techniques to flow cytometry data using FlowCyPy. The simulation is set up with a Gaussian beam, a flow cell, and two detectors. A single population of scatterers (with delta distributions) is used, and the focus here is on processing the forward scatter detector signals. Three acquisitions are performed:">
+    <div class="sphx-glr-thumbcontainer" tooltip="A threshold crossing can come from the optical background alone. Estimate thresholds on one blank, then count triggered segments in four independent blanks. Reuse each acquired waveform across thresholds so every setting sees the same noise realization.">
 
 .. only:: html
 
-  .. image:: /gallery/studies/images/thumb/sphx_glr_signal_processing_thumb.png
+  .. image:: /gallery/studies/images/thumb/sphx_glr_measure_blank_trigger_rate_thumb.png
     :alt:
 
-  :doc:`/gallery/studies/signal_processing`
+  :doc:`/gallery/studies/measure_blank_trigger_rate`
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Signal processing</div>
+      <div class="sphx-glr-thumbnail-title">Measure false triggers with particle-free blanks</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Illuminate a dye for 4 ns and close the gate when the light switches off. Compare prompt emission with the FITC and ATTO 647N preset lifetimes. This controlled input isolates the detector chain from particle arrivals and beam geometry.">
+
+.. only:: html
+
+  .. image:: /gallery/studies/images/thumb/sphx_glr_measure_fluorescence_gate_loss_thumb.png
+    :alt:
+
+  :doc:`/gallery/studies/measure_fluorescence_gate_loss`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">How much fluorescence arrives after the gate closes?</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The RosettaX CAL003 standard contains twelve sizes of polystyrene bead in water. Ten sizes scatter light only. The 140 nm and 380 nm populations also emit green fluorescence. Simulate the whole mixture and compare the two marker populations with the RosettaX analysis of a measured CAL003 acquisition.">
+
+.. only:: html
+
+  .. image:: /gallery/studies/images/thumb/sphx_glr_reproduce_rosetta_mix_markers_thumb.png
+    :alt:
+
+  :doc:`/gallery/studies/reproduce_rosetta_mix_markers`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Compare Rosetta Mix marker peaks with CAL003</div>
     </div>
 
 
@@ -134,6 +219,23 @@ Examples: Studies
     </div>
 
 
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Two particles can arrive in the same trigger window even though the discriminator reports only one event. This example sends two identical Gaussian voltage pulses through the dynamic-window discriminator and varies their separation. The noiseless signal isolates the role of pulse overlap.">
+
+.. only:: html
+
+  .. image:: /gallery/studies/images/thumb/sphx_glr_two_particle_resolution_thumb.png
+    :alt:
+
+  :doc:`/gallery/studies/two_particle_resolution`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Resolving two overlapping particle pulses</div>
+    </div>
+
+
 .. thumbnail-parent-div-close
 
 .. raw:: html
@@ -144,13 +246,19 @@ Examples: Studies
 .. toctree::
    :hidden:
 
+   /gallery/studies/choose_digitizer_voltage_range
+   /gallery/studies/compare_analog_filters
+   /gallery/studies/compare_scatter_systems
+   /gallery/studies/compare_scatter_with_cytek_bead_data
+   /gallery/studies/compare_size_exclusion_cutoffs
    /gallery/studies/concentration_sweep
-   /gallery/studies/cytek_comparison
-   /gallery/studies/flowcell_sampling
    /gallery/studies/limit_of_detection
-   /gallery/studies/sec_results
-   /gallery/studies/signal_processing
+   /gallery/studies/map_particle_velocities_in_the_flow_cell
+   /gallery/studies/measure_blank_trigger_rate
+   /gallery/studies/measure_fluorescence_gate_loss
+   /gallery/studies/reproduce_rosetta_mix_markers
    /gallery/studies/threshold_sensitivity
+   /gallery/studies/two_particle_resolution
 
 
 
