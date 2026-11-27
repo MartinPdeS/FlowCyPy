@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Threshold sensitivity &#8212; FlowCyPy 1.5.0 documentation</title>
+    <title>Threshold sensitivity &#8212; FlowCyPy 1.6.0 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=623e1633"></script>
+    <script src="../../_static/documentation_options.js?v=cf6e66ff"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -53,7 +53,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.5.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.6.0';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
@@ -66,7 +66,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.5.0" />
+  <meta name="docsearch:version" content="1.6.0" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -464,12 +464,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/cluster_particles_by_scatter.html">Cluster particles by forward and side scatter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/define_custom_dye_spectra.html">Define custom dyes and predict spectral spillover</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/detect_labeled_beads.html">Detect fluorescent beads alongside unlabeled beads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/excite_one_bead_with_two_lasers.html">Excite the same bead with two lasers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/select_a_laser_on_sony_id7000.html">Choose a laser on the Sony ID7000</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: Studies</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="choose_digitizer_voltage_range.html">Choose a digitizer range for dim and bright pulses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_analog_filters.html">Compare baseline restoration and low-pass filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compare_laser_intensity_noise.html">Compare intensity noise from two co-located lasers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_scatter_systems.html">Compare side-scatter collection at 488 nm</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_scatter_with_cytek_bead_data.html">Compare simulated scatter with Cytek bead measurements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_size_exclusion_cutoffs.html">Compare size-exclusion cutoffs for vesicles and lipoproteins</a></li>
@@ -570,20 +572,24 @@ for weak signals close to baseline noise.</p>
 <h2>Load the weakly scattering sample<a class="headerlink" href="#load-the-weakly-scattering-sample" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/flow_cytometer.html#FlowCyPy.flow_cytometer.FlowCytometer" title="FlowCyPy.FlowCytometer"><span class="n">instrument</span></a> <span class="o">=</span> <span class="n">aurora</span><span class="p">(</span><span class="n">optical_power</span><span class="o">=</span><span class="mi">25</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliwatt</span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="FlowCyPy.fluidics.ScattererCollection"><span class="n">scatterer_collection</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-property reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.system.Fluidics.scatterer_collection" title="FlowCyPy.Fluidics.scatterer_collection"><span class="n">instrument</span><span class="o">.</span><span class="n">fluidics</span><span class="o">.</span><span class="n">scatterer_collection</span></a><span class="w">
+</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics-distributions sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.distributions.Delta" title="FlowCyPy.fluidics.distributions.Delta"><span class="n">medium_refractive_index</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-fluidics-distributions sphx-glr-backref-type-py-class reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.distributions.Delta" title="FlowCyPy.fluidics.distributions.Delta"><span class="n">distributions</span><span class="o">.</span><span class="n">Delta</span></a><span class="p">(</span><span class="mf">1.33</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics-distributions sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.distributions.RosinRammler" title="FlowCyPy.fluidics.distributions.RosinRammler"><span class="n">diameter_distribution</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-fluidics-distributions sphx-glr-backref-type-py-class reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.distributions.RosinRammler" title="FlowCyPy.fluidics.distributions.RosinRammler"><span class="n">distributions</span><span class="o">.</span><span class="n">RosinRammler</span></a><span class="p">(</span><span class="w">
+</span>    <span class="n">scale</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span><span class="w">
+</span>    <span class="n">shape</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics-distributions sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.distributions.Normal" title="FlowCyPy.fluidics.distributions.Normal"><span class="n">refractive_index_distribution</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-fluidics-distributions sphx-glr-backref-type-py-class reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.distributions.Normal" title="FlowCyPy.fluidics.distributions.Normal"><span class="n">distributions</span><span class="o">.</span><span class="n">Normal</span></a><span class="p">(</span><span class="w">
+</span>    <span class="n">mean</span><span class="o">=</span><span class="mf">1.40</span><span class="p">,</span><span class="w">
+</span>    <span class="n">standard_deviation</span><span class="o">=</span><span class="mf">0.002</span><span class="p">,</span><span class="w">
+</span>    <span class="n">low_cutoff</span><span class="o">=</span><span class="mf">1.33</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="n">sampling_method</span> <span class="o">=</span> <span class="n">populations</span><span class="o">.</span><span class="n">ExplicitModel</span><span class="p">(</span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-FlowCyPy-fluidics-populations sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.populations.SpherePopulation" title="FlowCyPy.fluidics.populations.SpherePopulation"><span class="n">population</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-fluidics-populations sphx-glr-backref-type-py-class reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.populations.SpherePopulation" title="FlowCyPy.fluidics.populations.SpherePopulation"><span class="n">populations</span><span class="o">.</span><span class="n">SpherePopulation</span></a><span class="p">(</span><span class="w">
 </span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">Near-threshold population</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
-</span>    <span class="n">medium_refractive_index</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics-distributions sphx-glr-backref-type-py-class reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.distributions.Delta" title="FlowCyPy.fluidics.distributions.Delta"><span class="n">distributions</span><span class="o">.</span><span class="n">Delta</span></a><span class="p">(</span><span class="mf">1.33</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-FlowCyPy-fluidics-distributions sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.distributions.Delta" title="FlowCyPy.fluidics.distributions.Delta"><span class="n">medium_refractive_index</span></a><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics-distributions sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.distributions.Delta" title="FlowCyPy.fluidics.distributions.Delta"><span class="n">medium_refractive_index</span></a><span class="p">,</span><span class="w">
 </span>    <span class="n">concentration</span><span class="o">=</span><span class="mf">1e10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span><span class="p">,</span><span class="w">
-</span>    <span class="n">diameter</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics-distributions sphx-glr-backref-type-py-class reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.distributions.RosinRammler" title="FlowCyPy.fluidics.distributions.RosinRammler"><span class="n">distributions</span><span class="o">.</span><span class="n">RosinRammler</span></a><span class="p">(</span><span class="w">
-</span>        <span class="n">scale</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span><span class="w">
-</span>        <span class="n">shape</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span><span class="w">
-</span>    <span class="p">)</span><span class="p">,</span><span class="w">
-</span>    <span class="n">refractive_index</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics-distributions sphx-glr-backref-type-py-class reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.distributions.Normal" title="FlowCyPy.fluidics.distributions.Normal"><span class="n">distributions</span><span class="o">.</span><span class="n">Normal</span></a><span class="p">(</span><span class="w">
-</span>        <span class="n">mean</span><span class="o">=</span><span class="mf">1.40</span><span class="p">,</span><span class="w">
-</span>        <span class="n">standard_deviation</span><span class="o">=</span><span class="mf">0.002</span><span class="p">,</span><span class="w">
-</span>        <span class="n">low_cutoff</span><span class="o">=</span><span class="mf">1.33</span><span class="p">,</span><span class="w">
-</span>    <span class="p">)</span><span class="p">,</span><span class="w">
-</span>    <span class="n">sampling_method</span><span class="o">=</span><span class="n">populations</span><span class="o">.</span><span class="n">ExplicitModel</span><span class="p">(</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="n">diameter</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics-distributions sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.distributions.RosinRammler" title="FlowCyPy.fluidics.distributions.RosinRammler"><span class="n">diameter_distribution</span></a><span class="p">,</span><span class="w">
+</span>    <span class="n">refractive_index</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics-distributions sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.distributions.Normal" title="FlowCyPy.fluidics.distributions.Normal"><span class="n">refractive_index_distribution</span></a><span class="p">,</span><span class="w">
+</span>    <span class="n">sampling_method</span><span class="o">=</span><span class="n">sampling_method</span><span class="p">,</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-method reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.add_population" title="FlowCyPy.fluidics.ScattererCollection.add_population"><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span></a><span class="p">(</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics-populations sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.populations.SpherePopulation" title="FlowCyPy.fluidics.populations.SpherePopulation"><span class="n">population</span></a><span class="p">)</span><span class="w">
@@ -605,15 +611,17 @@ waveform. Event IDs below are row positions in this shared acquisition.</p>
 </span><span class="n">window_counts</span> <span class="o">=</span> <span class="p">[</span><span class="p">]</span><span class="w">
 </span><span class="w">
 </span><span class="k">for</span> <span class="n">threshold_value</span> <span class="ow">in</span> <span class="n">threshold_values</span><span class="p">:</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-FlowCyPy-digital_processing-discriminator sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.discriminator.DynamicWindow" title="FlowCyPy.digital_processing.discriminator.DynamicWindow"><span class="n">trigger_window</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-digital_processing-discriminator sphx-glr-backref-type-py-class reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.discriminator.DynamicWindow" title="FlowCyPy.digital_processing.discriminator.DynamicWindow"><span class="n">discriminator</span><span class="o">.</span><span class="n">DynamicWindow</span></a><span class="p">(</span><span class="w">
+</span>        <span class="n">trigger_channel</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">SSC</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="n">threshold</span><span class="o">=</span><span class="n">threshold_value</span><span class="p">,</span><span class="w">
+</span>        <span class="n">pre_buffer</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span><span class="w">
+</span>        <span class="n">post_buffer</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span><span class="w">
+</span>        <span class="n">max_triggers</span><span class="o">=</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w">
+</span>    <span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-FlowCyPy-digital_processing-peak_locator sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator" title="FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator"><span class="n">peak_algorithm</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-digital_processing-peak_locator sphx-glr-backref-type-py-class reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator" title="FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator"><span class="n">peak_locator</span><span class="o">.</span><span class="n">GlobalPeakLocator</span></a><span class="p">(</span><span class="p">)</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.DigitalProcessing" title="FlowCyPy.DigitalProcessing"><span class="n">digital_processing</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.DigitalProcessing" title="FlowCyPy.DigitalProcessing"><span class="n">DigitalProcessing</span></a><span class="p">(</span><span class="w">
-</span>        <span class="n">discriminator</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-digital_processing-discriminator sphx-glr-backref-type-py-class reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.discriminator.DynamicWindow" title="FlowCyPy.digital_processing.discriminator.DynamicWindow"><span class="n">discriminator</span><span class="o">.</span><span class="n">DynamicWindow</span></a><span class="p">(</span><span class="w">
-</span>            <span class="n">trigger_channel</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">SSC</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
-</span>            <span class="n">threshold</span><span class="o">=</span><span class="n">threshold_value</span><span class="p">,</span><span class="w">
-</span>            <span class="n">pre_buffer</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span><span class="w">
-</span>            <span class="n">post_buffer</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span><span class="w">
-</span>            <span class="n">max_triggers</span><span class="o">=</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w">
-</span>        <span class="p">)</span><span class="p">,</span><span class="w">
-</span>        <span class="n">peak_locator</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-digital_processing-peak_locator sphx-glr-backref-type-py-class reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator" title="FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator"><span class="n">peak_locator</span><span class="o">.</span><span class="n">GlobalPeakLocator</span></a><span class="p">(</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>        <span class="n">discriminator</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-digital_processing-discriminator sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.discriminator.DynamicWindow" title="FlowCyPy.digital_processing.discriminator.DynamicWindow"><span class="n">trigger_window</span></a><span class="p">,</span><span class="w">
+</span>        <span class="n">peak_locator</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-digital_processing-peak_locator sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator" title="FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator"><span class="n">peak_algorithm</span></a><span class="p">,</span><span class="w">
 </span>    <span class="p">)</span><span class="w">
 </span><span class="w">
 </span>    <span class="n">run_record</span> <span class="o">=</span> <span class="n">acquisition</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.DigitalProcessing" title="FlowCyPy.DigitalProcessing"><span class="n">digital_processing</span></a><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.DigitalProcessing" title="FlowCyPy.DigitalProcessing"><span class="n">digital_processing</span></a><span class="p">)</span><span class="w">
@@ -860,7 +868,7 @@ Threshold
 <p>Compare the recovered weak-event distribution as the threshold rises.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">_</span> <span class="o">=</span> <span class="n">plot_peak_heights</span><span class="p">(</span><span class="n">run_record</span><span class="p">,</span> <span class="n">threshold_value</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_threshold_sensitivity_012.png" srcset="../../_images/sphx_glr_threshold_sensitivity_012.png" alt="Side-scatter peak heights at 5sigma" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.726 seconds)</p>
+<img src="../../_images/sphx_glr_threshold_sensitivity_012.png" srcset="../../_images/sphx_glr_threshold_sensitivity_012.png" alt="Side-scatter peak heights at 5sigma" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.156 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-studies-threshold-sensitivity-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/3aa2e6853cfe0f8eaf11069b88b104e8/threshold_sensitivity.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">threshold_sensitivity.ipynb</span></code></a></p>
@@ -944,7 +952,7 @@ Threshold
 
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.5.0/docs/source/gallery/studies/threshold_sensitivity.rst">
+    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.6.0/docs/source/gallery/studies/threshold_sensitivity.rst">
       <i class="fa-solid fa-pencil"></i>
       
       

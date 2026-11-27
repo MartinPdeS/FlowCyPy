@@ -69,10 +69,15 @@ def build_mix(*, diameter_cv, surface_labeling):
     """
     instrument = facs_canto_ii(background_power=4 * ureg.picowatt)
     optics = instrument.opto_electronics
-    optics.detectors = [*optics.detectors, pmt(
-        name="Green", phi_angle=90 * ureg.degree, numerical_aperture=0.8,
-        signals=("fluorescence",), optical_filter=Bandpass(center=530 * ureg.nm, width=30 * ureg.nm),
-    )]
+    optical_filter = Bandpass(center=530 * ureg.nm, width=30 * ureg.nm)
+    green_detector = pmt(
+        name="Green",
+        phi_angle=90 * ureg.degree,
+        numerical_aperture=0.8,
+        signals=("fluorescence",),
+        optical_filter=optical_filter,
+    )
+    optics.detectors = [*optics.detectors, green_detector]
 
     for diameter_nm in diameters_nm:
         diameter = diameter_nm * ureg.nm
@@ -85,9 +90,13 @@ def build_mix(*, diameter_cv, surface_labeling):
             else:
                 label = Label(fluorophore=dye, molecules_per_particle=nominal_count)
             labels = (label,)
+        diameter_distribution = distributions.Normal(
+            mean=diameter,
+            standard_deviation=diameter_cv * diameter,
+        )
         population = populations.SpherePopulation(
             name=f"{diameter_nm} nm",
-            diameter=distributions.Normal(mean=diameter, standard_deviation=diameter_cv * diameter),
+            diameter=diameter_distribution,
             refractive_index=1.59,
             medium_refractive_index=1.333,
             concentration=1e7 * ureg.particle / ureg.milliliter,

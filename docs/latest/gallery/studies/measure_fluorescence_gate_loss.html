@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>How much fluorescence arrives after the gate closes? &#8212; FlowCyPy 1.5.0 documentation</title>
+    <title>How much fluorescence arrives after the gate closes? &#8212; FlowCyPy 1.6.0 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=623e1633"></script>
+    <script src="../../_static/documentation_options.js?v=cf6e66ff"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -53,7 +53,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.5.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.6.0';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
@@ -66,7 +66,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.5.0" />
+  <meta name="docsearch:version" content="1.6.0" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -464,12 +464,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/cluster_particles_by_scatter.html">Cluster particles by forward and side scatter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/define_custom_dye_spectra.html">Define custom dyes and predict spectral spillover</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/detect_labeled_beads.html">Detect fluorescent beads alongside unlabeled beads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/excite_one_bead_with_two_lasers.html">Excite the same bead with two lasers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/select_a_laser_on_sony_id7000.html">Choose a laser on the Sony ID7000</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: Studies</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="choose_digitizer_voltage_range.html">Choose a digitizer range for dim and bright pulses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_analog_filters.html">Compare baseline restoration and low-pass filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compare_laser_intensity_noise.html">Compare intensity noise from two co-located lasers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_scatter_systems.html">Compare side-scatter collection at 488 nm</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_scatter_with_cytek_bead_data.html">Compare simulated scatter with Cytek bead measurements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_size_exclusion_cutoffs.html">Compare size-exclusion cutoffs for vesicles and lipoproteins</a></li>
@@ -641,7 +643,7 @@ ATTO 647N, 4 ns bins: 40.4% in gate, 0.80 nV ns total
 The shorter ATTO 647N lifetime puts more of its emission inside the gate.
 Both bin widths recover the same fraction because the gate edges align with
 sampling boundaries. The finer grid resolves more of the rise and decay.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.148 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.463 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-studies-measure-fluorescence-gate-loss-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/19beb687182de5518244e87ed121bc88/measure_fluorescence_gate_loss.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">measure_fluorescence_gate_loss.ipynb</span></code></a></p>
@@ -714,7 +716,7 @@ sampling boundaries. The finer grid resolves more of the rise and decay.</p>
 
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.5.0/docs/source/gallery/studies/measure_fluorescence_gate_loss.rst">
+    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.6.0/docs/source/gallery/studies/measure_fluorescence_gate_loss.rst">
       <i class="fa-solid fa-pencil"></i>
       
       

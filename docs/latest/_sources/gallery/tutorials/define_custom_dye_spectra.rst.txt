@@ -53,7 +53,7 @@ Each entry counts photons across a whole bin. The filter acts on the bin's
 representative wavelength, exactly as it does during a FlowCyPy acquisition.
 Both endpoints, 515 and 545 nm, pass the filter.
 
-.. GENERATED FROM PYTHON SOURCE LINES 24-48
+.. GENERATED FROM PYTHON SOURCE LINES 24-47
 
 .. code-block:: Python
 
@@ -62,22 +62,21 @@ Both endpoints, 515 and 545 nm, pass the filter.
     # The cross sections are illustrative values at the 488 nm laser wavelength.
     # Both dyes use prompt emission. To model a measured decay, also pass
     # lifetime as a time quantity when constructing the fluorophore.
-    dyes = [
-        Fluorophore(
-            name="Green dye",
-            absorption_cross_section=2e-20 * ureg.meter**2,
-            quantum_yield=0.8,
-            emission_wavelengths=wavelengths,
-            photon_weights=(8, 15, 35, 25, 10, 5, 2, 0, 0),
-        ),
-        Fluorophore(
-            name="Orange dye",
-            absorption_cross_section=1e-20 * ureg.meter**2,
-            quantum_yield=0.6,
-            emission_wavelengths=wavelengths,
-            photon_weights=(0, 0, 2, 4, 7, 15, 28, 30, 14),
-        ),
-    ]
+    green_dye = Fluorophore(
+        name="Green dye",
+        absorption_cross_section=2e-20 * ureg.meter**2,
+        quantum_yield=0.8,
+        emission_wavelengths=wavelengths,
+        photon_weights=(8, 15, 35, 25, 10, 5, 2, 0, 0),
+    )
+    orange_dye = Fluorophore(
+        name="Orange dye",
+        absorption_cross_section=1e-20 * ureg.meter**2,
+        quantum_yield=0.6,
+        emission_wavelengths=wavelengths,
+        photon_weights=(0, 0, 2, 4, 7, 15, 28, 30, 14),
+    )
+    dyes = [green_dye, orange_dye]
     bandpass = Bandpass(center=530 * ureg.nm, width=30 * ureg.nm)
     transmitted = bandpass.transmits(wavelength=wavelengths)
 
@@ -88,7 +87,7 @@ Both endpoints, 515 and 545 nm, pass the filter.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 49-55
+.. GENERATED FROM PYTHON SOURCE LINES 48-54
 
 Calculate spillover into the green channel
 ------------------------------------------
@@ -97,13 +96,18 @@ Normalize each dye to its own emitted photon count. The hard filter passes
 fractions describe spectral transmission before geometric collection and
 conversion to detector voltage.
 
-.. GENERATED FROM PYTHON SOURCE LINES 55-70
+.. GENERATED FROM PYTHON SOURCE LINES 54-74
 
 .. code-block:: Python
 
 
     figure, axes = plt.subplots(
-        2, 1, sharex=True, sharey=True, figsize=(7, 5), layout="constrained"
+        nrows=2,
+        ncols=1,
+        sharex=True,
+        sharey=True,
+        figsize=(7, 5),
+        layout="constrained",
     )
     for axis, dye in zip(axes, dyes, strict=True):
         fraction = np.asarray(dye.photon_weights)
@@ -128,7 +132,7 @@ conversion to detector voltage.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 71-78
+.. GENERATED FROM PYTHON SOURCE LINES 75-82
 
 Predict the power ratio and check it with single-color controls
 ---------------------------------------------------------------
@@ -138,15 +142,16 @@ collection fraction cancel in the green/orange power ratio. Each photon
 contributes energy proportional to inverse wavelength. Use that weighting
 when predicting the ratio from the spectra.
 
-.. GENERATED FROM PYTHON SOURCE LINES 78-117
+.. GENERATED FROM PYTHON SOURCE LINES 82-123
 
 .. code-block:: Python
 
 
     instrument = facs_canto(include_shot_noise=False, include_rin_noise=False)
+    orange_filter = Bandpass(center=570 * ureg.nm, width=30 * ureg.nm)
     filters = {
         "green": bandpass,
-        "orange": Bandpass(center=570 * ureg.nm, width=30 * ureg.nm),
+        "orange": orange_filter,
     }
     instrument.opto_electronics.detectors = [
         pmt(
@@ -160,12 +165,13 @@ when predicting the ratio from the spectra.
         for channel, optical_filter in filters.items()
     ]
     for dye in dyes:
+        label = Label(fluorophore=dye, molecules_per_particle=20_000)
         beads = microbeads(
             name=dye.name,
             diameter=300 * ureg.nm,
             refractive_index=1.59,
             concentration=1e8 * ureg.particle / ureg.milliliter,
-            labels=[Label(fluorophore=dye, molecules_per_particle=20_000)],
+            labels=[label],
         )
         instrument.fluidics.scatterer_collection.add_population(beads)
 
@@ -195,7 +201,7 @@ when predicting the ratio from the spectra.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 118-120
+.. GENERATED FROM PYTHON SOURCE LINES 124-126
 
 Each ratio uses event-frame optical powers in watts. A voltage ratio from
 hardware also depends on the two channels' responsivities and amplifier gains.
@@ -203,7 +209,7 @@ hardware also depends on the two channels' responsivities and amplifier gains.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.163 seconds)
+   **Total running time of the script:** (0 minutes 1.452 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_define_custom_dye_spectra.py:

@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Assemble a flow cytometer from components &#8212; FlowCyPy 1.5.0 documentation</title>
+    <title>Assemble a flow cytometer from components &#8212; FlowCyPy 1.6.0 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=623e1633"></script>
+    <script src="../../_static/documentation_options.js?v=cf6e66ff"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -53,7 +53,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.5.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.6.0';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
@@ -66,7 +66,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.5.0" />
+  <meta name="docsearch:version" content="1.6.0" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -464,12 +464,14 @@
 <li class="toctree-l2"><a class="reference internal" href="cluster_particles_by_scatter.html">Cluster particles by forward and side scatter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="define_custom_dye_spectra.html">Define custom dyes and predict spectral spillover</a></li>
 <li class="toctree-l2"><a class="reference internal" href="detect_labeled_beads.html">Detect fluorescent beads alongside unlabeled beads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="excite_one_bead_with_two_lasers.html">Excite the same bead with two lasers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="select_a_laser_on_sony_id7000.html">Choose a laser on the Sony ID7000</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../studies/index.html">Examples: Studies</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../studies/choose_digitizer_voltage_range.html">Choose a digitizer range for dim and bright pulses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../studies/compare_analog_filters.html">Compare baseline restoration and low-pass filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../studies/compare_laser_intensity_noise.html">Compare intensity noise from two co-located lasers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../studies/compare_scatter_systems.html">Compare side-scatter collection at 488 nm</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../studies/compare_scatter_with_cytek_bead_data.html">Compare simulated scatter with Cytek bead measurements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../studies/compare_size_exclusion_cutoffs.html">Compare size-exclusion cutoffs for vesicles and lipoproteins</a></li>
@@ -620,13 +622,14 @@ forward-scatter voltages, triggered segments and peak heights.</p>
 </span>    <span class="n">low_cutoff</span><span class="o">=</span><span class="mf">1.33</span><span class="p">,</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span><span class="w">
+</span><span class="n">gamma_sampling</span> <span class="o">=</span> <span class="n">populations</span><span class="o">.</span><span class="n">GammaModel</span><span class="p">(</span><span class="n">number_of_samples</span><span class="o">=</span><span class="mi">5_000</span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-FlowCyPy-fluidics-populations sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.populations.SpherePopulation" title="FlowCyPy.fluidics.populations.SpherePopulation"><span class="n">population_1</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-fluidics-populations sphx-glr-backref-type-py-class reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.populations.SpherePopulation" title="FlowCyPy.fluidics.populations.SpherePopulation"><span class="n">populations</span><span class="o">.</span><span class="n">SpherePopulation</span></a><span class="p">(</span><span class="w">
 </span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">Pop 1</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-FlowCyPy-fluidics-distributions sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.distributions.Delta" title="FlowCyPy.fluidics.distributions.Delta"><span class="n">medium_refractive_index</span></a><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics-distributions sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.distributions.Delta" title="FlowCyPy.fluidics.distributions.Delta"><span class="n">medium_refractive_index</span></a><span class="p">,</span><span class="w">
 </span>    <span class="n">concentration</span><span class="o">=</span><span class="mf">5e11</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span><span class="p">,</span><span class="w">
 </span>    <span class="n">diameter</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics-distributions sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.distributions.RosinRammler" title="FlowCyPy.fluidics.distributions.RosinRammler"><span class="n">diameter_dist</span></a><span class="p">,</span><span class="w">
 </span>    <span class="n">refractive_index</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics-distributions sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.distributions.Normal" title="FlowCyPy.fluidics.distributions.Normal"><span class="n">ri_dist</span></a><span class="p">,</span><span class="w">
-</span>    <span class="n">sampling_method</span><span class="o">=</span><span class="n">populations</span><span class="o">.</span><span class="n">GammaModel</span><span class="p">(</span><span class="n">number_of_samples</span><span class="o">=</span><span class="mi">5_000</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="n">sampling_method</span><span class="o">=</span><span class="n">gamma_sampling</span><span class="p">,</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-method reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.add_population" title="FlowCyPy.fluidics.ScattererCollection.add_population"><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span></a><span class="p">(</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics-populations sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.populations.SpherePopulation" title="FlowCyPy.fluidics.populations.SpherePopulation"><span class="n">population_0</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-FlowCyPy-fluidics-populations sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.populations.SpherePopulation" title="FlowCyPy.fluidics.populations.SpherePopulation"><span class="n">population_1</span></a><span class="p">)</span><span class="w">
@@ -647,10 +650,9 @@ forward-scatter voltages, triggered segments and peak heights.</p>
 </span>    <span class="n">circuits</span><span class="p">,</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span><span class="w">
-</span><span class="n">analog_processing</span> <span class="o">=</span> <span class="p">[</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics-circuits sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.circuits.BaselineRestorationServo" title="FlowCyPy.opto_electronics.circuits.BaselineRestorationServo"><span class="n">circuits</span><span class="o">.</span><span class="n">BaselineRestorationServo</span></a><span class="p">(</span><span class="n">time_constant</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">microsecond</span><span class="p">)</span><span class="p">,</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics-circuits sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.circuits.BesselLowPass" title="FlowCyPy.opto_electronics.circuits.BesselLowPass"><span class="n">circuits</span><span class="o">.</span><span class="n">BesselLowPass</span></a><span class="p">(</span><span class="n">cutoff_frequency</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="p">,</span><span class="w">
-</span><span class="p">]</span><span class="w">
+</span><a class="sphx-glr-backref-module-FlowCyPy-opto_electronics-circuits sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.circuits.BaselineRestorationServo" title="FlowCyPy.opto_electronics.circuits.BaselineRestorationServo"><span class="n">baseline_restoration</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics-circuits sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.circuits.BaselineRestorationServo" title="FlowCyPy.opto_electronics.circuits.BaselineRestorationServo"><span class="n">circuits</span><span class="o">.</span><span class="n">BaselineRestorationServo</span></a><span class="p">(</span><span class="n">time_constant</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">microsecond</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-FlowCyPy-opto_electronics-circuits sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.circuits.BesselLowPass" title="FlowCyPy.opto_electronics.circuits.BesselLowPass"><span class="n">low_pass_filter</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics-circuits sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.circuits.BesselLowPass" title="FlowCyPy.opto_electronics.circuits.BesselLowPass"><span class="n">circuits</span><span class="o">.</span><span class="n">BesselLowPass</span></a><span class="p">(</span><span class="n">cutoff_frequency</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="w">
+</span><span class="n">analog_processing</span> <span class="o">=</span> <span class="p">[</span><a class="sphx-glr-backref-module-FlowCyPy-opto_electronics-circuits sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.circuits.BaselineRestorationServo" title="FlowCyPy.opto_electronics.circuits.BaselineRestorationServo"><span class="n">baseline_restoration</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics-circuits sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.circuits.BesselLowPass" title="FlowCyPy.opto_electronics.circuits.BesselLowPass"><span class="n">low_pass_filter</span></a><span class="p">]</span><span class="w">
 </span><span class="w">
 </span><a class="sphx-glr-backref-module-FlowCyPy-opto_electronics-source sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.source.Gaussian" title="FlowCyPy.opto_electronics.source.Gaussian"><span class="n">source</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics-source sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.source.Gaussian" title="FlowCyPy.opto_electronics.source.Gaussian"><span class="n">source</span><span class="o">.</span><span class="n">Gaussian</span></a><span class="p">(</span><span class="w">
 </span>    <span class="n">waist_z</span><span class="o">=</span><span class="mf">10e-6</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">,</span>  <span class="c1"># Beam waist along flow direction (z-axis)</span><span class="w">
@@ -661,21 +663,20 @@ forward-scatter voltages, triggered segments and peak heights.</p>
 </span>    <span class="n">bandwidth</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span><span class="w">
-</span><span class="n">detectors</span> <span class="o">=</span> <span class="p">[</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.Detector"><span class="n">Detector</span></a><span class="p">(</span><span class="w">
-</span>        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">side</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
-</span>        <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span><span class="w">
-</span>        <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span><span class="w">
-</span>        <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span><span class="w">
-</span>    <span class="p">)</span><span class="p">,</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.Detector"><span class="n">Detector</span></a><span class="p">(</span><span class="w">
-</span>        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">forward</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
-</span>        <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span><span class="w">
-</span>        <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span><span class="w">
-</span>        <span class="n">cache_numerical_aperture</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span><span class="w">
-</span>        <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span><span class="w">
-</span>    <span class="p">)</span><span class="p">,</span><span class="w">
-</span><span class="p">]</span><span class="w">
+</span><a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.Detector"><span class="n">side_detector</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.Detector"><span class="n">Detector</span></a><span class="p">(</span><span class="w">
+</span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">side</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span><span class="w">
+</span>    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span><span class="w">
+</span>    <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.Detector"><span class="n">forward_detector</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.Detector"><span class="n">Detector</span></a><span class="p">(</span><span class="w">
+</span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">forward</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span><span class="w">
+</span>    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span><span class="w">
+</span>    <span class="n">cache_numerical_aperture</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span><span class="w">
+</span>    <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="n">detectors</span> <span class="o">=</span> <span class="p">[</span><a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.Detector"><span class="n">side_detector</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.Detector"><span class="n">forward_detector</span></a><span class="p">]</span><span class="w">
 </span><span class="w">
 </span><a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.Digitizer"><span class="n">digitizer</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.Digitizer"><span class="n">Digitizer</span></a><span class="p">(</span><span class="w">
 </span>    <span class="n">sampling_rate</span><span class="o">=</span><span class="mi">60</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span><span class="w">
@@ -795,7 +796,7 @@ forward-scatter voltages, triggered segments and peak heights.</p>
 <img src="../../_images/sphx_glr_assemble_a_flow_cytometer_005.png" srcset="../../_images/sphx_glr_assemble_a_flow_cytometer_005.png" alt="Forward-scatter peak heights" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 600x600 with 1 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.475 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.753 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-assemble-a-flow-cytometer-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/a15b0f4f7b8d57bb795dd89550f41337/assemble_a_flow_cytometer.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">assemble_a_flow_cytometer.ipynb</span></code></a></p>
@@ -874,7 +875,7 @@ forward-scatter voltages, triggered segments and peak heights.</p>
 
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.5.0/docs/source/gallery/tutorials/assemble_a_flow_cytometer.rst">
+    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.6.0/docs/source/gallery/tutorials/assemble_a_flow_cytometer.rst">
       <i class="fa-solid fa-pencil"></i>
       
       

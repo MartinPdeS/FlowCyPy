@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Measure false triggers with particle-free blanks &#8212; FlowCyPy 1.5.0 documentation</title>
+    <title>Measure false triggers with particle-free blanks &#8212; FlowCyPy 1.6.0 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=623e1633"></script>
+    <script src="../../_static/documentation_options.js?v=cf6e66ff"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -53,7 +53,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.5.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.6.0';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
@@ -66,7 +66,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.5.0" />
+  <meta name="docsearch:version" content="1.6.0" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -464,12 +464,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/cluster_particles_by_scatter.html">Cluster particles by forward and side scatter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/define_custom_dye_spectra.html">Define custom dyes and predict spectral spillover</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/detect_labeled_beads.html">Detect fluorescent beads alongside unlabeled beads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/excite_one_bead_with_two_lasers.html">Excite the same bead with two lasers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/select_a_laser_on_sony_id7000.html">Choose a laser on the Sony ID7000</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: Studies</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="choose_digitizer_voltage_range.html">Choose a digitizer range for dim and bright pulses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_analog_filters.html">Compare baseline restoration and low-pass filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compare_laser_intensity_noise.html">Compare intensity noise from two co-located lasers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_scatter_systems.html">Compare side-scatter collection at 488 nm</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_scatter_with_cytek_bead_data.html">Compare simulated scatter with Cytek bead measurements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_size_exclusion_cutoffs.html">Compare size-exclusion cutoffs for vesicles and lipoproteins</a></li>
@@ -603,15 +605,14 @@ rate because neighboring high samples can belong to one trigger.</p>
 </span>    <span class="n">record</span> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-method reference internal" href="../../code/flow_cytometer.html#FlowCyPy.flow_cytometer.FlowCytometer.acquire" title="FlowCyPy.FlowCytometer.acquire"><span class="n">instrument</span><span class="o">.</span><span class="n">acquire</span></a><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span><span class="w">
 </span>    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">event_collection</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="w">
 </span>    <span class="k">for</span> <span class="n">threshold_index</span><span class="p">,</span> <span class="n">threshold</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">thresholds</span><span class="p">)</span><span class="p">:</span><span class="w">
-</span>        <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.DigitalProcessing" title="FlowCyPy.DigitalProcessing"><span class="n">settings</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.DigitalProcessing" title="FlowCyPy.DigitalProcessing"><span class="n">DigitalProcessing</span></a><span class="p">(</span><span class="w">
-</span>            <span class="n">discriminator</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-digital_processing-discriminator sphx-glr-backref-type-py-class reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.discriminator.FixedWindow" title="FlowCyPy.digital_processing.discriminator.FixedWindow"><span class="n">discriminator</span><span class="o">.</span><span class="n">FixedWindow</span></a><span class="p">(</span><span class="w">
-</span>                <span class="n">trigger_channel</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">side</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
-</span>                <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span><span class="w">
-</span>                <span class="n">pre_buffer</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="w">
-</span>                <span class="n">post_buffer</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span><span class="w">
-</span>                <span class="n">max_triggers</span><span class="o">=</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w">
-</span>            <span class="p">)</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-FlowCyPy-digital_processing-discriminator sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.discriminator.FixedWindow" title="FlowCyPy.digital_processing.discriminator.FixedWindow"><span class="n">trigger_window</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-digital_processing-discriminator sphx-glr-backref-type-py-class reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.discriminator.FixedWindow" title="FlowCyPy.digital_processing.discriminator.FixedWindow"><span class="n">discriminator</span><span class="o">.</span><span class="n">FixedWindow</span></a><span class="p">(</span><span class="w">
+</span>            <span class="n">trigger_channel</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">side</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>            <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span><span class="w">
+</span>            <span class="n">pre_buffer</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="w">
+</span>            <span class="n">post_buffer</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span><span class="w">
+</span>            <span class="n">max_triggers</span><span class="o">=</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w">
 </span>        <span class="p">)</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.DigitalProcessing" title="FlowCyPy.DigitalProcessing"><span class="n">settings</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.DigitalProcessing" title="FlowCyPy.DigitalProcessing"><span class="n">DigitalProcessing</span></a><span class="p">(</span><span class="n">discriminator</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-digital_processing-discriminator sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.discriminator.FixedWindow" title="FlowCyPy.digital_processing.discriminator.FixedWindow"><span class="n">trigger_window</span></a><span class="p">)</span><span class="w">
 </span>        <span class="n">processed</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">digital_processing</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.DigitalProcessing" title="FlowCyPy.DigitalProcessing"><span class="n">settings</span></a><span class="p">)</span><span class="w">
 </span>        <span class="n">counts</span><span class="p">[</span><span class="n">run_index</span><span class="p">,</span> <span class="n">threshold_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">processed</span><span class="o">.</span><span class="n">number_of_triggers</span> <span class="ow">or</span> <span class="mi">0</span><span class="w">
 </span><span class="w">
@@ -643,7 +644,7 @@ rate because neighboring high samples can belong to one trigger.</p>
 milliseconds. Longer blanks can resolve rarer false triggers. To measure
 the sensitivity cost of raising a threshold, apply the same voltage levels
 to a sample with known particles.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.133 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.444 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-studies-measure-blank-trigger-rate-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/7250d23a88b70eae3bf7ca20b70aed40/measure_blank_trigger_rate.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">measure_blank_trigger_rate.ipynb</span></code></a></p>
@@ -715,7 +716,7 @@ to a sample with known particles.</p>
 
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.5.0/docs/source/gallery/studies/measure_blank_trigger_rate.rst">
+    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.6.0/docs/source/gallery/studies/measure_blank_trigger_rate.rst">
       <i class="fa-solid fa-pencil"></i>
       
       

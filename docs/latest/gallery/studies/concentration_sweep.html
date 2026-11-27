@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Concentration and coincidence &#8212; FlowCyPy 1.5.0 documentation</title>
+    <title>Concentration and coincidence &#8212; FlowCyPy 1.6.0 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=623e1633"></script>
+    <script src="../../_static/documentation_options.js?v=cf6e66ff"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -53,7 +53,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.5.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.6.0';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
@@ -66,7 +66,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.5.0" />
+  <meta name="docsearch:version" content="1.6.0" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -464,12 +464,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/cluster_particles_by_scatter.html">Cluster particles by forward and side scatter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/define_custom_dye_spectra.html">Define custom dyes and predict spectral spillover</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/detect_labeled_beads.html">Detect fluorescent beads alongside unlabeled beads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/excite_one_bead_with_two_lasers.html">Excite the same bead with two lasers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/select_a_laser_on_sony_id7000.html">Choose a laser on the Sony ID7000</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: Studies</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="choose_digitizer_voltage_range.html">Choose a digitizer range for dim and bright pulses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_analog_filters.html">Compare baseline restoration and low-pass filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compare_laser_intensity_noise.html">Compare intensity noise from two co-located lasers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_scatter_systems.html">Compare side-scatter collection at 488 nm</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_scatter_with_cytek_bead_data.html">Compare simulated scatter with Cytek bead measurements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_size_exclusion_cutoffs.html">Compare size-exclusion cutoffs for vesicles and lipoproteins</a></li>
@@ -602,13 +604,14 @@ resulting analog traces, trigger counts, and peak distributions.</p>
 </span><span class="k">for</span> <span class="n">concentration_value</span> <span class="ow">in</span> <span class="n">concentration_values</span><span class="p">:</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/flow_cytometer.html#FlowCyPy.flow_cytometer.FlowCytometer" title="FlowCyPy.FlowCytometer"><span class="n">instrument</span></a> <span class="o">=</span> <span class="n">aurora</span><span class="p">(</span><span class="n">optical_power</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliwatt</span><span class="p">)</span><span class="w">
 </span><span class="w">
+</span>    <span class="n">sampling_method</span> <span class="o">=</span> <span class="n">populations</span><span class="o">.</span><span class="n">ExplicitModel</span><span class="p">(</span><span class="p">)</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-FlowCyPy-fluidics-populations sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.populations.SpherePopulation" title="FlowCyPy.fluidics.populations.SpherePopulation"><span class="n">population</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-fluidics-populations sphx-glr-backref-type-py-class reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.populations.SpherePopulation" title="FlowCyPy.fluidics.populations.SpherePopulation"><span class="n">populations</span><span class="o">.</span><span class="n">SpherePopulation</span></a><span class="p">(</span><span class="w">
 </span>        <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">concentration_value</span><span class="si">:</span><span class="s2">.0e</span><span class="si">}</span><span class="s2"> particles_per_mL</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
 </span>        <a class="sphx-glr-backref-module-FlowCyPy-fluidics-distributions sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.distributions.Delta" title="FlowCyPy.fluidics.distributions.Delta"><span class="n">medium_refractive_index</span></a><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics-distributions sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.distributions.Delta" title="FlowCyPy.fluidics.distributions.Delta"><span class="n">medium_refractive_index</span></a><span class="p">,</span><span class="w">
 </span>        <span class="n">concentration</span><span class="o">=</span><span class="n">concentration_value</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span><span class="p">,</span><span class="w">
 </span>        <span class="n">diameter</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics-distributions sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.distributions.RosinRammler" title="FlowCyPy.fluidics.distributions.RosinRammler"><span class="n">diameter_distribution</span></a><span class="p">,</span><span class="w">
 </span>        <span class="n">refractive_index</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics-distributions sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.distributions.Normal" title="FlowCyPy.fluidics.distributions.Normal"><span class="n">refractive_index_distribution</span></a><span class="p">,</span><span class="w">
-</span>        <span class="n">sampling_method</span><span class="o">=</span><span class="n">populations</span><span class="o">.</span><span class="n">ExplicitModel</span><span class="p">(</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>        <span class="n">sampling_method</span><span class="o">=</span><span class="n">sampling_method</span><span class="p">,</span><span class="w">
 </span>    <span class="p">)</span><span class="w">
 </span><span class="w">
 </span>    <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-property reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.system.Fluidics.scatterer_collection" title="FlowCyPy.Fluidics.scatterer_collection"><span class="n">instrument</span><span class="o">.</span><span class="n">fluidics</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span></a><span class="p">(</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics-populations sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.populations.SpherePopulation" title="FlowCyPy.fluidics.populations.SpherePopulation"><span class="n">population</span></a><span class="p">)</span><span class="w">
@@ -714,7 +717,7 @@ resulting analog traces, trigger counts, and peak distributions.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>No peaks detected at 5e+09 particles/mL.
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 7.946 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 9.269 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-studies-concentration-sweep-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/6c2f44bdbe64e8b2fe58c75e0b2234f5/concentration_sweep.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">concentration_sweep.ipynb</span></code></a></p>
@@ -794,7 +797,7 @@ resulting analog traces, trigger counts, and peak distributions.</p>
 
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.5.0/docs/source/gallery/studies/concentration_sweep.rst">
+    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.6.0/docs/source/gallery/studies/concentration_sweep.rst">
       <i class="fa-solid fa-pencil"></i>
       
       

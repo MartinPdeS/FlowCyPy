@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Compare Rosetta Mix marker peaks with CAL003 &#8212; FlowCyPy 1.5.0 documentation</title>
+    <title>Compare Rosetta Mix marker peaks with CAL003 &#8212; FlowCyPy 1.6.0 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=623e1633"></script>
+    <script src="../../_static/documentation_options.js?v=cf6e66ff"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -53,7 +53,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.5.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.6.0';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
@@ -66,7 +66,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.5.0" />
+  <meta name="docsearch:version" content="1.6.0" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -464,12 +464,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/cluster_particles_by_scatter.html">Cluster particles by forward and side scatter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/define_custom_dye_spectra.html">Define custom dyes and predict spectral spillover</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/detect_labeled_beads.html">Detect fluorescent beads alongside unlabeled beads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/excite_one_bead_with_two_lasers.html">Excite the same bead with two lasers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/select_a_laser_on_sony_id7000.html">Choose a laser on the Sony ID7000</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: Studies</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="choose_digitizer_voltage_range.html">Choose a digitizer range for dim and bright pulses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_analog_filters.html">Compare baseline restoration and low-pass filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compare_laser_intensity_noise.html">Compare intensity noise from two co-located lasers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_scatter_systems.html">Compare side-scatter collection at 488 nm</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_scatter_with_cytek_bead_data.html">Compare simulated scatter with Cytek bead measurements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_size_exclusion_cutoffs.html">Compare size-exclusion cutoffs for vesicles and lipoproteins</a></li>
@@ -619,10 +621,15 @@ the dye, coating mechanism, size CV or absolute loading.</p>
     &quot;&quot;&quot;</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/flow_cytometer.html#FlowCyPy.flow_cytometer.FlowCytometer" title="FlowCyPy.FlowCytometer"><span class="n">instrument</span></a> <span class="o">=</span> <span class="n">facs_canto_ii</span><span class="p">(</span><span class="n">background_power</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">picowatt</span><span class="p">)</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics" title="FlowCyPy.OptoElectronics"><span class="n">optics</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics" title="FlowCyPy.OptoElectronics"><span class="n">instrument</span><span class="o">.</span><span class="n">opto_electronics</span></a><span class="w">
-</span>    <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-property reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics.detectors" title="FlowCyPy.OptoElectronics.detectors"><span class="n">optics</span><span class="o">.</span><span class="n">detectors</span></a> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-property reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics.detectors" title="FlowCyPy.OptoElectronics.detectors"><span class="n">optics</span><span class="o">.</span><span class="n">detectors</span></a><span class="p">,</span> <span class="n">pmt</span><span class="p">(</span><span class="w">
-</span>        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">Green</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span> <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span><span class="w">
-</span>        <span class="n">signals</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">fluorescence</span><span class="s2">&quot;</span><span class="p">,</span><span class="p">)</span><span class="p">,</span> <span class="n">optical_filter</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-fluorescence sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.fluorescence.Bandpass" title="FlowCyPy.fluorescence.Bandpass"><span class="n">Bandpass</span></a><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="mi">530</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nm</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">30</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nm</span><span class="p">)</span><span class="p">,</span><span class="w">
-</span>    <span class="p">)</span><span class="p">]</span><span class="w">
+</span>    <span class="n">optical_filter</span> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-fluorescence sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.fluorescence.Bandpass" title="FlowCyPy.fluorescence.Bandpass"><span class="n">Bandpass</span></a><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="mi">530</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nm</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">30</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nm</span><span class="p">)</span><span class="w">
+</span>    <span class="n">green_detector</span> <span class="o">=</span> <span class="n">pmt</span><span class="p">(</span><span class="w">
+</span>        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">Green</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span><span class="w">
+</span>        <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span><span class="w">
+</span>        <span class="n">signals</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">fluorescence</span><span class="s2">&quot;</span><span class="p">,</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>        <span class="n">optical_filter</span><span class="o">=</span><span class="n">optical_filter</span><span class="p">,</span><span class="w">
+</span>    <span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-property reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics.detectors" title="FlowCyPy.OptoElectronics.detectors"><span class="n">optics</span><span class="o">.</span><span class="n">detectors</span></a> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-property reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics.detectors" title="FlowCyPy.OptoElectronics.detectors"><span class="n">optics</span><span class="o">.</span><span class="n">detectors</span></a><span class="p">,</span> <span class="n">green_detector</span><span class="p">]</span><span class="w">
 </span><span class="w">
 </span>    <span class="k">for</span> <span class="n">diameter_nm</span> <span class="ow">in</span> <span class="n">diameters_nm</span><span class="p">:</span><span class="w">
 </span>        <span class="n">diameter</span> <span class="o">=</span> <span class="n">diameter_nm</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nm</span><span class="w">
@@ -635,9 +642,13 @@ the dye, coating mechanism, size CV or absolute loading.</p>
 </span>            <span class="k">else</span><span class="p">:</span><span class="w">
 </span>                <span class="n">label</span> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-fluorescence sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.fluorescence.Label" title="FlowCyPy.fluorescence.Label"><span class="n">Label</span></a><span class="p">(</span><span class="n">fluorophore</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-fluorescence sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.fluorescence.Fluorophore" title="FlowCyPy.fluorescence.Fluorophore"><span class="n">dye</span></a><span class="p">,</span> <span class="n">molecules_per_particle</span><span class="o">=</span><span class="n">nominal_count</span><span class="p">)</span><span class="w">
 </span>            <span class="n">labels</span> <span class="o">=</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="p">)</span><span class="w">
+</span>        <span class="n">diameter_distribution</span> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-fluidics-distributions sphx-glr-backref-type-py-class reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.distributions.Normal" title="FlowCyPy.fluidics.distributions.Normal"><span class="n">distributions</span><span class="o">.</span><span class="n">Normal</span></a><span class="p">(</span><span class="w">
+</span>            <span class="n">mean</span><span class="o">=</span><span class="n">diameter</span><span class="p">,</span><span class="w">
+</span>            <span class="n">standard_deviation</span><span class="o">=</span><span class="n">diameter_cv</span> <span class="o">*</span> <span class="n">diameter</span><span class="p">,</span><span class="w">
+</span>        <span class="p">)</span><span class="w">
 </span>        <span class="n">population</span> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-fluidics-populations sphx-glr-backref-type-py-class reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.populations.SpherePopulation" title="FlowCyPy.fluidics.populations.SpherePopulation"><span class="n">populations</span><span class="o">.</span><span class="n">SpherePopulation</span></a><span class="p">(</span><span class="w">
 </span>            <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">diameter_nm</span><span class="si">}</span><span class="s2"> nm</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
-</span>            <span class="n">diameter</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-fluidics-distributions sphx-glr-backref-type-py-class reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.distributions.Normal" title="FlowCyPy.fluidics.distributions.Normal"><span class="n">distributions</span><span class="o">.</span><span class="n">Normal</span></a><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="n">diameter</span><span class="p">,</span> <span class="n">standard_deviation</span><span class="o">=</span><span class="n">diameter_cv</span> <span class="o">*</span> <span class="n">diameter</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>            <span class="n">diameter</span><span class="o">=</span><span class="n">diameter_distribution</span><span class="p">,</span><span class="w">
 </span>            <span class="n">refractive_index</span><span class="o">=</span><span class="mf">1.59</span><span class="p">,</span><span class="w">
 </span>            <span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.333</span><span class="p">,</span><span class="w">
 </span>            <span class="n">concentration</span><span class="o">=</span><span class="mf">1e7</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span><span class="p">,</span><span class="w">
@@ -803,7 +814,7 @@ Scatter bright/dim: RosettaX 13.77, FlowCyPy 20.43
 Green bright/dim: RosettaX 34.65, FlowCyPy 29.16
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 13.388 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 16.007 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-studies-reproduce-rosetta-mix-markers-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/1101f35c61d1d0fe2f481db1e4e464ae/reproduce_rosetta_mix_markers.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">reproduce_rosetta_mix_markers.ipynb</span></code></a></p>
@@ -877,7 +888,7 @@ Green bright/dim: RosettaX 34.65, FlowCyPy 29.16
 
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.5.0/docs/source/gallery/studies/reproduce_rosetta_mix_markers.rst">
+    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.6.0/docs/source/gallery/studies/reproduce_rosetta_mix_markers.rst">
       <i class="fa-solid fa-pencil"></i>
       
       

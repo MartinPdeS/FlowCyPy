@@ -50,7 +50,7 @@ scatter signals in the presence of system noise and fluidic variability.
 Load five nanoparticle sizes on the 405 nm Aurora scatter preset
 ----------------------------------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 21-36
+.. GENERATED FROM PYTHON SOURCE LINES 21-38
 
 .. code-block:: Python
 
@@ -58,11 +58,13 @@ Load five nanoparticle sizes on the 405 nm Aurora scatter preset
     scatterer_collection = instrument.fluidics.scatterer_collection
 
     for size in [150, 125, 100, 75, 50]:
+        diameter_distribution = distributions.Delta(value=size * ureg.nanometer)
+        refractive_index_distribution = distributions.Delta(value=1.36)
         pop = populations.SpherePopulation(
             name=f"{size} nm",
             concentration=5e9 * ureg.particle / ureg.milliliter,
-            diameter=distributions.Delta(value=size * ureg.nanometer),
-            refractive_index=distributions.Delta(value=1.36),
+            diameter=diameter_distribution,
+            refractive_index=refractive_index_distribution,
             medium_refractive_index=1.33,
         )
         scatterer_collection.add_population(pop)
@@ -76,12 +78,12 @@ Load five nanoparticle sizes on the 405 nm Aurora scatter preset
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 37-39
+.. GENERATED FROM PYTHON SOURCE LINES 39-41
 
 Acquire ten milliseconds with the preset's side-scatter trigger
 ---------------------------------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 39-41
+.. GENERATED FROM PYTHON SOURCE LINES 41-43
 
 .. code-block:: Python
 
@@ -94,14 +96,14 @@ Acquire ten milliseconds with the preset's side-scatter trigger
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 42-46
+.. GENERATED FROM PYTHON SOURCE LINES 44-48
 
 Plot Raw Analog Signal
 ----------------------
 Zoom to the strongest triggered window so the pulse shape remains visible
 instead of compressing the entire acquisition into a dense band.
 
-.. GENERATED FROM PYTHON SOURCE LINES 46-82
+.. GENERATED FROM PYTHON SOURCE LINES 48-84
 
 .. code-block:: Python
 
@@ -161,13 +163,13 @@ instead of compressing the entire acquisition into a dense band.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 83-86
+.. GENERATED FROM PYTHON SOURCE LINES 85-88
 
 Plot Triggered Analog Signal Segments
 -------------------------------------
 Inspect which weak pulses survived the discriminator threshold.
 
-.. GENERATED FROM PYTHON SOURCE LINES 86-88
+.. GENERATED FROM PYTHON SOURCE LINES 88-90
 
 .. code-block:: Python
 
@@ -195,7 +197,7 @@ Inspect which weak pulses survived the discriminator threshold.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 7.562 seconds)
+   **Total running time of the script:** (0 minutes 8.749 seconds)
 
 
 .. _sphx_glr_download_gallery_studies_limit_of_detection.py:

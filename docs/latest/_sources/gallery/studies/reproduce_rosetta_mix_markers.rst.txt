@@ -91,7 +91,7 @@ give a ratio of only (380/140)² = 7.37. Matching 34.65 requires about 4.70
 times the surface density on the bright beads. The fixture does not identify
 the dye, coating mechanism, size CV or absolute loading.
 
-.. GENERATED FROM PYTHON SOURCE LINES 49-137
+.. GENERATED FROM PYTHON SOURCE LINES 49-146
 
 .. code-block:: Python
 
@@ -118,10 +118,15 @@ the dye, coating mechanism, size CV or absolute loading.
         """
         instrument = facs_canto_ii(background_power=4 * ureg.picowatt)
         optics = instrument.opto_electronics
-        optics.detectors = [*optics.detectors, pmt(
-            name="Green", phi_angle=90 * ureg.degree, numerical_aperture=0.8,
-            signals=("fluorescence",), optical_filter=Bandpass(center=530 * ureg.nm, width=30 * ureg.nm),
-        )]
+        optical_filter = Bandpass(center=530 * ureg.nm, width=30 * ureg.nm)
+        green_detector = pmt(
+            name="Green",
+            phi_angle=90 * ureg.degree,
+            numerical_aperture=0.8,
+            signals=("fluorescence",),
+            optical_filter=optical_filter,
+        )
+        optics.detectors = [*optics.detectors, green_detector]
 
         for diameter_nm in diameters_nm:
             diameter = diameter_nm * ureg.nm
@@ -134,9 +139,13 @@ the dye, coating mechanism, size CV or absolute loading.
                 else:
                     label = Label(fluorophore=dye, molecules_per_particle=nominal_count)
                 labels = (label,)
+            diameter_distribution = distributions.Normal(
+                mean=diameter,
+                standard_deviation=diameter_cv * diameter,
+            )
             population = populations.SpherePopulation(
                 name=f"{diameter_nm} nm",
-                diameter=distributions.Normal(mean=diameter, standard_deviation=diameter_cv * diameter),
+                diameter=diameter_distribution,
                 refractive_index=1.59,
                 medium_refractive_index=1.333,
                 concentration=1e7 * ureg.particle / ureg.milliliter,
@@ -190,7 +199,7 @@ the dye, coating mechanism, size CV or absolute loading.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 138-147
+.. GENERATED FROM PYTHON SOURCE LINES 147-156
 
 Separate size dispersion from surface labeling
 ----------------------------------------------
@@ -202,7 +211,7 @@ using its fitted dim center and the geometric centers of its log bins.
 This measures local spread, including overlapping events inside the gate.
 It does not determine the bead lot’s diameter CV. The last case supplies the instrument for the waveform comparison below.
 
-.. GENERATED FROM PYTHON SOURCE LINES 147-175
+.. GENERATED FROM PYTHON SOURCE LINES 156-184
 
 .. code-block:: Python
 
@@ -250,7 +259,7 @@ It does not determine the bead lot’s diameter CV. The last case supplies the i
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 176-196
+.. GENERATED FROM PYTHON SOURCE LINES 185-205
 
 Compare the measured and simulated populations
 ----------------------------------------------
@@ -273,7 +282,7 @@ each channel within 1 µs of each known arrival. Retain arrivals separated by
 at least 4 µs from their neighbors to limit pulse overlap. This selects isolated
 beads and omits the Micro-PLUS hardware trigger, ADC clipping and blank triggers.
 
-.. GENERATED FROM PYTHON SOURCE LINES 196-220
+.. GENERATED FROM PYTHON SOURCE LINES 205-229
 
 .. code-block:: Python
 
@@ -308,7 +317,7 @@ beads and omits the Micro-PLUS hardware trigger, ADC clipping and blank triggers
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 221-226
+.. GENERATED FROM PYTHON SOURCE LINES 230-235
 
 Put the dim marker at (1, 1) independently in each panel. The remaining
 displacement of the bright marker tests relative spacing. Both panels use
@@ -316,7 +325,7 @@ identical bins and show the percentage of the respective sample per bin.
 Peaks outside the measured range are excluded from the plot and remain in
 the denominator. Crosses show both measured fitted centers in each panel.
 
-.. GENERATED FROM PYTHON SOURCE LINES 226-250
+.. GENERATED FROM PYTHON SOURCE LINES 235-259
 
 .. code-block:: Python
 
@@ -368,7 +377,7 @@ the denominator. Crosses show both measured fitted centers in each panel.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 13.388 seconds)
+   **Total running time of the script:** (0 minutes 16.007 seconds)
 
 
 .. _sphx_glr_download_gallery_studies_reproduce_rosetta_mix_markers.py:

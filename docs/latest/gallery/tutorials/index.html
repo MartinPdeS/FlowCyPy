@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Examples: Tutorials &#8212; FlowCyPy 1.5.0 documentation</title>
+    <title>Examples: Tutorials &#8212; FlowCyPy 1.6.0 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=623e1633"></script>
+    <script src="../../_static/documentation_options.js?v=cf6e66ff"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -53,7 +53,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.5.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.6.0';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
@@ -66,7 +66,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.5.0" />
+  <meta name="docsearch:version" content="1.6.0" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -464,12 +464,14 @@
 <li class="toctree-l2"><a class="reference internal" href="cluster_particles_by_scatter.html">Cluster particles by forward and side scatter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="define_custom_dye_spectra.html">Define custom dyes and predict spectral spillover</a></li>
 <li class="toctree-l2"><a class="reference internal" href="detect_labeled_beads.html">Detect fluorescent beads alongside unlabeled beads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="excite_one_bead_with_two_lasers.html">Excite the same bead with two lasers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="select_a_laser_on_sony_id7000.html">Choose a laser on the Sony ID7000</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../studies/index.html">Examples: Studies</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../studies/choose_digitizer_voltage_range.html">Choose a digitizer range for dim and bright pulses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../studies/compare_analog_filters.html">Compare baseline restoration and low-pass filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../studies/compare_laser_intensity_noise.html">Compare intensity noise from two co-located lasers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../studies/compare_scatter_systems.html">Compare side-scatter collection at 488 nm</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../studies/compare_scatter_with_cytek_bead_data.html">Compare simulated scatter with Cytek bead measurements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../studies/compare_size_exclusion_cutoffs.html">Compare size-exclusion cutoffs for vesicles and lipoproteins</a></li>
@@ -568,6 +570,9 @@
 </div><div class="sphx-glr-thumbcontainer" tooltip="Run two populations of 300 nm beads through a 488 nm laser. Both scatter light. Only the labeled population emits fluorescence. Compare the two PMT voltages against the simulated particle arrival times in the same acquisition."><img alt="" src="../../_images/sphx_glr_detect_labeled_beads_thumb.png" />
 <p><a class="reference internal" href="detect_labeled_beads.html"><span class="doc">Detect fluorescent beads alongside unlabeled beads</span></a></p>
   <div class="sphx-glr-thumbnail-title">Detect fluorescent beads alongside unlabeled beads</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Compare the green fluorescence excited by 405 nm and 488 nm lasers at a single interrogation spot. The preset supplies a shared Gaussian beam profile."><img alt="" src="../../_images/sphx_glr_excite_one_bead_with_two_lasers_thumb.png" />
+<p><a class="reference internal" href="excite_one_bead_with_two_lasers.html"><span class="doc">Excite the same bead with two lasers</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Excite the same bead with two lasers</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="The two ID7000 factories model different scatter channels. Use the 405 nm factory for side scatter (SSC) and the 488 nm factory for forward scatter (FSC). Here we configure the violet channel for a faster acquisition and inspect the analog voltage trace from each configuration."><img alt="" src="../../_images/sphx_glr_select_a_laser_on_sony_id7000_thumb.png" />
 <p><a class="reference internal" href="select_a_laser_on_sony_id7000.html"><span class="doc">Choose a laser on the Sony ID7000</span></a></p>
   <div class="sphx-glr-thumbnail-title">Choose a laser on the Sony ID7000</div>
@@ -619,7 +624,7 @@
 
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.5.0/docs/source/gallery/tutorials/index.rst">
+    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.6.0/docs/source/gallery/tutorials/index.rst">
       <i class="fa-solid fa-pencil"></i>
       
       

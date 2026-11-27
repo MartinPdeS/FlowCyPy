@@ -49,41 +49,48 @@ Define the particle mixture
 ---------------------------
 Specify the size, refractive index and concentration of each population.
 
-.. GENERATED FROM PYTHON SOURCE LINES 20-54
+.. GENERATED FROM PYTHON SOURCE LINES 20-61
 
 .. code-block:: Python
 
 
+    medium_index_0 = distributions.Delta(1.33)
+    diameter_0 = distributions.RosinRammler(
+        scale=150 * ureg.nanometer,
+        shape=50,
+        low_cutoff=50.0 * ureg.nanometer,
+    )
+    refractive_index_0 = distributions.Normal(
+        mean=1.44,
+        standard_deviation=0.002,
+        low_cutoff=1.33,
+    )
     population_0 = populations.SpherePopulation(
         name="Pop 0",
-        medium_refractive_index=distributions.Delta(1.33),
+        medium_refractive_index=medium_index_0,
         concentration=1e10 * ureg.particle / ureg.milliliter,
-        diameter=distributions.RosinRammler(
-            scale=150 * ureg.nanometer,
-            shape=50,
-            low_cutoff=50.0 * ureg.nanometer,
-        ),
-        refractive_index=distributions.Normal(
-            mean=1.44,
-            standard_deviation=0.002,
-            low_cutoff=1.33,
-        ),
+        diameter=diameter_0,
+        refractive_index=refractive_index_0,
     )
 
+    medium_index_1 = distributions.Delta(1.33)
+    diameter_1 = distributions.RosinRammler(
+        scale=50 * ureg.nanometer,
+        shape=2,
+    )
+    refractive_index_1 = distributions.Normal(
+        mean=1.44,
+        standard_deviation=0.002,
+        low_cutoff=1.33,
+    )
+    gamma_sampling = populations.GammaModel(number_of_samples=1_000)
     population_1 = populations.SpherePopulation(
         name="Pop 1",
-        medium_refractive_index=distributions.Delta(1.33),
+        medium_refractive_index=medium_index_1,
         concentration=5e17 * ureg.particle / ureg.milliliter,
-        diameter=distributions.RosinRammler(
-            scale=50 * ureg.nanometer,
-            shape=2,
-        ),
-        refractive_index=distributions.Normal(
-            mean=1.44,
-            standard_deviation=0.002,
-            low_cutoff=1.33,
-        ),
-        sampling_method=populations.GammaModel(number_of_samples=1_000),
+        diameter=diameter_1,
+        refractive_index=refractive_index_1,
+        sampling_method=gamma_sampling,
     )
 
 
@@ -94,14 +101,14 @@ Specify the size, refractive index and concentration of each population.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 55-59
+.. GENERATED FROM PYTHON SOURCE LINES 62-66
 
 Load the sample on a FACSCanto
 ------------------------------
 Use the preset's paired forward- and side-scatter detectors and peak locator.
 Dilute the particle mixture 100-fold before acquisition.
 
-.. GENERATED FROM PYTHON SOURCE LINES 59-66
+.. GENERATED FROM PYTHON SOURCE LINES 66-73
 
 .. code-block:: Python
 
@@ -119,13 +126,13 @@ Dilute the particle mixture 100-fold before acquisition.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 67-70
+.. GENERATED FROM PYTHON SOURCE LINES 74-77
 
 Run the acquisition
 -------------------
 Acquire and process one millisecond of events.
 
-.. GENERATED FROM PYTHON SOURCE LINES 70-74
+.. GENERATED FROM PYTHON SOURCE LINES 77-81
 
 .. code-block:: Python
 
@@ -140,13 +147,13 @@ Acquire and process one millisecond of events.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 75-78
+.. GENERATED FROM PYTHON SOURCE LINES 82-85
 
 Inspect particle sizes
 ----------------------
 Check the sampled diameter distribution before examining the detector response.
 
-.. GENERATED FROM PYTHON SOURCE LINES 78-85
+.. GENERATED FROM PYTHON SOURCE LINES 85-92
 
 .. code-block:: Python
 
@@ -175,12 +182,12 @@ Check the sampled diameter distribution before examining the detector response.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 86-88
+.. GENERATED FROM PYTHON SOURCE LINES 93-95
 
 Step 5: Plot Events and Raw Analog Signals
 ------------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 88-94
+.. GENERATED FROM PYTHON SOURCE LINES 95-101
 
 .. code-block:: Python
 
@@ -208,12 +215,12 @@ Step 5: Plot Events and Raw Analog Signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 95-97
+.. GENERATED FROM PYTHON SOURCE LINES 102-104
 
 Plot raw analog signals
 -----------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 97-102
+.. GENERATED FROM PYTHON SOURCE LINES 104-109
 
 .. code-block:: Python
 
@@ -242,12 +249,12 @@ Plot raw analog signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 103-105
+.. GENERATED FROM PYTHON SOURCE LINES 110-112
 
 Step 6: Plot Triggered Analog Segments
 --------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 105-110
+.. GENERATED FROM PYTHON SOURCE LINES 112-117
 
 .. code-block:: Python
 
@@ -274,12 +281,12 @@ Step 6: Plot Triggered Analog Segments
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 111-113
+.. GENERATED FROM PYTHON SOURCE LINES 118-120
 
 Step 7: Plot Peak Features
 --------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 113-119
+.. GENERATED FROM PYTHON SOURCE LINES 120-126
 
 .. code-block:: Python
 
@@ -307,12 +314,12 @@ Step 7: Plot Peak Features
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 120-122
+.. GENERATED FROM PYTHON SOURCE LINES 127-129
 
 Step 8: Classify Events from Peak Features
 ------------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 122-131
+.. GENERATED FROM PYTHON SOURCE LINES 129-138
 
 .. code-block:: Python
 
@@ -340,7 +347,7 @@ Step 8: Classify Events from Peak Features
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.331 seconds)
+   **Total running time of the script:** (0 minutes 2.126 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_cluster_particles_by_scatter.py:

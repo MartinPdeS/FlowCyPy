@@ -119,6 +119,23 @@ Examples: Tutorials
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Compare the green fluorescence excited by 405 nm and 488 nm lasers at a single interrogation spot. The preset supplies a shared Gaussian beam profile.">
+
+.. only:: html
+
+  .. image:: /gallery/tutorials/images/thumb/sphx_glr_excite_one_bead_with_two_lasers_thumb.png
+    :alt:
+
+  :doc:`/gallery/tutorials/excite_one_bead_with_two_lasers`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Excite the same bead with two lasers</div>
+    </div>
+
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="The two ID7000 factories model different scatter channels. Use the 405 nm factory for side scatter (SSC) and the 488 nm factory for forward scatter (FSC). Here we configure the violet channel for a faster acquisition and inspect the analog voltage trace from each configuration.">
 
 .. only:: html
@@ -150,6 +167,7 @@ Examples: Tutorials
    /gallery/tutorials/cluster_particles_by_scatter
    /gallery/tutorials/define_custom_dye_spectra
    /gallery/tutorials/detect_labeled_beads
+   /gallery/tutorials/excite_one_bead_with_two_lasers
    /gallery/tutorials/select_a_laser_on_sony_id7000
 
 

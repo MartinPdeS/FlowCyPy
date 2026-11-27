@@ -68,13 +68,14 @@ ri_dist = distributions.Normal(
     low_cutoff=1.33,
 )
 
+gamma_sampling = populations.GammaModel(number_of_samples=5_000)
 population_1 = populations.SpherePopulation(
     name="Pop 1",
     medium_refractive_index=medium_refractive_index,
     concentration=5e11 * ureg.particle / ureg.milliliter,
     diameter=diameter_dist,
     refractive_index=ri_dist,
-    sampling_method=populations.GammaModel(number_of_samples=5_000),
+    sampling_method=gamma_sampling,
 )
 
 scatterer_collection.add_population(population_0, population_1)
@@ -95,10 +96,9 @@ from FlowCyPy.opto_electronics import (
     circuits,
 )
 
-analog_processing = [
-    circuits.BaselineRestorationServo(time_constant=100 * ureg.microsecond),
-    circuits.BesselLowPass(cutoff_frequency=2 * ureg.megahertz, order=4, gain=2),
-]
+baseline_restoration = circuits.BaselineRestorationServo(time_constant=100 * ureg.microsecond)
+low_pass_filter = circuits.BesselLowPass(cutoff_frequency=2 * ureg.megahertz, order=4, gain=2)
+analog_processing = [baseline_restoration, low_pass_filter]
 
 source = source.Gaussian(
     waist_z=10e-6 * ureg.meter,  # Beam waist along flow direction (z-axis)
@@ -109,21 +109,20 @@ source = source.Gaussian(
     bandwidth=10 * ureg.megahertz,
 )
 
-detectors = [
-    Detector(
-        name="side",
-        phi_angle=90 * ureg.degree,
-        numerical_aperture=1.1,
-        responsivity=1 * ureg.ampere / ureg.watt,
-    ),
-    Detector(
-        name="forward",
-        phi_angle=0 * ureg.degree,
-        numerical_aperture=0.3,
-        cache_numerical_aperture=0.1,
-        responsivity=1 * ureg.ampere / ureg.watt,
-    ),
-]
+side_detector = Detector(
+    name="side",
+    phi_angle=90 * ureg.degree,
+    numerical_aperture=1.1,
+    responsivity=1 * ureg.ampere / ureg.watt,
+)
+forward_detector = Detector(
+    name="forward",
+    phi_angle=0 * ureg.degree,
+    numerical_aperture=0.3,
+    cache_numerical_aperture=0.1,
+    responsivity=1 * ureg.ampere / ureg.watt,
+)
+detectors = [side_detector, forward_detector]
 
 digitizer = Digitizer(
     sampling_rate=60 * ureg.megahertz,

@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Compare size-exclusion cutoffs for vesicles and lipoproteins &#8212; FlowCyPy 1.5.0 documentation</title>
+    <title>Compare size-exclusion cutoffs for vesicles and lipoproteins &#8212; FlowCyPy 1.6.0 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=623e1633"></script>
+    <script src="../../_static/documentation_options.js?v=cf6e66ff"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -53,7 +53,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.5.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.6.0';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
@@ -66,7 +66,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.5.0" />
+  <meta name="docsearch:version" content="1.6.0" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -464,12 +464,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/cluster_particles_by_scatter.html">Cluster particles by forward and side scatter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/define_custom_dye_spectra.html">Define custom dyes and predict spectral spillover</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/detect_labeled_beads.html">Detect fluorescent beads alongside unlabeled beads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/excite_one_bead_with_two_lasers.html">Excite the same bead with two lasers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/select_a_laser_on_sony_id7000.html">Choose a laser on the Sony ID7000</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: Studies</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="choose_digitizer_voltage_range.html">Choose a digitizer range for dim and bright pulses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_analog_filters.html">Compare baseline restoration and low-pass filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compare_laser_intensity_noise.html">Compare intensity noise from two co-located lasers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_scatter_systems.html">Compare side-scatter collection at 488 nm</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_scatter_with_cytek_bead_data.html">Compare simulated scatter with Cytek bead measurements</a></li>
 <li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">Compare size-exclusion cutoffs for vesicles and lipoproteins</a></li>
@@ -611,7 +613,7 @@ to download the full example code.</p>
 </span>        <span class="n">sheath_volume_flow</span><span class="o">=</span><span class="n">fluidics</span><span class="o">.</span><span class="n">SheathFlowRate</span><span class="o">.</span><span class="n">MEDIUM</span><span class="o">.</span><span class="n">value</span><span class="p">,</span><span class="w">
 </span>        <span class="n">width</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span> <span class="c1">#can be changed to fit an experimental setup</span><span class="w">
 </span>        <span class="n">height</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span> <span class="c1">#^^</span><span class="w">
-</span>        <span class="n">perfectly_aligned</span><span class="o">=</span><span class="kc">True</span><span class="w">
+</span>        <span class="n">perfectly_aligned</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="w">
 </span>    <span class="p">)</span><span class="w">
 </span><span class="w">
 </span>    <span class="c1"># Initialize a collection to hold different scatterer populations.</span><span class="w">
@@ -634,18 +636,19 @@ to download the full example code.</p>
 </span>        <span class="n">mean</span><span class="o">=</span><span class="n">lp_refractive_index_mean</span><span class="p">,</span> <span class="c1"># Corrected to use LP_refractive_index_mean</span><span class="w">
 </span>        <span class="n">standard_deviation</span><span class="o">=</span><span class="n">lp_refractive_index_standard_deviation</span><span class="p">,</span><span class="w">
 </span>        <span class="n">low_cutoff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="c1"># can be used to not incude lp particles that would overlap with evs</span><span class="w">
-</span>        <span class="n">high_cutoff</span><span class="o">=</span><span class="kc">None</span> <span class="c1">#can be used if data generated gives few very high values which are not wanted</span><span class="w">
+</span>        <span class="n">high_cutoff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="c1">#can be used if data generated gives few very high values which are not wanted</span><span class="w">
 </span>    <span class="p">)</span><span class="w">
 </span>    <span class="c1"># Calculate the proportion of LPs that are kept within the defined cutoffs.</span><span class="w">
 </span>    <span class="n">lp_kept_joint</span> <span class="o">=</span> <span class="n">lp_diameter_distribution</span><span class="o">.</span><span class="n">proportion_within_cutoffs</span><span class="p">(</span><span class="p">)</span> <span class="o">*</span> <span class="n">lp_refractive_index_distribution</span><span class="o">.</span><span class="n">proportion_within_cutoffs</span><span class="p">(</span><span class="p">)</span><span class="w">
 </span>    <span class="c1"># Create the LP population with its properties and sampling method.</span><span class="w">
+</span>    <span class="n">lp_sampling_method</span> <span class="o">=</span> <span class="n">fluidics</span><span class="o">.</span><span class="n">populations</span><span class="o">.</span><span class="n">GammaModel</span><span class="p">(</span><span class="n">number_of_samples</span><span class="o">=</span><span class="n">gamma_monte_carlo_samples</span><span class="p">)</span><span class="w">
 </span>    <span class="n">lp_population</span> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-fluidics-populations sphx-glr-backref-type-py-class reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.populations.SpherePopulation" title="FlowCyPy.fluidics.populations.SpherePopulation"><span class="n">fluidics</span><span class="o">.</span><span class="n">populations</span><span class="o">.</span><span class="n">SpherePopulation</span></a><span class="p">(</span><span class="w">
 </span>        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">LPs</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
 </span>        <span class="n">medium_refractive_index</span><span class="o">=</span><span class="n">medium_refractive_index</span><span class="p">,</span><span class="w">
 </span>        <span class="n">concentration</span><span class="o">=</span><span class="n">lp_concentration</span> <span class="o">*</span> <span class="n">lp_kept_joint</span><span class="p">,</span><span class="w">
 </span>        <span class="n">diameter</span><span class="o">=</span><span class="n">lp_diameter_distribution</span><span class="p">,</span><span class="w">
 </span>        <span class="n">refractive_index</span><span class="o">=</span><span class="n">lp_refractive_index_distribution</span><span class="p">,</span><span class="w">
-</span>        <span class="n">sampling_method</span><span class="o">=</span><span class="n">fluidics</span><span class="o">.</span><span class="n">populations</span><span class="o">.</span><span class="n">GammaModel</span><span class="p">(</span><span class="n">number_of_samples</span><span class="o">=</span><span class="n">gamma_monte_carlo_samples</span><span class="p">)</span><span class="p">,</span> <span class="c1"># uses monte carlo sampling as decrease in runtime is more important than accuracy for lps</span><span class="w">
+</span>        <span class="n">sampling_method</span><span class="o">=</span><span class="n">lp_sampling_method</span><span class="p">,</span> <span class="c1"># uses monte carlo sampling as decrease in runtime is more important than accuracy for lps</span><span class="w">
 </span>    <span class="p">)</span><span class="w">
 </span><span class="w">
 </span>    <span class="c1"># 3. Extracellular Vesicle (EV) Population Construction</span><span class="w">
@@ -661,18 +664,19 @@ to download the full example code.</p>
 </span>        <span class="n">mean</span><span class="o">=</span><span class="n">ev_refractive_index_mean</span><span class="p">,</span><span class="w">
 </span>        <span class="n">standard_deviation</span><span class="o">=</span><span class="n">ev_refractive_index_standard_deviation</span><span class="p">,</span><span class="w">
 </span>        <span class="n">low_cutoff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="c1">#can be used if data generated gives few very low values which are not wanted</span><span class="w">
-</span>        <span class="n">high_cutoff</span><span class="o">=</span><span class="kc">None</span> <span class="c1"># can be used to not include evs that would overlap with lps</span><span class="w">
+</span>        <span class="n">high_cutoff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="c1"># can be used to not include evs that would overlap with lps</span><span class="w">
 </span>    <span class="p">)</span><span class="w">
 </span>    <span class="c1"># Calculate the proportion of EVs that are kept within the defined cutoffs.</span><span class="w">
 </span>    <span class="n">ev_kept_joint</span> <span class="o">=</span> <span class="n">ev_diameter_distribution</span><span class="o">.</span><span class="n">proportion_within_cutoffs</span><span class="p">(</span><span class="p">)</span> <span class="o">*</span> <span class="n">ev_refractive_index_distribution</span><span class="o">.</span><span class="n">proportion_within_cutoffs</span><span class="p">(</span><span class="p">)</span><span class="w">
 </span>    <span class="c1"># Create the EV population with its properties and sampling method.</span><span class="w">
+</span>    <span class="n">ev_sampling_method</span> <span class="o">=</span> <span class="n">fluidics</span><span class="o">.</span><span class="n">populations</span><span class="o">.</span><span class="n">ExplicitModel</span><span class="p">(</span><span class="p">)</span><span class="w">
 </span>    <span class="n">ev_population</span> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-fluidics-populations sphx-glr-backref-type-py-class reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.populations.SpherePopulation" title="FlowCyPy.fluidics.populations.SpherePopulation"><span class="n">fluidics</span><span class="o">.</span><span class="n">populations</span><span class="o">.</span><span class="n">SpherePopulation</span></a><span class="p">(</span><span class="w">
 </span>        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">EVs</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
 </span>        <span class="n">medium_refractive_index</span><span class="o">=</span><span class="n">medium_refractive_index</span><span class="p">,</span><span class="w">
 </span>        <span class="n">concentration</span><span class="o">=</span><span class="n">ev_concentration</span> <span class="o">*</span> <span class="n">ev_kept_joint</span><span class="p">,</span><span class="w">
 </span>        <span class="n">diameter</span><span class="o">=</span><span class="n">ev_diameter_distribution</span><span class="p">,</span><span class="w">
 </span>        <span class="n">refractive_index</span><span class="o">=</span><span class="n">ev_refractive_index_distribution</span><span class="p">,</span><span class="w">
-</span>        <span class="n">sampling_method</span><span class="o">=</span><span class="n">fluidics</span><span class="o">.</span><span class="n">populations</span><span class="o">.</span><span class="n">ExplicitModel</span><span class="p">(</span><span class="p">)</span><span class="p">,</span> <span class="c1"># uses explicit model to increase accuracy as there are fewer evs than lps</span><span class="w">
+</span>        <span class="n">sampling_method</span><span class="o">=</span><span class="n">ev_sampling_method</span><span class="p">,</span> <span class="c1"># uses explicit model to increase accuracy as there are fewer evs than lps</span><span class="w">
 </span>    <span class="p">)</span><span class="w">
 </span><span class="w">
 </span>    <span class="c1"># Add populations to the scatterer collection if they exist and have non-zero concentration.</span><span class="w">
@@ -696,7 +700,7 @@ to download the full example code.</p>
 </span>        <span class="n">waist_y</span><span class="o">=</span><span class="mi">60</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span><span class="w">
 </span>        <span class="n">wavelength</span><span class="o">=</span><span class="n">wavelength</span><span class="p">,</span><span class="w">
 </span>        <span class="n">optical_power</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliwatt</span><span class="p">,</span><span class="w">
-</span>        <span class="n">include_shot_noise</span><span class="o">=</span><span class="kc">False</span> <span class="c1">#this is set to false to make sure the results are easy to interpret</span><span class="w">
+</span>        <span class="n">include_shot_noise</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="c1">#this is set to false to make sure the results are easy to interpret</span><span class="w">
 </span>    <span class="p">)</span><span class="w">
 </span><span class="w">
 </span>    <span class="c1"># Configure the side scatter detector.</span><span class="w">
@@ -705,7 +709,7 @@ to download the full example code.</p>
 </span>        <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span><span class="w">
 </span>        <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.9</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span><span class="w">
 </span>        <span class="n">responsivity</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span><span class="w">
-</span>        <span class="n">dark_current</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanoampere</span><span class="w">
+</span>        <span class="n">dark_current</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanoampere</span><span class="p">,</span><span class="w">
 </span>    <span class="p">)</span><span class="w">
 </span><span class="w">
 </span>    <span class="c1"># Configure the forward scatter detector.</span><span class="w">
@@ -715,7 +719,7 @@ to download the full example code.</p>
 </span>        <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span><span class="w">
 </span>        <span class="n">cache_numerical_aperture</span><span class="o">=</span><span class="mf">0.08</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span><span class="w">
 </span>        <span class="n">responsivity</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span><span class="w">
-</span>        <span class="n">dark_current</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanoampere</span><span class="w">
+</span>        <span class="n">dark_current</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanoampere</span><span class="p">,</span><span class="w">
 </span>    <span class="p">)</span><span class="w">
 </span><span class="w">
 </span>    <span class="c1"># Configure the amplifier for signal processing.</span><span class="w">
@@ -729,13 +733,16 @@ to download the full example code.</p>
 </span>    <span class="n">digitizer</span> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.Digitizer"><span class="n">opto_electronics</span><span class="o">.</span><span class="n">Digitizer</span></a><span class="p">(</span><span class="w">
 </span>        <span class="n">bit_depth</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span><span class="w">
 </span>        <span class="n">use_auto_range</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="w">
-</span>        <span class="n">sampling_rate</span><span class="o">=</span><span class="mi">30</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="w">
+</span>        <span class="n">sampling_rate</span><span class="o">=</span><span class="mi">30</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span><span class="w">
 </span>    <span class="p">)</span><span class="w">
 </span><span class="w">
 </span>    <span class="c1"># Define analog processing filters.</span><span class="w">
-</span>    <span class="n">analog_processing</span> <span class="o">=</span> <span class="p">[</span><span class="w">
-</span>        <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics-circuits sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.circuits.BesselLowPass" title="FlowCyPy.opto_electronics.circuits.BesselLowPass"><span class="n">opto_electronics</span><span class="o">.</span><span class="n">circuits</span><span class="o">.</span><span class="n">BesselLowPass</span></a><span class="p">(</span><span class="n">cutoff_frequency</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="p">,</span><span class="w">
-</span>    <span class="p">]</span><span class="w">
+</span>    <span class="n">low_pass_filter</span> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-opto_electronics-circuits sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.circuits.BesselLowPass" title="FlowCyPy.opto_electronics.circuits.BesselLowPass"><span class="n">opto_electronics</span><span class="o">.</span><span class="n">circuits</span><span class="o">.</span><span class="n">BesselLowPass</span></a><span class="p">(</span><span class="w">
+</span>        <span class="n">cutoff_frequency</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span><span class="w">
+</span>        <span class="n">order</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="w">
+</span>        <span class="n">gain</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="w">
+</span>    <span class="p">)</span><span class="w">
+</span>    <span class="n">analog_processing</span> <span class="o">=</span> <span class="p">[</span><span class="n">low_pass_filter</span><span class="p">]</span><span class="w">
 </span><span class="w">
 </span>    <span class="c1"># Instantiate the OptoElectronics module with detectors, source, amplifier, digitizer, and analog processing.</span><span class="w">
 </span>    <span class="n">_opto_electronics</span> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics" title="FlowCyPy.OptoElectronics"><span class="n">opto_electronics</span><span class="o">.</span><span class="n">OptoElectronics</span></a><span class="p">(</span><span class="w">
@@ -743,7 +750,7 @@ to download the full example code.</p>
 </span>        <span class="n">source</span><span class="o">=</span><span class="n">beam</span><span class="p">,</span><span class="w">
 </span>        <span class="n">amplifier</span><span class="o">=</span><span class="n">amplifier</span><span class="p">,</span><span class="w">
 </span>        <span class="n">digitizer</span><span class="o">=</span><span class="n">digitizer</span><span class="p">,</span><span class="w">
-</span>        <span class="n">analog_processing</span><span class="o">=</span><span class="n">analog_processing</span><span class="w">
+</span>        <span class="n">analog_processing</span><span class="o">=</span><span class="n">analog_processing</span><span class="p">,</span><span class="w">
 </span>    <span class="p">)</span><span class="w">
 </span><span class="w">
 </span>    <span class="c1"># 5. Digital Processing Setup</span><span class="w">
@@ -964,7 +971,7 @@ to download the full example code.</p>
 </span><span class="n">figure</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">scatterers_with_marginals.png</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_compare_size_exclusion_cutoffs_002.png" srcset="../../_images/sphx_glr_compare_size_exclusion_cutoffs_002.png" alt="compare size exclusion cutoffs" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 29.781 seconds)</p>
+<img src="../../_images/sphx_glr_compare_size_exclusion_cutoffs_002.png" srcset="../../_images/sphx_glr_compare_size_exclusion_cutoffs_002.png" alt="compare size exclusion cutoffs" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 36.340 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-studies-compare-size-exclusion-cutoffs-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/3a25a73924ede22b83a52e8ba16bc02e/compare_size_exclusion_cutoffs.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">compare_size_exclusion_cutoffs.ipynb</span></code></a></p>
@@ -1039,7 +1046,7 @@ to download the full example code.</p>
 
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.5.0/docs/source/gallery/studies/compare_size_exclusion_cutoffs.rst">
+    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.6.0/docs/source/gallery/studies/compare_size_exclusion_cutoffs.rst">
       <i class="fa-solid fa-pencil"></i>
       
       

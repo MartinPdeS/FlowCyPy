@@ -90,7 +90,7 @@ Keep the calibrated voltage thresholds fixed. Sum segment counts and divide
 by the total recorded time. The segment length and sampling rate affect this
 rate because neighboring high samples can belong to one trigger.
 
-.. GENERATED FROM PYTHON SOURCE LINES 48-86
+.. GENERATED FROM PYTHON SOURCE LINES 48-85
 
 .. code-block:: Python
 
@@ -101,15 +101,14 @@ rate because neighboring high samples can belong to one trigger.
         record = instrument.acquire(run_time=duration, random_state=seed)
         assert len(record.event_collection[0]) == 0
         for threshold_index, threshold in enumerate(thresholds):
-            settings = DigitalProcessing(
-                discriminator=discriminator.FixedWindow(
-                    trigger_channel="side",
-                    threshold=threshold,
-                    pre_buffer=4,
-                    post_buffer=8,
-                    max_triggers=-1,
-                )
+            trigger_window = discriminator.FixedWindow(
+                trigger_channel="side",
+                threshold=threshold,
+                pre_buffer=4,
+                post_buffer=8,
+                max_triggers=-1,
             )
+            settings = DigitalProcessing(discriminator=trigger_window)
             processed = record.process(digital_processing=settings)
             counts[run_index, threshold_index] = processed.number_of_triggers or 0
 
@@ -152,7 +151,7 @@ rate because neighboring high samples can belong to one trigger.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 87-91
+.. GENERATED FROM PYTHON SOURCE LINES 86-90
 
 A zero count means that no crossing was observed during these four
 milliseconds. Longer blanks can resolve rarer false triggers. To measure
@@ -162,7 +161,7 @@ to a sample with known particles.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.133 seconds)
+   **Total running time of the script:** (0 minutes 1.444 seconds)
 
 
 .. _sphx_glr_download_gallery_studies_measure_blank_trigger_rate.py:

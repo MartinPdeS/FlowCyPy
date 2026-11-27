@@ -14,11 +14,13 @@ from FlowCyPy.systems.bd import facs_canto
 from FlowCyPy.units import ureg
 
 instrument = facs_canto(optical_power=100 * ureg.milliwatt, background_power=2 * ureg.microwatt)
+diameter_distribution = distributions.Delta(value=150 * ureg.nanometer)
+refractive_index_distribution = distributions.Delta(value=1.39)
 population = populations.SpherePopulation(
     name="Population",
     concentration=5e9 * ureg.particle / ureg.milliliter,
-    diameter=distributions.Delta(value=150 * ureg.nanometer),
-    refractive_index=distributions.Delta(value=1.39),
+    diameter=diameter_distribution,
+    refractive_index=refractive_index_distribution,
     medium_refractive_index=1.33,
 )
 instrument.fluidics.scatterer_collection.add_population(population)
@@ -33,9 +35,11 @@ sampling_rate = instrument.opto_electronics.digitizer.sampling_rate
 
 figure, axis = plt.subplots()
 axis.plot(time, signal.m_as("millivolt"), label="Raw signal")
+baseline_restoration = circuits.BaselineRestorationServo(time_constant=10 * ureg.microsecond)
+low_pass_filter = circuits.BesselLowPass(cutoff_frequency=3 * ureg.megahertz, order=4, gain=2)
 for label, circuit in [
-    ("Baseline restored", circuits.BaselineRestorationServo(time_constant=10 * ureg.microsecond)),
-    ("Bessel low-pass", circuits.BesselLowPass(cutoff_frequency=3 * ureg.megahertz, order=4, gain=2)),
+    ("Baseline restored", baseline_restoration),
+    ("Bessel low-pass", low_pass_filter),
 ]:
     filtered = circuit.process(signal=signal.copy(), sampling_rate=sampling_rate)
     axis.plot(time, filtered.m_as("millivolt"), label=label)

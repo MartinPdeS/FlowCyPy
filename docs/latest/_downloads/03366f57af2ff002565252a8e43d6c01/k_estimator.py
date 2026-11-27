@@ -239,9 +239,7 @@ detector_0 = Detector(
     dark_current=0 * ureg.ampere,
 )
 
-baseline_restoration = circuits.BaselineRestorationServo(
-    time_constant=50 * ureg.microsecond
-)
+baseline_restoration = circuits.BaselineRestorationServo(time_constant=50 * ureg.microsecond)
 
 opto_electronics = OptoElectronics(
     digitizer=digitizer,

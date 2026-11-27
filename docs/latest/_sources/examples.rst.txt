@@ -31,6 +31,7 @@ Choose a worked example
 * Define two custom fluorophores and check their channel ratios in :doc:`gallery/tutorials/define_custom_dye_spectra`.
 * Compare the 140 nm and 380 nm fluorescent markers with measured data in :doc:`gallery/studies/reproduce_rosetta_mix_markers`.
 * Check dim-pulse resolution and bright-pulse clipping in :doc:`gallery/studies/choose_digitizer_voltage_range`.
+* Compare fluctuations shared by one laser with independent laser noise in :doc:`gallery/studies/compare_laser_intensity_noise`.
 * Measure noise-triggered segments in :doc:`gallery/studies/measure_blank_trigger_rate`.
 
 .. toctree::

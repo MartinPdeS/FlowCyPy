@@ -58,7 +58,7 @@ Define the SEC simulation
 -------------------------
 Build a reusable acquisition for a specified size cutoff and particle mixture.
 
-.. GENERATED FROM PYTHON SOURCE LINES 29-244
+.. GENERATED FROM PYTHON SOURCE LINES 29-249
 
 .. code-block:: Python
 
@@ -95,7 +95,7 @@ Build a reusable acquisition for a specified size cutoff and particle mixture.
             sheath_volume_flow=fluidics.SheathFlowRate.MEDIUM.value,
             width=200 * ureg.micrometer, #can be changed to fit an experimental setup
             height=100 * ureg.micrometer, #^^
-            perfectly_aligned=True
+            perfectly_aligned=True,
         )
 
         # Initialize a collection to hold different scatterer populations.
@@ -118,18 +118,19 @@ Build a reusable acquisition for a specified size cutoff and particle mixture.
             mean=lp_refractive_index_mean, # Corrected to use LP_refractive_index_mean
             standard_deviation=lp_refractive_index_standard_deviation,
             low_cutoff=None, # can be used to not incude lp particles that would overlap with evs
-            high_cutoff=None #can be used if data generated gives few very high values which are not wanted
+            high_cutoff=None, #can be used if data generated gives few very high values which are not wanted
         )
         # Calculate the proportion of LPs that are kept within the defined cutoffs.
         lp_kept_joint = lp_diameter_distribution.proportion_within_cutoffs() * lp_refractive_index_distribution.proportion_within_cutoffs()
         # Create the LP population with its properties and sampling method.
+        lp_sampling_method = fluidics.populations.GammaModel(number_of_samples=gamma_monte_carlo_samples)
         lp_population = fluidics.populations.SpherePopulation(
             name="LPs",
             medium_refractive_index=medium_refractive_index,
             concentration=lp_concentration * lp_kept_joint,
             diameter=lp_diameter_distribution,
             refractive_index=lp_refractive_index_distribution,
-            sampling_method=fluidics.populations.GammaModel(number_of_samples=gamma_monte_carlo_samples), # uses monte carlo sampling as decrease in runtime is more important than accuracy for lps
+            sampling_method=lp_sampling_method, # uses monte carlo sampling as decrease in runtime is more important than accuracy for lps
         )
 
         # 3. Extracellular Vesicle (EV) Population Construction
@@ -145,18 +146,19 @@ Build a reusable acquisition for a specified size cutoff and particle mixture.
             mean=ev_refractive_index_mean,
             standard_deviation=ev_refractive_index_standard_deviation,
             low_cutoff=None, #can be used if data generated gives few very low values which are not wanted
-            high_cutoff=None # can be used to not include evs that would overlap with lps
+            high_cutoff=None, # can be used to not include evs that would overlap with lps
         )
         # Calculate the proportion of EVs that are kept within the defined cutoffs.
         ev_kept_joint = ev_diameter_distribution.proportion_within_cutoffs() * ev_refractive_index_distribution.proportion_within_cutoffs()
         # Create the EV population with its properties and sampling method.
+        ev_sampling_method = fluidics.populations.ExplicitModel()
         ev_population = fluidics.populations.SpherePopulation(
             name="EVs",
             medium_refractive_index=medium_refractive_index,
             concentration=ev_concentration * ev_kept_joint,
             diameter=ev_diameter_distribution,
             refractive_index=ev_refractive_index_distribution,
-            sampling_method=fluidics.populations.ExplicitModel(), # uses explicit model to increase accuracy as there are fewer evs than lps
+            sampling_method=ev_sampling_method, # uses explicit model to increase accuracy as there are fewer evs than lps
         )
 
         # Add populations to the scatterer collection if they exist and have non-zero concentration.
@@ -180,7 +182,7 @@ Build a reusable acquisition for a specified size cutoff and particle mixture.
             waist_y=60 * ureg.micrometer,
             wavelength=wavelength,
             optical_power=200 * ureg.milliwatt,
-            include_shot_noise=False #this is set to false to make sure the results are easy to interpret
+            include_shot_noise=False, #this is set to false to make sure the results are easy to interpret
         )
 
         # Configure the side scatter detector.
@@ -189,7 +191,7 @@ Build a reusable acquisition for a specified size cutoff and particle mixture.
             phi_angle=90 * ureg.degree,
             numerical_aperture=0.9 * ureg.AU,
             responsivity=10 * ureg.ampere / ureg.watt,
-            dark_current=20 * ureg.nanoampere
+            dark_current=20 * ureg.nanoampere,
         )
 
         # Configure the forward scatter detector.
@@ -199,7 +201,7 @@ Build a reusable acquisition for a specified size cutoff and particle mixture.
             numerical_aperture=0.2 * ureg.AU,
             cache_numerical_aperture=0.08 * ureg.AU,
             responsivity=10 * ureg.ampere / ureg.watt,
-            dark_current=20 * ureg.nanoampere
+            dark_current=20 * ureg.nanoampere,
         )
 
         # Configure the amplifier for signal processing.
@@ -213,13 +215,16 @@ Build a reusable acquisition for a specified size cutoff and particle mixture.
         digitizer = opto_electronics.Digitizer(
             bit_depth=20,
             use_auto_range=True,
-            sampling_rate=30 * ureg.megahertz
+            sampling_rate=30 * ureg.megahertz,
         )
 
         # Define analog processing filters.
-        analog_processing = [
-            opto_electronics.circuits.BesselLowPass(cutoff_frequency=2 * ureg.megahertz, order=4, gain=2),
-        ]
+        low_pass_filter = opto_electronics.circuits.BesselLowPass(
+            cutoff_frequency=2 * ureg.megahertz,
+            order=4,
+            gain=2,
+        )
+        analog_processing = [low_pass_filter]
 
         # Instantiate the OptoElectronics module with detectors, source, amplifier, digitizer, and analog processing.
         _opto_electronics = opto_electronics.OptoElectronics(
@@ -227,7 +232,7 @@ Build a reusable acquisition for a specified size cutoff and particle mixture.
             source=beam,
             amplifier=amplifier,
             digitizer=digitizer,
-            analog_processing=analog_processing
+            analog_processing=analog_processing,
         )
 
         # 5. Digital Processing Setup
@@ -284,13 +289,13 @@ Build a reusable acquisition for a specified size cutoff and particle mixture.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 245-248
+.. GENERATED FROM PYTHON SOURCE LINES 250-253
 
 Run the separation scenarios
 ----------------------------
 Compare EVs alone, the EV and lipoprotein mixture, and two SEC size cutoffs.
 
-.. GENERATED FROM PYTHON SOURCE LINES 248-298
+.. GENERATED FROM PYTHON SOURCE LINES 253-303
 
 .. code-block:: Python
 
@@ -360,13 +365,13 @@ Compare EVs alone, the EV and lipoprotein mixture, and two SEC size cutoffs.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 299-302
+.. GENERATED FROM PYTHON SOURCE LINES 304-307
 
 Collect peak features
 ---------------------
 Combine the detected peak heights and retain the scenario labels for comparison.
 
-.. GENERATED FROM PYTHON SOURCE LINES 302-344
+.. GENERATED FROM PYTHON SOURCE LINES 307-349
 
 .. code-block:: Python
 
@@ -419,13 +424,13 @@ Combine the detected peak heights and retain the scenario labels for comparison.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 345-348
+.. GENERATED FROM PYTHON SOURCE LINES 350-353
 
 Compare forward and side scatter
 --------------------------------
 Each panel shows the detected peak heights for one separation scenario.
 
-.. GENERATED FROM PYTHON SOURCE LINES 348-376
+.. GENERATED FROM PYTHON SOURCE LINES 353-381
 
 .. code-block:: Python
 
@@ -469,13 +474,13 @@ Each panel shows the detected peak heights for one separation scenario.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 377-380
+.. GENERATED FROM PYTHON SOURCE LINES 382-385
 
 Inspect particle size and scatter
 ---------------------------------
 Filter the diameter range, then compare the joint distributions and their marginals.
 
-.. GENERATED FROM PYTHON SOURCE LINES 380-413
+.. GENERATED FROM PYTHON SOURCE LINES 385-418
 
 .. code-block:: Python
 
@@ -527,7 +532,7 @@ Filter the diameter range, then compare the joint distributions and their margin
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 29.781 seconds)
+   **Total running time of the script:** (0 minutes 36.340 seconds)
 
 
 .. _sphx_glr_download_gallery_studies_compare_size_exclusion_cutoffs.py:

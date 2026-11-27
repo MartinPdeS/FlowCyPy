@@ -48,23 +48,29 @@ Define the illumination and collection angles
 The first channel is the default trigger. The forward detector has a central
 obscuration, specified by its inner numerical aperture.
 
-.. GENERATED FROM PYTHON SOURCE LINES 19-34
+.. GENERATED FROM PYTHON SOURCE LINES 19-40
 
 .. code-block:: Python
 
 
+    ssc = ScatterChannel(
+        name="SSC",
+        phi_angle=90 * ureg.degree,
+        numerical_aperture=1.0,
+        sampling=500,
+    )
+
+    fsc = ScatterChannel(
+        name="FSC",
+        phi_angle=0 * ureg.degree,
+        numerical_aperture=0.3,
+        cache_numerical_aperture=0.1,
+        sampling=500,
+    )
+
     scatter_system = ScatterSystem(
         wavelength=488 * ureg.nanometer,
-        channels=(
-            ScatterChannel(name="SSC", phi_angle=90 * ureg.degree, numerical_aperture=1.0, sampling=500),
-            ScatterChannel(
-                name="FSC",
-                phi_angle=0 * ureg.degree,
-                numerical_aperture=0.3,
-                cache_numerical_aperture=0.1,
-                sampling=500,
-            ),
-        ),
+        channels=(ssc, fsc),
     )
 
 
@@ -74,14 +80,14 @@ obscuration, specified by its inner numerical aperture.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 35-39
+.. GENERATED FROM PYTHON SOURCE LINES 41-45
 
 Instantiate and acquire at two laser powers
 -------------------------------------------
 Each call creates a fresh sample collection. Use identical beads and a fixed
 seed in both instruments so the particle arrivals match.
 
-.. GENERATED FROM PYTHON SOURCE LINES 39-51
+.. GENERATED FROM PYTHON SOURCE LINES 45-57
 
 .. code-block:: Python
 
@@ -133,7 +139,7 @@ seed in both instruments so the particle arrivals match.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.427 seconds)
+   **Total running time of the script:** (0 minutes 2.825 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_build_a_reusable_scatter_system.py:

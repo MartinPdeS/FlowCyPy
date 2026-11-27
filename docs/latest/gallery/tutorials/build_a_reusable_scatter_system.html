@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Build a reusable two-channel scatter system &#8212; FlowCyPy 1.5.0 documentation</title>
+    <title>Build a reusable two-channel scatter system &#8212; FlowCyPy 1.6.0 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=623e1633"></script>
+    <script src="../../_static/documentation_options.js?v=cf6e66ff"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -53,7 +53,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.5.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.6.0';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
@@ -66,7 +66,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.5.0" />
+  <meta name="docsearch:version" content="1.6.0" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -464,12 +464,14 @@
 <li class="toctree-l2"><a class="reference internal" href="cluster_particles_by_scatter.html">Cluster particles by forward and side scatter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="define_custom_dye_spectra.html">Define custom dyes and predict spectral spillover</a></li>
 <li class="toctree-l2"><a class="reference internal" href="detect_labeled_beads.html">Detect fluorescent beads alongside unlabeled beads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="excite_one_bead_with_two_lasers.html">Excite the same bead with two lasers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="select_a_laser_on_sony_id7000.html">Choose a laser on the Sony ID7000</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../studies/index.html">Examples: Studies</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../studies/choose_digitizer_voltage_range.html">Choose a digitizer range for dim and bright pulses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../studies/compare_analog_filters.html">Compare baseline restoration and low-pass filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../studies/compare_laser_intensity_noise.html">Compare intensity noise from two co-located lasers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../studies/compare_scatter_systems.html">Compare side-scatter collection at 488 nm</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../studies/compare_scatter_with_cytek_bead_data.html">Compare simulated scatter with Cytek bead measurements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../studies/compare_size_exclusion_cutoffs.html">Compare size-exclusion cutoffs for vesicles and lipoproteins</a></li>
@@ -569,18 +571,24 @@ electronics. The component assembly tutorial shows how to choose those too.</p>
 <h2>Define the illumination and collection angles<a class="headerlink" href="#define-the-illumination-and-collection-angles" title="Link to this heading">#</a></h2>
 <p>The first channel is the default trigger. The forward detector has a central
 obscuration, specified by its inner numerical aperture.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">scatter_system</span> <span class="o">=</span> <span class="n">ScatterSystem</span><span class="p">(</span><span class="w">
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">ssc</span> <span class="o">=</span> <span class="n">ScatterChannel</span><span class="p">(</span><span class="w">
+</span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">SSC</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span><span class="w">
+</span>    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span><span class="w">
+</span>    <span class="n">sampling</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="n">fsc</span> <span class="o">=</span> <span class="n">ScatterChannel</span><span class="p">(</span><span class="w">
+</span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">FSC</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span><span class="w">
+</span>    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span><span class="w">
+</span>    <span class="n">cache_numerical_aperture</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span><span class="w">
+</span>    <span class="n">sampling</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="n">scatter_system</span> <span class="o">=</span> <span class="n">ScatterSystem</span><span class="p">(</span><span class="w">
 </span>    <span class="n">wavelength</span><span class="o">=</span><span class="mi">488</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span><span class="w">
-</span>    <span class="n">channels</span><span class="o">=</span><span class="p">(</span><span class="w">
-</span>        <span class="n">ScatterChannel</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">SSC</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span> <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">sampling</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span><span class="p">,</span><span class="w">
-</span>        <span class="n">ScatterChannel</span><span class="p">(</span><span class="w">
-</span>            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">FSC</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
-</span>            <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span><span class="w">
-</span>            <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span><span class="w">
-</span>            <span class="n">cache_numerical_aperture</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span><span class="w">
-</span>            <span class="n">sampling</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span><span class="w">
-</span>        <span class="p">)</span><span class="p">,</span><span class="w">
-</span>    <span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="n">channels</span><span class="o">=</span><span class="p">(</span><span class="n">ssc</span><span class="p">,</span> <span class="n">fsc</span><span class="p">)</span><span class="p">,</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span></pre></div></div>
 </section>
@@ -610,7 +618,7 @@ seed in both instruments so the particle arrivals match.</p>
   return np.asarray(x, float)
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.427 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.825 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-build-a-reusable-scatter-system-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/3e2242f4acf76640934865b0d960fba9/build_a_reusable_scatter_system.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">build_a_reusable_scatter_system.ipynb</span></code></a></p>
@@ -682,7 +690,7 @@ seed in both instruments so the particle arrivals match.</p>
 
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.5.0/docs/source/gallery/tutorials/build_a_reusable_scatter_system.rst">
+    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.6.0/docs/source/gallery/tutorials/build_a_reusable_scatter_system.rst">
       <i class="fa-solid fa-pencil"></i>
       
       

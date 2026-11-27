@@ -56,13 +56,14 @@ Use the Alexa Fluor 488 reference lifetime of 4.1 ns and quantum yield of
 by its peak value at 495 nm and place all emission at 519 nm.
 Keep the bead size, refractive index and concentration equal in both populations.
 
-.. GENERATED FROM PYTHON SOURCE LINES 27-40
+.. GENERATED FROM PYTHON SOURCE LINES 27-41
 
 .. code-block:: Python
 
 
     instrument = facs_canto(include_shot_noise=False, include_rin_noise=False)
-    label = Label(fluorophore=alexa_fluor_488(), molecules_per_particle=20_000)
+    dye = alexa_fluor_488()
+    label = Label(fluorophore=dye, molecules_per_particle=20_000)
     for name, labels in [("Labeled", [label]), ("Unlabeled", [])]:
         beads = microbeads(
             name=name,
@@ -80,7 +81,7 @@ Keep the bead size, refractive index and concentration equal in both populations
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 41-47
+.. GENERATED FROM PYTHON SOURCE LINES 42-48
 
 Add a green PMT and acquire both signals
 ----------------------------------------
@@ -89,17 +90,18 @@ accepts fluorescence from 515 through 545 nm, including the 519 nm
 emission bin. Optical noise and green PMT dark current are disabled to make the
 relationship between individual events and pulses visible.
 
-.. GENERATED FROM PYTHON SOURCE LINES 47-60
+.. GENERATED FROM PYTHON SOURCE LINES 48-62
 
 .. code-block:: Python
 
 
+    optical_filter = Bandpass(center=530 * ureg.nm, width=30 * ureg.nm)
     green = pmt(
         name="green",
         phi_angle=90 * ureg.degree,
         numerical_aperture=0.8,
         signals=("fluorescence",),
-        optical_filter=Bandpass(center=530 * ureg.nm, width=30 * ureg.nm),
+        optical_filter=optical_filter,
         dark_current=0 * ureg.ampere,
     )
     optics = instrument.opto_electronics
@@ -113,7 +115,7 @@ relationship between individual events and pulses visible.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 61-66
+.. GENERATED FROM PYTHON SOURCE LINES 63-68
 
 Match pulses to their particles
 -------------------------------
@@ -121,13 +123,18 @@ The top panel marks each bead's arrival. Read vertically to compare the
 side-scatter and green-channel responses. Closely spaced arrivals can
 contribute to the same pulse. Each voltage panel has its own scale.
 
-.. GENERATED FROM PYTHON SOURCE LINES 66-86
+.. GENERATED FROM PYTHON SOURCE LINES 68-93
 
 .. code-block:: Python
 
 
     figure, axes = plt.subplots(
-        3, 1, sharex=True, figsize=(8, 5), height_ratios=(1, 2, 2), layout="constrained"
+        nrows=3,
+        ncols=1,
+        sharex=True,
+        figsize=(8, 5),
+        height_ratios=(1, 2, 2),
+        layout="constrained",
     )
     for row, events in enumerate(record.event_collection):
         arrivals = events.get_quantity("Time").m_as("microsecond")
@@ -157,7 +164,7 @@ contribute to the same pulse. Each voltage panel has its own scale.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 87-94
+.. GENERATED FROM PYTHON SOURCE LINES 94-101
 
 Read simulated labels and trigger on fluorescence
 -------------------------------------------------
@@ -167,7 +174,7 @@ Triggering on green selects bright pulses and extracts the corresponding
 time window from every detector. The threshold below is illustrative and
 depends on the peak voltage of this noise-free record.
 
-.. GENERATED FROM PYTHON SOURCE LINES 94-115
+.. GENERATED FROM PYTHON SOURCE LINES 101-123
 
 .. code-block:: Python
 
@@ -176,17 +183,18 @@ depends on the peak voltage of this noise-free record.
     counts = labeled_events.get_quantity(label.column_name)
     print(f"{len(counts)} labeled beads with {counts.magnitude[0]:.0f} molecules per bead")
     threshold = analog["green"].max() / 2
-    processed = record.process(
-        digital_processing=DigitalProcessing(
-            discriminator=discriminator.DynamicWindow(
-                trigger_channel="green",
-                threshold=threshold,
-                pre_buffer=8,
-                post_buffer=8,
-            ),
-            peak_locator=peak_locator.GlobalPeakLocator(),
-        )
+    trigger_window = discriminator.DynamicWindow(
+        trigger_channel="green",
+        threshold=threshold,
+        pre_buffer=8,
+        post_buffer=8,
     )
+    peak_algorithm = peak_locator.GlobalPeakLocator()
+    processing = DigitalProcessing(
+        discriminator=trigger_window,
+        peak_locator=peak_algorithm,
+    )
+    processed = record.process(digital_processing=processing)
     print(f"Green-triggered segments: {processed.number_of_triggers}")
     print(
         "Channels with digitized peaks:", processed.peaks.index.unique("Detector").tolist()
@@ -207,7 +215,7 @@ depends on the peak voltage of this noise-free record.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 116-122
+.. GENERATED FROM PYTHON SOURCE LINES 124-130
 
 Compare the same bead with photon shot noise enabled
 ----------------------------------------------------
@@ -216,7 +224,7 @@ Turn on photon shot noise and zoom in on the labeled bead nearest the middle
 of the record. The green channel now fluctuates around the deterministic
 pulse. In this example the background and dark current are both zero.
 
-.. GENERATED FROM PYTHON SOURCE LINES 122-145
+.. GENERATED FROM PYTHON SOURCE LINES 130-153
 
 .. code-block:: Python
 
@@ -258,7 +266,7 @@ pulse. In this example the background and dark current are both zero.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.226 seconds)
+   **Total running time of the script:** (0 minutes 1.569 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_detect_labeled_beads.py:

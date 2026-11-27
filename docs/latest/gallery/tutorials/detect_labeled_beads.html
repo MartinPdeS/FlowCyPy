@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Detect fluorescent beads alongside unlabeled beads &#8212; FlowCyPy 1.5.0 documentation</title>
+    <title>Detect fluorescent beads alongside unlabeled beads &#8212; FlowCyPy 1.6.0 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=623e1633"></script>
+    <script src="../../_static/documentation_options.js?v=cf6e66ff"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -53,7 +53,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.5.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.6.0';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
@@ -61,12 +61,12 @@
     <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Choose a laser on the Sony ID7000" href="select_a_laser_on_sony_id7000.html" />
+    <link rel="next" title="Excite the same bead with two lasers" href="excite_one_bead_with_two_lasers.html" />
     <link rel="prev" title="Define custom dyes and predict spectral spillover" href="define_custom_dye_spectra.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.5.0" />
+  <meta name="docsearch:version" content="1.6.0" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -464,12 +464,14 @@
 <li class="toctree-l2"><a class="reference internal" href="cluster_particles_by_scatter.html">Cluster particles by forward and side scatter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="define_custom_dye_spectra.html">Define custom dyes and predict spectral spillover</a></li>
 <li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">Detect fluorescent beads alongside unlabeled beads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="excite_one_bead_with_two_lasers.html">Excite the same bead with two lasers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="select_a_laser_on_sony_id7000.html">Choose a laser on the Sony ID7000</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../studies/index.html">Examples: Studies</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../studies/choose_digitizer_voltage_range.html">Choose a digitizer range for dim and bright pulses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../studies/compare_analog_filters.html">Compare baseline restoration and low-pass filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../studies/compare_laser_intensity_noise.html">Compare intensity noise from two co-located lasers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../studies/compare_scatter_systems.html">Compare side-scatter collection at 488 nm</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../studies/compare_scatter_with_cytek_bead_data.html">Compare simulated scatter with Cytek bead measurements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../studies/compare_size_exclusion_cutoffs.html">Compare size-exclusion cutoffs for vesicles and lipoproteins</a></li>
@@ -578,7 +580,8 @@ voltages against the simulated particle arrival times in the same acquisition.</
 by its peak value at 495 nm and place all emission at 519 nm.
 Keep the bead size, refractive index and concentration equal in both populations.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/flow_cytometer.html#FlowCyPy.flow_cytometer.FlowCytometer" title="FlowCyPy.FlowCytometer"><span class="n">instrument</span></a> <span class="o">=</span> <span class="n">facs_canto</span><span class="p">(</span><span class="n">include_shot_noise</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_rin_noise</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="w">
-</span><a class="sphx-glr-backref-module-FlowCyPy-fluorescence sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.fluorescence.Label" title="FlowCyPy.fluorescence.Label"><span class="n">label</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-fluorescence sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.fluorescence.Label" title="FlowCyPy.fluorescence.Label"><span class="n">Label</span></a><span class="p">(</span><span class="n">fluorophore</span><span class="o">=</span><span class="n">alexa_fluor_488</span><span class="p">(</span><span class="p">)</span><span class="p">,</span> <span class="n">molecules_per_particle</span><span class="o">=</span><span class="mi">20_000</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-FlowCyPy-fluorescence sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.fluorescence.Fluorophore" title="FlowCyPy.fluorescence.Fluorophore"><span class="n">dye</span></a> <span class="o">=</span> <span class="n">alexa_fluor_488</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-FlowCyPy-fluorescence sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.fluorescence.Label" title="FlowCyPy.fluorescence.Label"><span class="n">label</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-fluorescence sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.fluorescence.Label" title="FlowCyPy.fluorescence.Label"><span class="n">Label</span></a><span class="p">(</span><span class="n">fluorophore</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-fluorescence sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.fluorescence.Fluorophore" title="FlowCyPy.fluorescence.Fluorophore"><span class="n">dye</span></a><span class="p">,</span> <span class="n">molecules_per_particle</span><span class="o">=</span><span class="mi">20_000</span><span class="p">)</span><span class="w">
 </span><span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">labels</span> <span class="ow">in</span> <span class="p">[</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Labeled</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">[</span><a class="sphx-glr-backref-module-FlowCyPy-fluorescence sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.fluorescence.Label" title="FlowCyPy.fluorescence.Label"><span class="n">label</span></a><span class="p">]</span><span class="p">)</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;</span><span class="s2">Unlabeled</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">[</span><span class="p">]</span><span class="p">)</span><span class="p">]</span><span class="p">:</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-FlowCyPy-fluidics-populations sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.populations.SpherePopulation" title="FlowCyPy.fluidics.populations.SpherePopulation"><span class="n">beads</span></a> <span class="o">=</span> <span class="n">microbeads</span><span class="p">(</span><span class="w">
 </span>        <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span><span class="w">
@@ -596,12 +599,13 @@ Keep the bead size, refractive index and concentration equal in both populations
 accepts fluorescence from 515 through 545 nm, including the 519 nm
 emission bin. Optical noise and green PMT dark current are disabled to make the
 relationship between individual events and pulses visible.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.Detector"><span class="n">green</span></a> <span class="o">=</span> <span class="n">pmt</span><span class="p">(</span><span class="w">
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-FlowCyPy-fluorescence sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.fluorescence.Bandpass" title="FlowCyPy.fluorescence.Bandpass"><span class="n">optical_filter</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-fluorescence sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.fluorescence.Bandpass" title="FlowCyPy.fluorescence.Bandpass"><span class="n">Bandpass</span></a><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="mi">530</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nm</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">30</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nm</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-FlowCyPy-opto_electronics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.Detector"><span class="n">green</span></a> <span class="o">=</span> <span class="n">pmt</span><span class="p">(</span><span class="w">
 </span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">green</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
 </span>    <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span><span class="w">
 </span>    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span><span class="w">
 </span>    <span class="n">signals</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">fluorescence</span><span class="s2">&quot;</span><span class="p">,</span><span class="p">)</span><span class="p">,</span><span class="w">
-</span>    <span class="n">optical_filter</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-fluorescence sphx-glr-backref-type-py-class reference internal" href="../../code/opto_electronics.html#FlowCyPy.fluorescence.Bandpass" title="FlowCyPy.fluorescence.Bandpass"><span class="n">Bandpass</span></a><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="mi">530</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nm</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">30</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nm</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-FlowCyPy-fluorescence sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.fluorescence.Bandpass" title="FlowCyPy.fluorescence.Bandpass"><span class="n">optical_filter</span></a><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-fluorescence sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.fluorescence.Bandpass" title="FlowCyPy.fluorescence.Bandpass"><span class="n">optical_filter</span></a><span class="p">,</span><span class="w">
 </span>    <span class="n">dark_current</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span><span class="p">,</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics" title="FlowCyPy.OptoElectronics"><span class="n">optics</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/opto_electronics.html#FlowCyPy.opto_electronics.OptoElectronics" title="FlowCyPy.OptoElectronics"><span class="n">instrument</span><span class="o">.</span><span class="n">opto_electronics</span></a><span class="w">
@@ -615,7 +619,12 @@ relationship between individual events and pulses visible.</p>
 side-scatter and green-channel responses. Closely spaced arrivals can
 contribute to the same pulse. Each voltage panel has its own scale.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">figure</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="w">
-</span>    <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span><span class="p">,</span> <span class="n">height_ratios</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">constrained</span><span class="s2">&quot;</span><span class="w">
+</span>    <span class="n">nrows</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span><span class="w">
+</span>    <span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="w">
+</span>    <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="w">
+</span>    <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="n">height_ratios</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">constrained</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span><span class="k">for</span> <span class="n">row</span><span class="p">,</span> <a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.population_events.PopulationEvents" title="FlowCyPy.fluidics.PopulationEvents"><span class="n">events</span></a> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">event_collection</span><span class="p">)</span><span class="p">:</span><span class="w">
 </span>    <span class="n">arrivals</span> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-method reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.population_events.PopulationEvents.get_quantity" title="FlowCyPy.fluidics.PopulationEvents.get_quantity"><span class="n">events</span><span class="o">.</span><span class="n">get_quantity</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Time</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">microsecond</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
@@ -645,17 +654,18 @@ depends on the peak voltage of this noise-free record.</p>
 </span><span class="n">counts</span> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-fluidics sphx-glr-backref-type-py-method reference internal" href="../../code/fluidics.html#FlowCyPy.fluidics.population_events.PopulationEvents.get_quantity" title="FlowCyPy.fluidics.PopulationEvents.get_quantity"><span class="n">labeled_events</span><span class="o">.</span><span class="n">get_quantity</span></a><span class="p">(</span><a class="sphx-glr-backref-module-FlowCyPy-fluorescence sphx-glr-backref-type-py-property reference internal" href="../../code/opto_electronics.html#FlowCyPy.fluorescence.Label.column_name" title="FlowCyPy.fluorescence.Label.column_name"><span class="n">label</span><span class="o">.</span><span class="n">column_name</span></a><span class="p">)</span><span class="w">
 </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span><span class="si">}</span><span class="s2"> labeled beads with </span><span class="si">{</span><span class="n">counts</span><span class="o">.</span><span class="n">magnitude</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> molecules per bead</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span><span class="n">threshold</span> <span class="o">=</span> <span class="n">analog</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">green</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="w">
-</span><span class="n">processed</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="w">
-</span>    <span class="n">digital_processing</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.DigitalProcessing" title="FlowCyPy.DigitalProcessing"><span class="n">DigitalProcessing</span></a><span class="p">(</span><span class="w">
-</span>        <span class="n">discriminator</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-digital_processing-discriminator sphx-glr-backref-type-py-class reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.discriminator.DynamicWindow" title="FlowCyPy.digital_processing.discriminator.DynamicWindow"><span class="n">discriminator</span><span class="o">.</span><span class="n">DynamicWindow</span></a><span class="p">(</span><span class="w">
-</span>            <span class="n">trigger_channel</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">green</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
-</span>            <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span><span class="w">
-</span>            <span class="n">pre_buffer</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span><span class="w">
-</span>            <span class="n">post_buffer</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span><span class="w">
-</span>        <span class="p">)</span><span class="p">,</span><span class="w">
-</span>        <span class="n">peak_locator</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-digital_processing-peak_locator sphx-glr-backref-type-py-class reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator" title="FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator"><span class="n">peak_locator</span><span class="o">.</span><span class="n">GlobalPeakLocator</span></a><span class="p">(</span><span class="p">)</span><span class="p">,</span><span class="w">
-</span>    <span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-FlowCyPy-digital_processing-discriminator sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.discriminator.DynamicWindow" title="FlowCyPy.digital_processing.discriminator.DynamicWindow"><span class="n">trigger_window</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-digital_processing-discriminator sphx-glr-backref-type-py-class reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.discriminator.DynamicWindow" title="FlowCyPy.digital_processing.discriminator.DynamicWindow"><span class="n">discriminator</span><span class="o">.</span><span class="n">DynamicWindow</span></a><span class="p">(</span><span class="w">
+</span>    <span class="n">trigger_channel</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">green</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span><span class="w">
+</span>    <span class="n">pre_buffer</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span><span class="w">
+</span>    <span class="n">post_buffer</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span><span class="w">
 </span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-FlowCyPy-digital_processing-peak_locator sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator" title="FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator"><span class="n">peak_algorithm</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy-digital_processing-peak_locator sphx-glr-backref-type-py-class reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator" title="FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator"><span class="n">peak_locator</span><span class="o">.</span><span class="n">GlobalPeakLocator</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.DigitalProcessing" title="FlowCyPy.DigitalProcessing"><span class="n">processing</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.DigitalProcessing" title="FlowCyPy.DigitalProcessing"><span class="n">DigitalProcessing</span></a><span class="p">(</span><span class="w">
+</span>    <span class="n">discriminator</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-digital_processing-discriminator sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.discriminator.DynamicWindow" title="FlowCyPy.digital_processing.discriminator.DynamicWindow"><span class="n">trigger_window</span></a><span class="p">,</span><span class="w">
+</span>    <span class="n">peak_locator</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy-digital_processing-peak_locator sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator" title="FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator"><span class="n">peak_algorithm</span></a><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="n">processed</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">digital_processing</span><span class="o">=</span><a class="sphx-glr-backref-module-FlowCyPy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../code/digital_processing.html#FlowCyPy.digital_processing.DigitalProcessing" title="FlowCyPy.DigitalProcessing"><span class="n">processing</span></a><span class="p">)</span><span class="w">
 </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Green-triggered segments: </span><span class="si">{</span><span class="n">processed</span><span class="o">.</span><span class="n">number_of_triggers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span><span class="nb">print</span><span class="p">(</span><span class="w">
 </span>    <span class="s2">&quot;</span><span class="s2">Channels with digitized peaks:</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">processed</span><span class="o">.</span><span class="n">peaks</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Detector</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(</span><span class="p">)</span><span class="w">
@@ -696,7 +706,7 @@ pulse. In this example the background and dark current are both zero.</p>
 </span><span class="n">axis</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="p">)</span><span class="w">
 </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_detect_labeled_beads_002.png" srcset="../../_images/sphx_glr_detect_labeled_beads_002.png" alt="detect labeled beads" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.226 seconds)</p>
+<img src="../../_images/sphx_glr_detect_labeled_beads_002.png" srcset="../../_images/sphx_glr_detect_labeled_beads_002.png" alt="detect labeled beads" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.569 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-detect-labeled-beads-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/2f8f43be5a4fc8e3b966fd5513b2b40c/detect_labeled_beads.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">detect_labeled_beads.ipynb</span></code></a></p>
@@ -732,11 +742,11 @@ pulse. In this example the background and dark current are both zero.</p>
       </div>
     </a>
     <a class="right-next"
-       href="select_a_laser_on_sony_id7000.html"
+       href="excite_one_bead_with_two_lasers.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Choose a laser on the Sony ID7000</p>
+        <p class="prev-next-title">Excite the same bead with two lasers</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -771,7 +781,7 @@ pulse. In this example the background and dark current are both zero.</p>
 
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.5.0/docs/source/gallery/tutorials/detect_labeled_beads.rst">
+    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.6.0/docs/source/gallery/tutorials/detect_labeled_beads.rst">
       <i class="fa-solid fa-pencil"></i>
       
       

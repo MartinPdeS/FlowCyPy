@@ -178,7 +178,7 @@ The outer rectangle represents the full channel cross section.
 The inner rectangle represents the focused sample core.
 Particle positions are colored by their local velocity.
 
-.. GENERATED FROM PYTHON SOURCE LINES 111-128
+.. GENERATED FROM PYTHON SOURCE LINES 111-129
 
 .. code-block:: Python
 
@@ -187,7 +187,8 @@ Particle positions are colored by their local velocity.
     for region, label in [(flow_cell.sheath, "Sheath"), (flow_cell.sample, "Sample")]:
         width = region.width.m_as("micrometer")
         height = region.height.m_as("micrometer")
-        ax.add_patch(plt.Rectangle((-width / 2, -height / 2), width, height, fill=False))
+        channel_outline = plt.Rectangle((-width / 2, -height / 2), width, height, fill=False)
+        ax.add_patch(channel_outline)
         ax.annotate(label, (0, height / 2))
 
     particles = ax.scatter(
@@ -214,7 +215,7 @@ Particle positions are colored by their local velocity.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.005 seconds)
+   **Total running time of the script:** (0 minutes 1.186 seconds)
 
 
 .. _sphx_glr_download_gallery_studies_map_particle_velocities_in_the_flow_cell.py:

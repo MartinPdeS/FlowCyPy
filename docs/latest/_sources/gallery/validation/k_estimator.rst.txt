@@ -236,7 +236,7 @@ Helper functions
 Construct simulation components
 -------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 193-274
+.. GENERATED FROM PYTHON SOURCE LINES 193-272
 
 .. code-block:: Python
 
@@ -289,9 +289,7 @@ Construct simulation components
         dark_current=0 * ureg.ampere,
     )
 
-    baseline_restoration = circuits.BaselineRestorationServo(
-        time_constant=50 * ureg.microsecond
-    )
+    baseline_restoration = circuits.BaselineRestorationServo(time_constant=50 * ureg.microsecond)
 
     opto_electronics = OptoElectronics(
         digitizer=digitizer,
@@ -328,12 +326,12 @@ Construct simulation components
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 275-277
+.. GENERATED FROM PYTHON SOURCE LINES 273-275
 
 Run K estimation simulation
 ---------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 277-338
+.. GENERATED FROM PYTHON SOURCE LINES 275-336
 
 .. code-block:: Python
 
@@ -435,12 +433,12 @@ Run K estimation simulation
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 339-341
+.. GENERATED FROM PYTHON SOURCE LINES 337-339
 
 Estimate K
 ----------
 
-.. GENERATED FROM PYTHON SOURCE LINES 341-355
+.. GENERATED FROM PYTHON SOURCE LINES 339-353
 
 .. code-block:: Python
 
@@ -468,18 +466,18 @@ Estimate K
 
 
     K estimation results
-    Estimated K: 0.23967446941291765 dimensionless
-    Linear intercept: -2.413183e+01
+    Estimated K: 0.24791509415546029 dimensionless
+    Linear intercept: -2.795826e+01
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 356-358
+.. GENERATED FROM PYTHON SOURCE LINES 354-356
 
 Plot estimation and diagnostics
 -------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 358-365
+.. GENERATED FROM PYTHON SOURCE LINES 356-363
 
 .. code-block:: Python
 
@@ -505,7 +503,7 @@ Plot estimation and diagnostics
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 34.267 seconds)
+   **Total running time of the script:** (0 minutes 43.319 seconds)
 
 
 .. _sphx_glr_download_gallery_validation_k_estimator.py:

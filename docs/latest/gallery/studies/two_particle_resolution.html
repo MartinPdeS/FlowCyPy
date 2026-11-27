@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Resolving two overlapping particle pulses &#8212; FlowCyPy 1.5.0 documentation</title>
+    <title>Resolving two overlapping particle pulses &#8212; FlowCyPy 1.6.0 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=623e1633"></script>
+    <script src="../../_static/documentation_options.js?v=cf6e66ff"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -53,7 +53,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.5.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.6.0';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
@@ -66,7 +66,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.5.0" />
+  <meta name="docsearch:version" content="1.6.0" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -464,12 +464,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/cluster_particles_by_scatter.html">Cluster particles by forward and side scatter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/define_custom_dye_spectra.html">Define custom dyes and predict spectral spillover</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/detect_labeled_beads.html">Detect fluorescent beads alongside unlabeled beads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/excite_one_bead_with_two_lasers.html">Excite the same bead with two lasers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/select_a_laser_on_sony_id7000.html">Choose a laser on the Sony ID7000</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: Studies</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="choose_digitizer_voltage_range.html">Choose a digitizer range for dim and bright pulses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_analog_filters.html">Compare baseline restoration and low-pass filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compare_laser_intensity_noise.html">Compare intensity noise from two co-located lasers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_scatter_systems.html">Compare side-scatter collection at 488 nm</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_scatter_with_cytek_bead_data.html">Compare simulated scatter with Cytek bead measurements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_size_exclusion_cutoffs.html">Compare size-exclusion cutoffs for vesicles and lipoproteins</a></li>
@@ -607,9 +609,10 @@ their separation. The noiseless signal isolates the role of pulse overlap.</p>
 </span>        <span class="p">{</span><span class="s2">&quot;</span><span class="s2">Time</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">sample_times</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">microsecond</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">side</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">voltage</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">millivolt</span><span class="p">}</span><span class="w">
 </span>    <span class="p">)</span><span class="w">
 </span>    <span class="n">trigger_times</span> <span class="o">=</span> <span class="n">triggered</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">Time</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">microsecond</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span>    <span class="n">segment_index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">triggered</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">segment_id</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">SegmentID</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span>    <span class="n">digital</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="w">
 </span>        <span class="p">{</span><span class="s2">&quot;</span><span class="s2">Time</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">trigger_times</span><span class="o">.</span><span class="n">magnitude</span><span class="p">}</span><span class="p">,</span><span class="w">
-</span>        <span class="n">index</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">triggered</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">segment_id</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">SegmentID</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>        <span class="n">index</span><span class="o">=</span><span class="n">segment_index</span><span class="p">,</span><span class="w">
 </span>    <span class="p">)</span><span class="w">
 </span>    <span class="n">digital</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">units</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;</span><span class="s2">Time</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">trigger_times</span><span class="o">.</span><span class="n">units</span><span class="p">}</span><span class="w">
 </span><span class="w">
@@ -623,10 +626,12 @@ their separation. The noiseless signal isolates the role of pulse overlap.</p>
 </span>        <span class="n">scatterer_type</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">Sphere</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
 </span>        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="p">}</span><span class="p">,</span><span class="w">
 </span>    <span class="p">)</span><span class="w">
+</span>    <span class="n">event_collection</span> <span class="o">=</span> <span class="n">EventCollection</span><span class="p">(</span><span class="n">events_list</span><span class="o">=</span><span class="p">[</span><span class="n">population</span><span class="p">]</span><span class="p">)</span><span class="w">
+</span>    <span class="n">signal_record</span> <span class="o">=</span> <span class="n">SignalRecord</span><span class="p">(</span><span class="n">digital</span><span class="o">=</span><span class="n">digital</span><span class="p">)</span><span class="w">
 </span>    <span class="n">record</span> <span class="o">=</span> <span class="n">RunRecord</span><span class="p">(</span><span class="w">
 </span>        <span class="n">run_time</span><span class="o">=</span><span class="n">sample_times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">microsecond</span><span class="p">,</span><span class="w">
-</span>        <span class="n">event_collection</span><span class="o">=</span><span class="n">EventCollection</span><span class="p">(</span><span class="n">events_list</span><span class="o">=</span><span class="p">[</span><span class="n">population</span><span class="p">]</span><span class="p">)</span><span class="p">,</span><span class="w">
-</span>        <span class="n">signal</span><span class="o">=</span><span class="n">SignalRecord</span><span class="p">(</span><span class="n">digital</span><span class="o">=</span><span class="n">digital</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>        <span class="n">event_collection</span><span class="o">=</span><span class="n">event_collection</span><span class="p">,</span><span class="w">
+</span>        <span class="n">signal</span><span class="o">=</span><span class="n">signal_record</span><span class="p">,</span><span class="w">
 </span>    <span class="p">)</span><span class="w">
 </span>    <span class="k">return</span> <span class="n">voltage</span><span class="p">,</span> <span class="n">record</span><span class="o">.</span><span class="n">coincidence_statistics</span><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
@@ -665,7 +670,7 @@ one known arrival. Peak localization is a separate measurement.</p>
 </span><span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="p">)</span><span class="w">
 </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_two_particle_resolution_001.png" srcset="../../_images/sphx_glr_two_particle_resolution_001.png" alt="2 µs apart Trigger windows = 1, 5 µs apart Trigger windows = 2" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.207 seconds)</p>
+<img src="../../_images/sphx_glr_two_particle_resolution_001.png" srcset="../../_images/sphx_glr_two_particle_resolution_001.png" alt="2 µs apart Trigger windows = 1, 5 µs apart Trigger windows = 2" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.278 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-studies-two-particle-resolution-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/5ab28b746a65570a70f056df08f98c26/two_particle_resolution.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">two_particle_resolution.ipynb</span></code></a></p>
@@ -723,7 +728,7 @@ one known arrival. Peak localization is a separate measurement.</p>
 
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.5.0/docs/source/gallery/studies/two_particle_resolution.rst">
+    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.6.0/docs/source/gallery/studies/two_particle_resolution.rst">
       <i class="fa-solid fa-pencil"></i>
       
       

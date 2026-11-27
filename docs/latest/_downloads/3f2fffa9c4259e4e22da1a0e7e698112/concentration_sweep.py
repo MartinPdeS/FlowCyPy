@@ -49,13 +49,14 @@ run_records = []
 for concentration_value in concentration_values:
     instrument = aurora(optical_power=100 * ureg.milliwatt)
 
+    sampling_method = populations.ExplicitModel()
     population = populations.SpherePopulation(
         name=f"{concentration_value:.0e} particles_per_mL",
         medium_refractive_index=medium_refractive_index,
         concentration=concentration_value * ureg.particle / ureg.milliliter,
         diameter=diameter_distribution,
         refractive_index=refractive_index_distribution,
-        sampling_method=populations.ExplicitModel(),
+        sampling_method=sampling_method,
     )
 
     instrument.fluidics.scatterer_collection.add_population(population)

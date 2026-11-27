@@ -53,9 +53,10 @@ def simulate_pair(*, separation: float) -> tuple[np.ndarray, dict]:
         {"Time": sample_times * ureg.microsecond, "side": voltage * ureg.millivolt}
     )
     trigger_times = triggered["Time"].to("microsecond")
+    segment_index = pd.Index(triggered["segment_id"], name="SegmentID")
     digital = pd.DataFrame(
         {"Time": trigger_times.magnitude},
-        index=pd.Index(triggered["segment_id"], name="SegmentID"),
+        index=segment_index,
     )
     digital.attrs["units"] = {"Time": trigger_times.units}
 
@@ -69,10 +70,12 @@ def simulate_pair(*, separation: float) -> tuple[np.ndarray, dict]:
         scatterer_type="Sphere",
         metadata={},
     )
+    event_collection = EventCollection(events_list=[population])
+    signal_record = SignalRecord(digital=digital)
     record = RunRecord(
         run_time=sample_times[-1] * ureg.microsecond,
-        event_collection=EventCollection(events_list=[population]),
-        signal=SignalRecord(digital=digital),
+        event_collection=event_collection,
+        signal=signal_record,
     )
     return voltage, record.coincidence_statistics()
 

@@ -22,11 +22,13 @@ instrument = aurora(optical_power=100 * ureg.milliwatt, background_power=0.1 * u
 scatterer_collection = instrument.fluidics.scatterer_collection
 
 for size in [150, 125, 100, 75, 50]:
+    diameter_distribution = distributions.Delta(value=size * ureg.nanometer)
+    refractive_index_distribution = distributions.Delta(value=1.36)
     pop = populations.SpherePopulation(
         name=f"{size} nm",
         concentration=5e9 * ureg.particle / ureg.milliliter,
-        diameter=distributions.Delta(value=size * ureg.nanometer),
-        refractive_index=distributions.Delta(value=1.36),
+        diameter=diameter_distribution,
+        refractive_index=refractive_index_distribution,
         medium_refractive_index=1.33,
     )
     scatterer_collection.add_population(pop)

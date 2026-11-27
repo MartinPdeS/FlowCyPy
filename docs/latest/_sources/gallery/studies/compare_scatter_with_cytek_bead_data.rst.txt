@@ -31,7 +31,7 @@ Cytek dataset in the FSC-H versus SSC-H feature space.
 The simulated and experimental distributions are displayed side by side as
 log-scaled two-dimensional density maps.
 
-.. GENERATED FROM PYTHON SOURCE LINES 16-615
+.. GENERATED FROM PYTHON SOURCE LINES 16-614
 
 .. code-block:: Python
 
@@ -287,12 +287,13 @@ log-scaled two-dimensional density maps.
             density_minimum_count,
         )
 
+        density_normalization = LogNorm()
         density_mesh = axis.pcolormesh(
             x_bins,
             y_bins,
             masked_density_counts,
             cmap=density_colormap,
-            norm=LogNorm(),
+            norm=density_normalization,
             shading="auto",
         )
 
@@ -451,25 +452,24 @@ log-scaled two-dimensional density maps.
             include_shot_noise=include_shot_noise,
         )
 
-        detectors = [
-            Detector(
-                name="SSC",
-                phi_angle=90 * ureg.degree,
-                numerical_aperture=1.1,
-                responsivity=side_responsivity,
-                bandwidth=10 * ureg.megahertz,
-                current_noise_density=side_current_noise_density,
-            ),
-            Detector(
-                name="FSC",
-                phi_angle=0 * ureg.degree,
-                numerical_aperture=0.1,
-                cache_numerical_aperture=0.04,
-                responsivity=forward_responsivity,
-                bandwidth=10 * ureg.megahertz,
-                current_noise_density=forward_current_noise_density,
-            ),
-        ]
+        side_detector = Detector(
+            name="SSC",
+            phi_angle=90 * ureg.degree,
+            numerical_aperture=1.1,
+            responsivity=side_responsivity,
+            bandwidth=10 * ureg.megahertz,
+            current_noise_density=side_current_noise_density,
+        )
+        forward_detector = Detector(
+            name="FSC",
+            phi_angle=0 * ureg.degree,
+            numerical_aperture=0.1,
+            cache_numerical_aperture=0.04,
+            responsivity=forward_responsivity,
+            bandwidth=10 * ureg.megahertz,
+            current_noise_density=forward_current_noise_density,
+        )
+        detectors = [side_detector, forward_detector]
 
         amplifier = Amplifier(
             gain=1 * ureg.volt / ureg.ampere,
@@ -501,20 +501,18 @@ log-scaled two-dimensional density maps.
         analog_processing = []
 
         if cutoff_frequency is not None:
-            analog_processing.append(
-                circuits.BesselLowPass(
-                    cutoff_frequency=cutoff_frequency,
-                    order=2,
-                    gain=2,
-                )
+            low_pass_filter = circuits.BesselLowPass(
+                cutoff_frequency=cutoff_frequency,
+                order=2,
+                gain=2,
             )
+            analog_processing.append(low_pass_filter)
 
-        analog_processing.append(
-            circuits.BaselineRestorationServo(
-                time_constant=time_constant,
-                initialize_with_first_sample=False,
-            )
+        baseline_restoration = circuits.BaselineRestorationServo(
+            time_constant=time_constant,
+            initialize_with_first_sample=False,
         )
+        analog_processing.append(baseline_restoration)
 
         return OptoElectronics(
             source=light_source,
@@ -542,11 +540,12 @@ log-scaled two-dimensional density maps.
             max_triggers=-1,
         )
 
+        peak_support = peak_locator.FullWindowSupport()
         global_peak_locator = peak_locator.GlobalPeakLocator(
             compute_width=False,
             compute_area=True,
             allow_negative_area=True,
-            support=peak_locator.FullWindowSupport(),
+            support=peak_support,
             polarity="positive",
             height_mode="peak_to_baseline",
             baseline_mode="edge_mean",
@@ -641,7 +640,7 @@ log-scaled two-dimensional density maps.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 616-622
+.. GENERATED FROM PYTHON SOURCE LINES 615-621
 
 Run the simulation
 ------------------
@@ -650,7 +649,7 @@ The simulated bead mixture contains six populations with diameters from
 70 nm to 293 nm. The resulting event features are extracted from the detected
 peaks and converted to a pandas dataframe.
 
-.. GENERATED FROM PYTHON SOURCE LINES 622-666
+.. GENERATED FROM PYTHON SOURCE LINES 621-665
 
 .. code-block:: Python
 
@@ -705,7 +704,7 @@ peaks and converted to a pandas dataframe.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 667-673
+.. GENERATED FROM PYTHON SOURCE LINES 666-672
 
 Load the experimental data
 --------------------------
@@ -714,7 +713,7 @@ The experimental Cytek Rosetta bead data are loaded from the documentation
 data directory. The path lookup is robust to documentation runners where
 ``__file__`` is not defined.
 
-.. GENERATED FROM PYTHON SOURCE LINES 673-681
+.. GENERATED FROM PYTHON SOURCE LINES 672-680
 
 .. code-block:: Python
 
@@ -733,7 +732,7 @@ data directory. The path lookup is robust to documentation runners where
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 682-687
+.. GENERATED FROM PYTHON SOURCE LINES 681-686
 
 Compare simulated and experimental distributions
 ------------------------------------------------
@@ -741,7 +740,7 @@ Compare simulated and experimental distributions
 The two datasets are shown with identical FSC-H and SSC-H limits so that the
 visual comparison reflects the same feature space.
 
-.. GENERATED FROM PYTHON SOURCE LINES 687-700
+.. GENERATED FROM PYTHON SOURCE LINES 686-699
 
 .. code-block:: Python
 
@@ -773,7 +772,7 @@ visual comparison reflects the same feature space.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 4.563 seconds)
+   **Total running time of the script:** (0 minutes 5.575 seconds)
 
 
 .. _sphx_glr_download_gallery_studies_compare_scatter_with_cytek_bead_data.py:

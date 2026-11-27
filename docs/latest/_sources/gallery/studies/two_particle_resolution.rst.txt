@@ -26,7 +26,7 @@ discriminator reports only one event. This example sends two identical
 Gaussian voltage pulses through the dynamic-window discriminator and varies
 their separation. The noiseless signal isolates the role of pulse overlap.
 
-.. GENERATED FROM PYTHON SOURCE LINES 10-80
+.. GENERATED FROM PYTHON SOURCE LINES 10-83
 
 .. code-block:: Python
 
@@ -76,9 +76,10 @@ their separation. The noiseless signal isolates the role of pulse overlap.
             {"Time": sample_times * ureg.microsecond, "side": voltage * ureg.millivolt}
         )
         trigger_times = triggered["Time"].to("microsecond")
+        segment_index = pd.Index(triggered["segment_id"], name="SegmentID")
         digital = pd.DataFrame(
             {"Time": trigger_times.magnitude},
-            index=pd.Index(triggered["segment_id"], name="SegmentID"),
+            index=segment_index,
         )
         digital.attrs["units"] = {"Time": trigger_times.units}
 
@@ -92,10 +93,12 @@ their separation. The noiseless signal isolates the role of pulse overlap.
             scatterer_type="Sphere",
             metadata={},
         )
+        event_collection = EventCollection(events_list=[population])
+        signal_record = SignalRecord(digital=digital)
         record = RunRecord(
             run_time=sample_times[-1] * ureg.microsecond,
-            event_collection=EventCollection(events_list=[population]),
-            signal=SignalRecord(digital=digital),
+            event_collection=event_collection,
+            signal=signal_record,
         )
         return voltage, record.coincidence_statistics()
 
@@ -107,7 +110,7 @@ their separation. The noiseless signal isolates the role of pulse overlap.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 81-86
+.. GENERATED FROM PYTHON SOURCE LINES 84-89
 
 When the voltage stays above the threshold between pulses, both arrivals
 share one window. Once the voltage falls below the threshold between the
@@ -115,7 +118,7 @@ pulses, each arrival gets its own window. The transition depends on the pulse
 shape, sampling rate, and trigger threshold. A single-event window contains
 one known arrival. Peak localization is a separate measurement.
 
-.. GENERATED FROM PYTHON SOURCE LINES 86-115
+.. GENERATED FROM PYTHON SOURCE LINES 89-118
 
 .. code-block:: Python
 
@@ -163,7 +166,7 @@ one known arrival. Peak localization is a separate measurement.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.207 seconds)
+   **Total running time of the script:** (0 minutes 0.278 seconds)
 
 
 .. _sphx_glr_download_gallery_studies_two_particle_resolution.py:

@@ -64,6 +64,44 @@ Choosing physical inputs
   For radiant power per nm, also divide by the photon energy before integrating.
   Use a response-corrected spectrum if detector sensitivity shaped the measurement.
 
+Co-located excitation lasers
+----------------------------
+
+Pass a sequence of ``Laser`` objects to a system preset, or to
+``source.Gaussian`` or ``source.FlatTop`` when building a custom system.
+All lines share the spot center, waist radii, polarization and pulse profile.
+
+.. code-block:: python
+
+   from FlowCyPy.opto_electronics import Laser, source
+   from FlowCyPy.units import ureg
+
+   lasers = [
+       Laser(wavelength=405 * ureg.nm, optical_power=8 * ureg.mW, rin=-145 * ureg.dB_per_Hz),
+       Laser(wavelength=488 * ureg.nm, optical_power=20 * ureg.mW),
+   ]
+   beam = source.Gaussian(lasers=lasers, waist_y=65 * ureg.um, waist_z=10 * ureg.um)
+
+Each bead has one arrival and one count per dye. Supply a molecular absorption
+cross section for each excitation wavelength, or use the dye preset's
+``relative_absorption`` mapping. An explicit zero models an inactive line.
+The detector bandpass acts on each scattered or emitted wavelength.
+The per-laser columns (for example ``Green[405 nm]``) sum to the detector's
+prompt-equivalent event power. Each detector produces one analog waveform.
+Photon shot noise uses the scattered or emitted wavelength. The optional
+relative intensity noise (RIN) is configured on each ``Laser`` in dB/Hz.
+Each laser fluctuates independently. Its scattered light and all fluorescence
+it excites share the same fluctuation across detectors, including when two
+lasers excite the same emission wavelength. Omit ``rin`` for a quiet line.
+The beam's ``include_rin_noise`` switch enables or disables RIN for the entire
+acquisition. With explicit lasers, RIN uses the configured beam bandwidth
+or the digitizer bandwidth when specified. If both are omitted, the model
+uses half the sampling rate. Unassigned optical background
+uses the first laser's photon energy. On a multi-line source, scalar source
+properties such as ``wavelength`` and ``optical_power`` describe the first line;
+``beam.lasers`` lists all lines. For a worked acquisition see
+:doc:`gallery/tutorials/excite_one_bead_with_two_lasers`.
+
 Surface and volume labeling
 ---------------------------
 
@@ -245,8 +283,8 @@ See :doc:`gallery/studies/measure_fluorescence_gate_loss`.
 Noise and comparison with measurements
 --------------------------------------
 
-When enabled, laser relative intensity noise supplies a common excitation
-fluctuation across channels. Lifetime acts on this fluctuating excitation.
+When enabled, each laser supplies its own relative intensity fluctuation
+to the channels it illuminates. Lifetime acts on this fluctuating excitation.
 Photon shot noise is then drawn using the energy of each wavelength component.
 For mean counts below 100 photons per bin the sampler uses a Poisson draw.
 At higher counts it uses a nonnegative Gaussian approximation with the same

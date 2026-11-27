@@ -18,36 +18,43 @@ from FlowCyPy.units import ureg
 # ---------------------------
 # Specify the size, refractive index and concentration of each population.
 
+medium_index_0 = distributions.Delta(1.33)
+diameter_0 = distributions.RosinRammler(
+    scale=150 * ureg.nanometer,
+    shape=50,
+    low_cutoff=50.0 * ureg.nanometer,
+)
+refractive_index_0 = distributions.Normal(
+    mean=1.44,
+    standard_deviation=0.002,
+    low_cutoff=1.33,
+)
 population_0 = populations.SpherePopulation(
     name="Pop 0",
-    medium_refractive_index=distributions.Delta(1.33),
+    medium_refractive_index=medium_index_0,
     concentration=1e10 * ureg.particle / ureg.milliliter,
-    diameter=distributions.RosinRammler(
-        scale=150 * ureg.nanometer,
-        shape=50,
-        low_cutoff=50.0 * ureg.nanometer,
-    ),
-    refractive_index=distributions.Normal(
-        mean=1.44,
-        standard_deviation=0.002,
-        low_cutoff=1.33,
-    ),
+    diameter=diameter_0,
+    refractive_index=refractive_index_0,
 )
 
+medium_index_1 = distributions.Delta(1.33)
+diameter_1 = distributions.RosinRammler(
+    scale=50 * ureg.nanometer,
+    shape=2,
+)
+refractive_index_1 = distributions.Normal(
+    mean=1.44,
+    standard_deviation=0.002,
+    low_cutoff=1.33,
+)
+gamma_sampling = populations.GammaModel(number_of_samples=1_000)
 population_1 = populations.SpherePopulation(
     name="Pop 1",
-    medium_refractive_index=distributions.Delta(1.33),
+    medium_refractive_index=medium_index_1,
     concentration=5e17 * ureg.particle / ureg.milliliter,
-    diameter=distributions.RosinRammler(
-        scale=50 * ureg.nanometer,
-        shape=2,
-    ),
-    refractive_index=distributions.Normal(
-        mean=1.44,
-        standard_deviation=0.002,
-        low_cutoff=1.33,
-    ),
-    sampling_method=populations.GammaModel(number_of_samples=1_000),
+    diameter=diameter_1,
+    refractive_index=refractive_index_1,
+    sampling_method=gamma_sampling,
 )
 
 

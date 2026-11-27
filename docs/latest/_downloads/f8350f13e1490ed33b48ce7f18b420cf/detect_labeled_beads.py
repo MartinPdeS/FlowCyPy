@@ -26,7 +26,8 @@ from FlowCyPy.units import ureg
 # Keep the bead size, refractive index and concentration equal in both populations.
 
 instrument = facs_canto(include_shot_noise=False, include_rin_noise=False)
-label = Label(fluorophore=alexa_fluor_488(), molecules_per_particle=20_000)
+dye = alexa_fluor_488()
+label = Label(fluorophore=dye, molecules_per_particle=20_000)
 for name, labels in [("Labeled", [label]), ("Unlabeled", [])]:
     beads = microbeads(
         name=name,
@@ -45,12 +46,13 @@ for name, labels in [("Labeled", [label]), ("Unlabeled", [])]:
 # emission bin. Optical noise and green PMT dark current are disabled to make the
 # relationship between individual events and pulses visible.
 
+optical_filter = Bandpass(center=530 * ureg.nm, width=30 * ureg.nm)
 green = pmt(
     name="green",
     phi_angle=90 * ureg.degree,
     numerical_aperture=0.8,
     signals=("fluorescence",),
-    optical_filter=Bandpass(center=530 * ureg.nm, width=30 * ureg.nm),
+    optical_filter=optical_filter,
     dark_current=0 * ureg.ampere,
 )
 optics = instrument.opto_electronics
@@ -65,7 +67,12 @@ record = instrument.acquire(run_time=200 * ureg.microsecond, random_state=42)
 # contribute to the same pulse. Each voltage panel has its own scale.
 
 figure, axes = plt.subplots(
-    3, 1, sharex=True, figsize=(8, 5), height_ratios=(1, 2, 2), layout="constrained"
+    nrows=3,
+    ncols=1,
+    sharex=True,
+    figsize=(8, 5),
+    height_ratios=(1, 2, 2),
+    layout="constrained",
 )
 for row, events in enumerate(record.event_collection):
     arrivals = events.get_quantity("Time").m_as("microsecond")
@@ -96,17 +103,18 @@ labeled_events = record.event_collection[0]
 counts = labeled_events.get_quantity(label.column_name)
 print(f"{len(counts)} labeled beads with {counts.magnitude[0]:.0f} molecules per bead")
 threshold = analog["green"].max() / 2
-processed = record.process(
-    digital_processing=DigitalProcessing(
-        discriminator=discriminator.DynamicWindow(
-            trigger_channel="green",
-            threshold=threshold,
-            pre_buffer=8,
-            post_buffer=8,
-        ),
-        peak_locator=peak_locator.GlobalPeakLocator(),
-    )
+trigger_window = discriminator.DynamicWindow(
+    trigger_channel="green",
+    threshold=threshold,
+    pre_buffer=8,
+    post_buffer=8,
 )
+peak_algorithm = peak_locator.GlobalPeakLocator()
+processing = DigitalProcessing(
+    discriminator=trigger_window,
+    peak_locator=peak_algorithm,
+)
+processed = record.process(digital_processing=processing)
 print(f"Green-triggered segments: {processed.number_of_triggers}")
 print(
     "Channels with digitized peaks:", processed.peaks.index.unique("Detector").tolist()

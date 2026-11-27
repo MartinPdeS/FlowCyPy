@@ -233,7 +233,7 @@ Helper functions
 Construct simulation components
 -------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 190-273
+.. GENERATED FROM PYTHON SOURCE LINES 190-271
 
 .. code-block:: Python
 
@@ -286,9 +286,7 @@ Construct simulation components
         dark_current=0 * ureg.ampere,
     )
 
-    baseline_restoration = circuits.BaselineRestorationServo(
-        time_constant=10 * ureg.microsecond
-    )
+    baseline_restoration = circuits.BaselineRestorationServo(time_constant=10 * ureg.microsecond)
 
     opto_electronics = OptoElectronics(
         detectors=[detector_0],
@@ -327,12 +325,12 @@ Construct simulation components
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 274-276
+.. GENERATED FROM PYTHON SOURCE LINES 272-274
 
 Run J estimation simulation
 ---------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 276-338
+.. GENERATED FROM PYTHON SOURCE LINES 274-336
 
 .. code-block:: Python
 
@@ -435,12 +433,12 @@ Run J estimation simulation
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 339-341
+.. GENERATED FROM PYTHON SOURCE LINES 337-339
 
 Estimate J
 ----------
 
-.. GENERATED FROM PYTHON SOURCE LINES 341-355
+.. GENERATED FROM PYTHON SOURCE LINES 339-353
 
 .. code-block:: Python
 
@@ -468,18 +466,18 @@ Estimate J
 
 
     J estimation results
-    Estimated J: 0.11017963850605912 dimensionless
-    Linear intercept: 6.496586e-05
+    Estimated J: 0.12924593330823095 dimensionless
+    Linear intercept: 2.869941e-05
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 356-358
+.. GENERATED FROM PYTHON SOURCE LINES 354-356
 
 Plot estimation and diagnostics
 -------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 358-368
+.. GENERATED FROM PYTHON SOURCE LINES 356-366
 
 .. code-block:: Python
 
@@ -508,7 +506,7 @@ Plot estimation and diagnostics
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 34.523 seconds)
+   **Total running time of the script:** (0 minutes 43.173 seconds)
 
 
 .. _sphx_glr_download_gallery_validation_j_estimator.py:

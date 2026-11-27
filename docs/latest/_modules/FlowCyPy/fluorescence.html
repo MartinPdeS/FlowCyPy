@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FlowCyPy.fluorescence &#8212; FlowCyPy 1.5.0 documentation</title>
+    <title>FlowCyPy.fluorescence &#8212; FlowCyPy 1.6.0 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=623e1633"></script>
+    <script src="../../_static/documentation_options.js?v=cf6e66ff"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -52,7 +52,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.5.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.6.0';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
@@ -63,7 +63,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.5.0" />
+  <meta name="docsearch:version" content="1.6.0" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -494,9 +494,11 @@
                 <article class="bd-article">
                   
   <h1>Source code for FlowCyPy.fluorescence</h1><div class="highlight"><pre>
-<span></span><span class="sd">"""Single-laser fluorescence for explicitly sampled particles."""</span>
+<span></span><span class="sd">"""Spectrally resolved fluorescence for explicitly sampled particles."""</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapping</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">MappingProxyType</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluidics</span><span class="w"> </span><span class="kn">import</span> <span class="n">distributions</span><span class="p">,</span> <span class="n">populations</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.opto_electronics.coupling_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScatteringModel</span>
@@ -551,8 +553,9 @@
 <span class="sd">    ----------</span>
 <span class="sd">    name : str</span>
 <span class="sd">        Dye identifier, unique among labels on a population.</span>
-<span class="sd">    absorption_cross_section : area quantity</span>
+<span class="sd">    absorption_cross_section : area quantity or mapping of wavelength to area</span>
 <span class="sd">        Molecular absorption cross section at the configured laser wavelength.</span>
+<span class="sd">        With multiple lasers, supply one wavelength-keyed value per line.</span>
 <span class="sd">    quantum_yield : float</span>
 <span class="sd">        Mean emitted photons per absorbed photon, between zero and one.</span>
 <span class="sd">    emission_wavelengths : length quantity, shape (n,)</span>
@@ -566,7 +569,7 @@
 <span class="sd">    """</span>
 
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">absorption_cross_section</span><span class="p">:</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span>
+    <span class="n">absorption_cross_section</span><span class="p">:</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span> <span class="o">|</span> <span class="n">Mapping</span>
     <span class="n">quantum_yield</span><span class="p">:</span> <span class="nb">float</span>
     <span class="n">emission_wavelengths</span><span class="p">:</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span>
     <span class="n">photon_weights</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
@@ -586,11 +589,22 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">emission_wavelengths</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s2">"nm"</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
         <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photon_weights</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-        <span class="n">area</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">absorption_cross_section</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s2">"meter**2"</span><span class="p">))</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">area</span><span class="p">)</span> <span class="ow">or</span> <span class="n">area</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">"Provide a dye name and a finite nonnegative absorption cross section."</span>
-            <span class="p">)</span>
+        <span class="n">areas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">absorption_cross_section</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">areas</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">areas</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Provide at least one absorption cross section."</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">wavelength</span> <span class="ow">in</span> <span class="n">areas</span><span class="p">:</span>
+                <span class="n">nm</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">wavelength</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s2">"nm"</span><span class="p">))</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">nm</span><span class="p">)</span> <span class="ow">or</span> <span class="n">nm</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Excitation wavelengths must be finite and positive."</span><span class="p">)</span>
+            <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"absorption_cross_section"</span><span class="p">,</span> <span class="n">MappingProxyType</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">areas</span><span class="p">)))</span>
+            <span class="n">areas</span> <span class="o">=</span> <span class="n">areas</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">areas</span> <span class="o">=</span> <span class="p">(</span><span class="n">areas</span><span class="p">,)</span>
+        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">areas</span><span class="p">:</span>
+            <span class="n">area</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s2">"meter**2"</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">area</span><span class="p">)</span> <span class="ow">or</span> <span class="n">area</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Provide a dye name and finite nonnegative absorption cross sections."</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantum_yield</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"quantum_yield must be between zero and one."</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span>
@@ -725,7 +739,53 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_couple_channel</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">detector</span><span class="p">,</span> <span class="n">compute_cross_section</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Write total collected peak power and its spectral contributions per event."""</span>
+<span class="w">    </span><span class="sd">"""Write the peak power and fluorescence components of one detector."""</span>
+    <span class="k">for</span> <span class="n">block</span><span class="p">,</span> <span class="n">scatter</span><span class="p">,</span> <span class="n">emissions</span><span class="p">,</span> <span class="n">total</span> <span class="ow">in</span> <span class="n">_line_powers</span><span class="p">(</span>
+        <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="n">detector</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span> <span class="n">compute_cross_section</span><span class="o">=</span><span class="n">compute_cross_section</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="n">emissions</span><span class="p">:</span>
+            <span class="n">block</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"FluorescencePower"</span><span class="p">,</span> <span class="p">{})[</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">scatter</span><span class="p">,</span> <span class="n">emissions</span><span class="p">)</span>
+        <span class="n">block</span><span class="o">.</span><span class="n">set_quantity_column</span><span class="p">(</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">total</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_couple_lasers</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">beam</span><span class="p">,</span> <span class="n">detector</span><span class="p">,</span> <span class="n">compute_cross_section</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Combine excitation lines on the same events and retain their photon wavelengths."""</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">totals</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">laser</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">beam</span><span class="o">.</span><span class="n">lasers</span><span class="p">):</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">beam</span> <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="nb">type</span><span class="p">(</span><span class="n">beam</span><span class="p">)(</span>
+            <span class="n">wavelength</span><span class="o">=</span><span class="n">laser</span><span class="o">.</span><span class="n">wavelength</span><span class="p">,</span> <span class="n">optical_power</span><span class="o">=</span><span class="n">laser</span><span class="o">.</span><span class="n">optical_power</span><span class="p">,</span>
+            <span class="n">waist_y</span><span class="o">=</span><span class="n">beam</span><span class="o">.</span><span class="n">waist_y</span><span class="p">,</span> <span class="n">waist_z</span><span class="o">=</span><span class="n">beam</span><span class="o">.</span><span class="n">waist_z</span><span class="p">,</span> <span class="n">polarization</span><span class="o">=</span><span class="n">beam</span><span class="o">.</span><span class="n">polarization</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">nm</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">laser</span><span class="o">.</span><span class="n">wavelength</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s2">"nm"</span><span class="p">))</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"[</span><span class="si">{</span><span class="n">nm</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> nm]"</span>
+        <span class="k">for</span> <span class="n">block</span><span class="p">,</span> <span class="n">scatter</span><span class="p">,</span> <span class="n">emissions</span><span class="p">,</span> <span class="n">total</span> <span class="ow">in</span> <span class="n">_line_powers</span><span class="p">(</span>
+            <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="n">detector</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span>
+            <span class="n">compute_cross_section</span><span class="o">=</span><span class="n">compute_cross_section</span><span class="p">,</span> <span class="n">multiple</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="n">block</span><span class="o">.</span><span class="n">set_quantity_column</span><span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">,</span> <span class="n">total</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">compute_cross_section</span><span class="p">:</span>
+                <span class="n">block</span><span class="o">.</span><span class="n">set_quantity_column</span><span class="p">(</span><span class="s2">"Csca"</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">,</span> <span class="n">block</span><span class="o">.</span><span class="n">get_quantity</span><span class="p">(</span><span class="s2">"Csca"</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">totals</span><span class="p">[</span><span class="n">block</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">total</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">block</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"FluorescencePower"</span><span class="p">,</span> <span class="p">{})[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="o">*</span> <span class="n">total</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">totals</span><span class="p">[</span><span class="n">block</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">+=</span> <span class="n">total</span>
+            <span class="n">components</span> <span class="o">=</span> <span class="n">block</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">"FluorescencePower"</span><span class="p">][</span><span class="n">name</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">"scatter"</span> <span class="ow">in</span> <span class="n">detector</span><span class="o">.</span><span class="n">signals</span><span class="p">:</span>
+                <span class="n">components</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">scatter</span><span class="p">,</span> <span class="p">{</span><span class="n">nm</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">},</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">index</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">amplitude</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="o">*</span><span class="n">delay</span> <span class="ow">in</span> <span class="n">emissions</span><span class="p">:</span>
+                <span class="n">components</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">amplitude</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">delay</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">delay</span> <span class="k">else</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">index</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">block</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="n">block</span><span class="o">.</span><span class="n">set_quantity_column</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">totals</span><span class="p">[</span><span class="n">block</span><span class="o">.</span><span class="n">name</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">compute_cross_section</span><span class="p">:</span>
+                <span class="n">first_nm</span> <span class="o">=</span> <span class="n">beam</span><span class="o">.</span><span class="n">wavelength</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s2">"nm"</span><span class="p">)</span>
+                <span class="n">block</span><span class="o">.</span><span class="n">set_quantity_column</span><span class="p">(</span><span class="s2">"Csca"</span><span class="p">,</span> <span class="n">block</span><span class="o">.</span><span class="n">get_quantity</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Csca[</span><span class="si">{</span><span class="n">first_nm</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> nm]"</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_line_powers</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">detector</span><span class="p">,</span> <span class="n">compute_cross_section</span><span class="p">,</span> <span class="n">multiple</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Yield scatter, spectrally resolved fluorescence, and total power per population."""</span>
     <span class="n">accepts_scatter</span> <span class="o">=</span> <span class="s2">"scatter"</span> <span class="ow">in</span> <span class="n">detector</span><span class="o">.</span><span class="n">signals</span> <span class="ow">and</span> <span class="p">(</span>
         <span class="n">detector</span><span class="o">.</span><span class="n">optical_filter</span> <span class="ow">is</span> <span class="kc">None</span>
         <span class="ow">or</span> <span class="n">detector</span><span class="o">.</span><span class="n">optical_filter</span><span class="o">.</span><span class="n">transmits</span><span class="p">(</span><span class="n">wavelength</span><span class="o">=</span><span class="n">source</span><span class="o">.</span><span class="n">wavelength</span><span class="p">)</span>
@@ -765,9 +825,19 @@
             <span class="n">fraction</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">inner</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">outer</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span>
         <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
             <span class="n">dye</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">fluorophore</span>
+            <span class="n">cross_section</span> <span class="o">=</span> <span class="n">dye</span><span class="o">.</span><span class="n">absorption_cross_section</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cross_section</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+                <span class="n">nm</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">wavelength</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s2">"nm"</span><span class="p">)</span>
+                <span class="n">matches</span> <span class="o">=</span> <span class="p">[</span><span class="n">value</span> <span class="k">for</span> <span class="n">line</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                           <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s2">"nm"</span><span class="p">),</span> <span class="n">nm</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mi">0</span><span class="p">)]</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">dye</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> requires one absorption cross section at </span><span class="si">{</span><span class="n">nm</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> nm."</span><span class="p">)</span>
+                <span class="n">cross_section</span> <span class="o">=</span> <span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">multiple</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Supply wavelength-specific absorption cross sections for </span><span class="si">{</span><span class="n">dye</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
             <span class="n">dye_amplitude</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">irradiance</span>
-                <span class="o">*</span> <span class="n">dye</span><span class="o">.</span><span class="n">absorption_cross_section</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s2">"m**2"</span><span class="p">)</span>
+                <span class="o">*</span> <span class="n">cross_section</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s2">"m**2"</span><span class="p">)</span>
                 <span class="o">*</span> <span class="n">block</span><span class="o">.</span><span class="n">get_quantity</span><span class="p">(</span><span class="n">label</span><span class="o">.</span><span class="n">column_name</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
                 <span class="o">*</span> <span class="n">dye</span><span class="o">.</span><span class="n">quantum_yield</span>
                 <span class="o">*</span> <span class="n">fraction</span>
@@ -795,12 +865,7 @@
                 <span class="p">)</span>
                 <span class="n">component</span> <span class="o">=</span> <span class="p">(</span><span class="n">dye_amplitude</span><span class="p">,</span> <span class="n">spectral_weights</span><span class="p">)</span>
                 <span class="n">emissions</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="o">*</span><span class="n">component</span><span class="p">,</span> <span class="n">lifetime</span><span class="p">)</span> <span class="k">if</span> <span class="n">lifetime</span> <span class="k">else</span> <span class="n">component</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">emissions</span><span class="p">:</span>
-            <span class="n">block</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"FluorescencePower"</span><span class="p">,</span> <span class="p">{})[</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">scatter</span><span class="p">,</span>
-                <span class="n">emissions</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="n">block</span><span class="o">.</span><span class="n">set_quantity_column</span><span class="p">(</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">total</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">block</span><span class="p">,</span> <span class="n">scatter</span><span class="p">,</span> <span class="n">emissions</span><span class="p">,</span> <span class="n">total</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_decay_bin_averages</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">excitation</span><span class="p">,</span> <span class="n">interval_seconds</span><span class="p">,</span> <span class="n">lifetime_seconds</span><span class="p">):</span>
@@ -847,29 +912,50 @@
     <span class="k">return</span> <span class="n">emitted</span> <span class="o">*</span> <span class="n">excitation</span><span class="o">.</span><span class="n">units</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_apply_spectral_noise</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">detectors</span><span class="p">,</span> <span class="n">power</span><span class="p">,</span> <span class="n">emission</span><span class="p">,</span> <span class="n">generator</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Apply common excitation noise and wavelength-specific photon statistics."""</span>
-    <span class="n">components</span> <span class="o">=</span> <span class="p">[(</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span> <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="n">detectors</span><span class="p">]</span>
-    <span class="n">traces</span> <span class="o">=</span> <span class="p">[</span><span class="n">power</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">components</span><span class="p">]</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_apply_spectral_noise</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">detectors</span><span class="p">,</span> <span class="n">power</span><span class="p">,</span> <span class="n">emission</span><span class="p">,</span> <span class="n">generator</span><span class="p">,</span> <span class="n">bandwidth</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Apply each laser's RIN before lifetime response and photon shot noise.</span>
+
+<span class="sd">    Spectral keys contain the detector, photon wavelength in nm and optionally</span>
+<span class="sd">    lifetime in seconds and excitation laser index. In a multi-line beam the</span>
+<span class="sd">    unassigned background has no excitation laser.</span>
+<span class="sd">    """</span>
+    <span class="n">multi</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">_has_multiple_lasers</span>
+    <span class="n">components</span> <span class="o">=</span> <span class="p">[(</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">multi</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="n">detectors</span><span class="p">]</span>
+    <span class="n">traces</span> <span class="o">=</span> <span class="p">[</span><span class="n">power</span><span class="p">[</span><span class="n">component</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">components</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">emission</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">name</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">,</span> <span class="o">*</span><span class="n">delay</span> <span class="o">=</span> <span class="n">key</span>
-        <span class="n">lifetime</span> <span class="o">=</span> <span class="n">delay</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">delay</span> <span class="k">else</span> <span class="mf">0.0</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">lifetime</span><span class="p">)</span> <span class="ow">or</span> <span class="n">lifetime</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">"Emission keys require a channel, wavelength in nm and optional nonnegative lifetime in seconds."</span>
-            <span class="p">)</span>
-        <span class="n">components</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">,</span> <span class="n">lifetime</span><span class="p">))</span>
+        <span class="n">name</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">,</span> <span class="o">*</span><span class="n">details</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="n">lifetime</span> <span class="o">=</span> <span class="n">details</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">details</span> <span class="k">else</span> <span class="mf">0.0</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">details</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">lifetime</span><span class="p">)</span> <span class="ow">or</span> <span class="n">lifetime</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Invalid spectral key or fluorescence lifetime."</span><span class="p">)</span>
+        <span class="n">laser_index</span> <span class="o">=</span> <span class="n">details</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">details</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="p">(</span><span class="kc">None</span> <span class="k">if</span> <span class="n">multi</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">components</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">,</span> <span class="n">lifetime</span><span class="p">,</span> <span class="n">laser_index</span><span class="p">))</span>
         <span class="n">traces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">source</span><span class="o">.</span><span class="n">include_rin_noise</span> <span class="ow">and</span> <span class="n">source</span><span class="o">.</span><span class="n">rin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># One excitation fluctuation applies to every wavelength and channel.</span>
-        <span class="n">inputs</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">index</span><span class="p">):</span> <span class="n">trace</span> <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">trace</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">traces</span><span class="p">)}</span>
-        <span class="n">noisy</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">add_rin_to_signal_dict</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">"Time"</span><span class="p">:</span> <span class="n">power</span><span class="p">[</span><span class="s2">"Time"</span><span class="p">],</span> <span class="o">**</span><span class="n">inputs</span><span class="p">},</span>
-            <span class="n">seed</span><span class="o">=</span><span class="n">_next_noise_seed</span><span class="p">(</span><span class="n">generator</span><span class="o">=</span><span class="n">generator</span><span class="p">),</span>
-        <span class="p">)</span>
-        <span class="n">traces</span> <span class="o">=</span> <span class="p">[</span><span class="n">noisy</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">source</span><span class="o">.</span><span class="n">include_rin_noise</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">laser</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">lasers</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">laser</span><span class="o">.</span><span class="n">rin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">positions</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">components</span><span class="p">)</span> <span class="k">if</span> <span class="n">component</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="n">index</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">positions</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">noise_source</span> <span class="o">=</span> <span class="n">source</span>
+            <span class="k">if</span> <span class="n">source</span><span class="o">.</span><span class="n">_explicit_lasers</span><span class="p">:</span>
+                <span class="n">noise_bandwidth</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">bandwidth</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">noise_bandwidth</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s2">"Hz"</span><span class="p">)):</span>
+                    <span class="n">noise_bandwidth</span> <span class="o">=</span> <span class="n">bandwidth</span>
+                <span class="n">noise_source</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">source</span><span class="p">)(</span>
+                    <span class="n">wavelength</span><span class="o">=</span><span class="n">laser</span><span class="o">.</span><span class="n">wavelength</span><span class="p">,</span> <span class="n">optical_power</span><span class="o">=</span><span class="n">laser</span><span class="o">.</span><span class="n">optical_power</span><span class="p">,</span>
+                    <span class="n">waist_y</span><span class="o">=</span><span class="n">source</span><span class="o">.</span><span class="n">waist_y</span><span class="p">,</span> <span class="n">waist_z</span><span class="o">=</span><span class="n">source</span><span class="o">.</span><span class="n">waist_z</span><span class="p">,</span>
+                    <span class="n">rin</span><span class="o">=</span><span class="n">laser</span><span class="o">.</span><span class="n">rin</span><span class="p">,</span> <span class="n">bandwidth</span><span class="o">=</span><span class="n">noise_bandwidth</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="n">inputs</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">):</span> <span class="n">traces</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">positions</span><span class="p">}</span>
+            <span class="n">noisy</span> <span class="o">=</span> <span class="n">noise_source</span><span class="o">.</span><span class="n">add_rin_to_signal_dict</span><span class="p">(</span>
+                <span class="p">{</span><span class="s2">"Time"</span><span class="p">:</span> <span class="n">power</span><span class="p">[</span><span class="s2">"Time"</span><span class="p">],</span> <span class="o">**</span><span class="n">inputs</span><span class="p">},</span> <span class="n">seed</span><span class="o">=</span><span class="n">_next_noise_seed</span><span class="p">(</span><span class="n">generator</span><span class="o">=</span><span class="n">generator</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">positions</span><span class="p">:</span>
+                <span class="n">traces</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">noisy</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span>
     <span class="n">combined</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"Time"</span><span class="p">:</span> <span class="n">power</span><span class="p">[</span><span class="s2">"Time"</span><span class="p">]}</span>
-    <span class="k">for</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">,</span> <span class="n">lifetime</span><span class="p">),</span> <span class="n">trace</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">components</span><span class="p">,</span> <span class="n">traces</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">,</span> <span class="n">lifetime</span><span class="p">,</span> <span class="n">_</span><span class="p">),</span> <span class="n">trace</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">components</span><span class="p">,</span> <span class="n">traces</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">lifetime</span> <span class="ow">and</span> <span class="n">trace</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">interval</span> <span class="o">=</span> <span class="p">(</span><span class="n">power</span><span class="p">[</span><span class="s2">"Time"</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">power</span><span class="p">[</span><span class="s2">"Time"</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s2">"second"</span><span class="p">)</span>
             <span class="n">trace</span> <span class="o">=</span> <span class="n">_decay_bin_averages</span><span class="p">(</span>

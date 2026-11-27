@@ -159,7 +159,7 @@ noise would also contribute to the uncertainty in a measured peak.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.100 seconds)
+   **Total running time of the script:** (0 minutes 0.142 seconds)
 
 
 .. _sphx_glr_download_gallery_studies_choose_digitizer_voltage_range.py:

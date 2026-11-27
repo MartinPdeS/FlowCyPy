@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Examples: Studies &#8212; FlowCyPy 1.5.0 documentation</title>
+    <title>Examples: Studies &#8212; FlowCyPy 1.6.0 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=623e1633"></script>
+    <script src="../../_static/documentation_options.js?v=cf6e66ff"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -53,7 +53,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.5.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.6.0';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             true;
         </script>
@@ -66,7 +66,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.5.0" />
+  <meta name="docsearch:version" content="1.6.0" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -464,12 +464,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/cluster_particles_by_scatter.html">Cluster particles by forward and side scatter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/define_custom_dye_spectra.html">Define custom dyes and predict spectral spillover</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/detect_labeled_beads.html">Detect fluorescent beads alongside unlabeled beads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/excite_one_bead_with_two_lasers.html">Excite the same bead with two lasers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/select_a_laser_on_sony_id7000.html">Choose a laser on the Sony ID7000</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a aria-current="page" class="current reference internal" href="#">Examples: Studies</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="choose_digitizer_voltage_range.html">Choose a digitizer range for dim and bright pulses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_analog_filters.html">Compare baseline restoration and low-pass filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compare_laser_intensity_noise.html">Compare intensity noise from two co-located lasers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_scatter_systems.html">Compare side-scatter collection at 488 nm</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_scatter_with_cytek_bead_data.html">Compare simulated scatter with Cytek bead measurements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_size_exclusion_cutoffs.html">Compare size-exclusion cutoffs for vesicles and lipoproteins</a></li>
@@ -556,6 +558,9 @@
 </div><div class="sphx-glr-thumbcontainer" tooltip="Acquire one forward-scatter waveform on the FACSCanto preset and apply two analog filters to it. Using the same waveform keeps particle arrivals and detector noise identical across the comparison."><img alt="" src="../../_images/sphx_glr_compare_analog_filters_thumb.png" />
 <p><a class="reference internal" href="compare_analog_filters.html"><span class="doc">Compare baseline restoration and low-pass filtering</span></a></p>
   <div class="sphx-glr-thumbnail-title">Compare baseline restoration and low-pass filtering</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Can a fluctuation in a bead pulse be traced back to one laser? Acquire the same beads twice, switching relative intensity noise (RIN) on and off. Two PMTs collect 405 nm scatter at different angles and a third collects 488 nm scatter at 90 degrees. Each narrow bandpass isolates one excitation line."><img alt="" src="../../_images/sphx_glr_compare_laser_intensity_noise_thumb.png" />
+<p><a class="reference internal" href="compare_laser_intensity_noise.html"><span class="doc">Compare intensity noise from two co-located lasers</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Compare intensity noise from two co-located lasers</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="The BD FACSCanto II and nanoFCM NanoAnalyzer presets both illuminate the sample at 488 nm. How does the same bead pulse appear on their modeled side-scatter detectors? These presets share FlowCyPy reference fluidics and electronics, so the comparison describes their modeled collection optics."><img alt="" src="../../_images/sphx_glr_compare_scatter_systems_thumb.png" />
 <p><a class="reference internal" href="compare_scatter_systems.html"><span class="doc">Compare side-scatter collection at 488 nm</span></a></p>
   <div class="sphx-glr-thumbnail-title">Compare side-scatter collection at 488 nm</div>
@@ -637,7 +642,7 @@
 
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.5.0/docs/source/gallery/studies/index.rst">
+    <a href="https://github.com/MartinPdeS/FlowCyPy/edit/v1.6.0/docs/source/gallery/studies/index.rst">
       <i class="fa-solid fa-pencil"></i>
       
       

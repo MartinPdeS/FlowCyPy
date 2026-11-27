@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**02:35.882** total execution time for 22 files **from all galleries**:
+**03:12.814** total execution time for 24 files **from all galleries**:
 
 .. container::
 
@@ -32,69 +32,75 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_gallery_validation_j_estimator.py` (``../examples/validation/j_estimator.py``)
-     - 00:34.523
-     - 0.0
    * - :ref:`sphx_glr_gallery_validation_k_estimator.py` (``../examples/validation/k_estimator.py``)
-     - 00:34.267
+     - 00:43.319
+     - 0.0
+   * - :ref:`sphx_glr_gallery_validation_j_estimator.py` (``../examples/validation/j_estimator.py``)
+     - 00:43.173
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_compare_size_exclusion_cutoffs.py` (``../examples/studies/compare_size_exclusion_cutoffs.py``)
-     - 00:29.781
+     - 00:36.340
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_reproduce_rosetta_mix_markers.py` (``../examples/studies/reproduce_rosetta_mix_markers.py``)
-     - 00:13.388
+     - 00:16.007
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_concentration_sweep.py` (``../examples/studies/concentration_sweep.py``)
-     - 00:07.946
+     - 00:09.269
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_limit_of_detection.py` (``../examples/studies/limit_of_detection.py``)
-     - 00:07.562
+     - 00:08.749
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_compare_scatter_with_cytek_bead_data.py` (``../examples/studies/compare_scatter_with_cytek_bead_data.py``)
-     - 00:04.563
+     - 00:05.575
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_threshold_sensitivity.py` (``../examples/studies/threshold_sensitivity.py``)
-     - 00:03.726
-     - 0.0
-   * - :ref:`sphx_glr_gallery_tutorials_assemble_a_flow_cytometer.py` (``../examples/tutorials/assemble_a_flow_cytometer.py``)
-     - 00:02.475
+     - 00:03.156
      - 0.0
    * - :ref:`sphx_glr_gallery_tutorials_build_a_reusable_scatter_system.py` (``../examples/tutorials/build_a_reusable_scatter_system.py``)
-     - 00:02.427
-     - 0.0
-   * - :ref:`sphx_glr_gallery_tutorials_cluster_particles_by_scatter.py` (``../examples/tutorials/cluster_particles_by_scatter.py``)
-     - 00:02.331
+     - 00:02.825
      - 0.0
    * - :ref:`sphx_glr_gallery_tutorials_select_a_laser_on_sony_id7000.py` (``../examples/tutorials/select_a_laser_on_sony_id7000.py``)
-     - 00:02.182
+     - 00:02.776
+     - 0.0
+   * - :ref:`sphx_glr_gallery_tutorials_assemble_a_flow_cytometer.py` (``../examples/tutorials/assemble_a_flow_cytometer.py``)
+     - 00:02.753
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_compare_scatter_systems.py` (``../examples/studies/compare_scatter_systems.py``)
-     - 00:02.143
+     - 00:02.710
+     - 0.0
+   * - :ref:`sphx_glr_gallery_tutorials_cluster_particles_by_scatter.py` (``../examples/tutorials/cluster_particles_by_scatter.py``)
+     - 00:02.126
+     - 0.0
+   * - :ref:`sphx_glr_gallery_studies_compare_laser_intensity_noise.py` (``../examples/studies/compare_laser_intensity_noise.py``)
+     - 00:01.896
      - 0.0
    * - :ref:`sphx_glr_gallery_tutorials_acquire_scatter_on_facs_canto.py` (``../examples/tutorials/acquire_scatter_on_facs_canto.py``)
-     - 00:01.463
+     - 00:01.732
      - 0.0
    * - :ref:`sphx_glr_gallery_tutorials_detect_labeled_beads.py` (``../examples/tutorials/detect_labeled_beads.py``)
-     - 00:01.226
-     - 0.0
-   * - :ref:`sphx_glr_gallery_tutorials_define_custom_dye_spectra.py` (``../examples/tutorials/define_custom_dye_spectra.py``)
-     - 00:01.163
+     - 00:01.569
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_measure_fluorescence_gate_loss.py` (``../examples/studies/measure_fluorescence_gate_loss.py``)
-     - 00:01.148
+     - 00:01.463
+     - 0.0
+   * - :ref:`sphx_glr_gallery_tutorials_excite_one_bead_with_two_lasers.py` (``../examples/tutorials/excite_one_bead_with_two_lasers.py``)
+     - 00:01.457
+     - 0.0
+   * - :ref:`sphx_glr_gallery_tutorials_define_custom_dye_spectra.py` (``../examples/tutorials/define_custom_dye_spectra.py``)
+     - 00:01.452
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_measure_blank_trigger_rate.py` (``../examples/studies/measure_blank_trigger_rate.py``)
-     - 00:01.133
+     - 00:01.444
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_compare_analog_filters.py` (``../examples/studies/compare_analog_filters.py``)
-     - 00:01.121
+     - 00:01.418
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_map_particle_velocities_in_the_flow_cell.py` (``../examples/studies/map_particle_velocities_in_the_flow_cell.py``)
-     - 00:01.005
+     - 00:01.186
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_two_particle_resolution.py` (``../examples/studies/two_particle_resolution.py``)
-     - 00:00.207
+     - 00:00.278
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_choose_digitizer_voltage_range.py` (``../examples/studies/choose_digitizer_voltage_range.py``)
-     - 00:00.100
+     - 00:00.142
      - 0.0

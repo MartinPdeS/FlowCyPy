@@ -51,6 +51,23 @@ Examples: Studies
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Can a fluctuation in a bead pulse be traced back to one laser? Acquire the same beads twice, switching relative intensity noise (RIN) on and off. Two PMTs collect 405 nm scatter at different angles and a third collects 488 nm scatter at 90 degrees. Each narrow bandpass isolates one excitation line.">
+
+.. only:: html
+
+  .. image:: /gallery/studies/images/thumb/sphx_glr_compare_laser_intensity_noise_thumb.png
+    :alt:
+
+  :doc:`/gallery/studies/compare_laser_intensity_noise`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Compare intensity noise from two co-located lasers</div>
+    </div>
+
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="The BD FACSCanto II and nanoFCM NanoAnalyzer presets both illuminate the sample at 488 nm. How does the same bead pulse appear on their modeled side-scatter detectors? These presets share FlowCyPy reference fluidics and electronics, so the comparison describes their modeled collection optics.">
 
 .. only:: html
@@ -248,6 +265,7 @@ Examples: Studies
 
    /gallery/studies/choose_digitizer_voltage_range
    /gallery/studies/compare_analog_filters
+   /gallery/studies/compare_laser_intensity_noise
    /gallery/studies/compare_scatter_systems
    /gallery/studies/compare_scatter_with_cytek_bead_data
    /gallery/studies/compare_size_exclusion_cutoffs
