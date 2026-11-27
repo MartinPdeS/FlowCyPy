@@ -13,17 +13,11 @@ from matplotlib.ticker import FuncFormatter
 from matplotlib.colors import LogNorm, Normalize
 from matplotlib.transforms import blended_transform_factory
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
-import matplotlib as mpl
-from MPSPlots.styles import scientific
 
 from FlowCyPy import fluidics, Fluidics
 from FlowCyPy import opto_electronics
 from FlowCyPy import digital_processing
 from FlowCyPy import FlowCytometer
-
-
-C0, C1 = '#1f77b4', '#ff7f0e'  # color ordering
-mpl.rcParams["axes.prop_cycle"] = mpl.cycler(color=[C0, C1])
 
 
 class ScatterHueGridPlotter:

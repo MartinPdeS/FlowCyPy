@@ -128,6 +128,7 @@ class FlowCytometer:
                 components = events.metadata.get("FluorescencePower", {}).get(name)
                 needs_spectral_trace = components is not None and (
                     opto_electronics.source.include_shot_noise
+                    or opto_electronics.source._has_multiple_lasers
                     or any(len(dye) == 3 for dye in components[1])
                 )
                 if not needs_spectral_trace:
@@ -153,6 +154,7 @@ class FlowCytometer:
         signal_dict: dict,
         opto_electronics: OptoElectronics,
         *,
+        spectral_traces: dict,
         random_generator: np.random.Generator | None = None,
     ) -> None:
         """
@@ -207,8 +209,14 @@ class FlowCytometer:
 
             for detector in opto_electronics.detectors:
                 mean_amplitude = events.get_quantity(detector.name).mean()
-                detector_power_trace = particle_trace * mean_amplitude
-                signal_dict[detector.name] += detector_power_trace
+                if opto_electronics.source._has_multiple_lasers:
+                    for index, laser in enumerate(opto_electronics.source.lasers):
+                        nm = laser.wavelength.m_as("nm")
+                        line_mean = events.get_quantity(f"{detector.name}[{nm:g} nm]").mean()
+                        key = (detector.name, nm, 0.0, index)
+                        spectral_traces[key] = spectral_traces.get(key, 0 * ureg.watt) + particle_trace * line_mean
+                else:
+                    signal_dict[detector.name] += particle_trace * mean_amplitude
 
     def compute_analog(
         self,
@@ -257,6 +265,7 @@ class FlowCytometer:
             signal_dict=power_signal_dict,
             opto_electronics=opto_electronics,
             random_generator=gamma_rng,
+            spectral_traces=spectral_traces,
         )
 
         return opto_electronics.convert_optical_power_to_voltage(

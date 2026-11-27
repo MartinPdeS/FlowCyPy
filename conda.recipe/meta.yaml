@@ -47,7 +47,7 @@ requirements:
     - numpy >=2.3.3,<3  # [py>=314]
     - pint >=0.24,<0.26
     - martinpdes::pymiesim >=6.0.4,<6.1
-    - martinpdes::mpsplots >=1.8.9
+    - matplotlib
     - martinpdes::typedunit >=0.2.9
 
 about:

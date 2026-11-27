@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib.gridspec import GridSpec
-from MPSPlots.styles import mps
 
 from FlowCyPy import units
 from FlowCyPy.flow_cell import CircularFlowCell
@@ -30,47 +29,46 @@ for f in focusing_factors:
     sampled_data[f] = sampled.to("meter/second").magnitude
 
 
-with plt.style.context(mps):
-    fig = plt.figure(figsize=(14, 5))
+fig = plt.figure(figsize=(14, 5))
 
-    grid = GridSpec(1, 4, width_ratios=[2, 1, 1, 1], height_ratios=[1])
+grid = GridSpec(1, 4, width_ratios=[2, 1, 1, 1], height_ratios=[1])
 
-    ax1 = fig.add_subplot(grid[0])
-    ax2 = fig.add_subplot(grid[1])
-    ax3 = fig.add_subplot(grid[2], sharey=ax2, sharex=ax2)
-    ax4 = fig.add_subplot(grid[3], sharey=ax2, sharex=ax2)
+ax1 = fig.add_subplot(grid[0])
+ax2 = fig.add_subplot(grid[1])
+ax3 = fig.add_subplot(grid[2], sharey=ax2, sharex=ax2)
+ax4 = fig.add_subplot(grid[3], sharey=ax2, sharex=ax2)
 
-    axes = [ax1, ax2, ax3, ax4]
+axes = [ax1, ax2, ax3, ax4]
 
-    # Plot overlaid velocity profiles on the first subplot
-    axes[0].plot(r, vel, lw=2, label=f"Focusing Factor = {f}")
+# Plot overlaid velocity profiles on the first subplot
+axes[0].plot(r, vel, lw=2, label=f"Focusing Factor = {f}")
 
-    axes[0].set_xlabel("Radial Position (m)")
-    axes[0].set_ylabel("Velocity (m/s)")
-    axes[0].set_title("Velocity Profiles")
-    axes[0].legend()
-    axes[0].grid(True)
+axes[0].set_xlabel("Radial Position (m)")
+axes[0].set_ylabel("Velocity (m/s)")
+axes[0].set_title("Velocity Profiles")
+axes[0].legend()
+axes[0].grid(True)
 
-    # Plot overlaid histograms using Seaborn on the second subplot
-    colors = sns.color_palette("husl", len(focusing_factors))
-    for ax, (i, f) in zip(axes[1:], enumerate(focusing_factors)):
-        sns.histplot(
-            sampled_data[f],
-            fill=True,
-            multiple="stack",
-            kde=False,
-            color=colors[i],
-            ax=ax,
-            alpha=0.3,
-        )
+# Plot overlaid histograms using Seaborn on the second subplot
+colors = sns.color_palette("husl", len(focusing_factors))
+for ax, (i, f) in zip(axes[1:], enumerate(focusing_factors)):
+    sns.histplot(
+        sampled_data[f],
+        fill=True,
+        multiple="stack",
+        kde=False,
+        color=colors[i],
+        ax=ax,
+        alpha=0.3,
+    )
 
-        ax.set_xlim([0.6, None])
-        ax.set_ylabel("")
-        ax.set_xlabel("Sampled Velocity (m/s)")
-        ax.set_title(f"Focusing Factor = {f}")
-        # ax.legend()
+    ax.set_xlim([0.6, None])
+    ax.set_ylabel("")
+    ax.set_xlabel("Sampled Velocity (m/s)")
+    ax.set_title(f"Focusing Factor = {f}")
+    # ax.legend()
 
-    axes[1].set_ylabel("Count")
-    plt.tight_layout()
-    plt.savefig("velocity_profiles_and_histograms.png", dpi=300)
-    plt.show()
+axes[1].set_ylabel("Count")
+plt.tight_layout()
+plt.savefig("velocity_profiles_and_histograms.png", dpi=300)
+plt.show()

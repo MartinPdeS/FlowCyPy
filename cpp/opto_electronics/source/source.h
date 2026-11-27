@@ -37,6 +37,9 @@ namespace FlowCyPy {
 
 class BaseSource {
 public:
+    struct LaserLine { double wavelength, power, rin; };  // m, W, dB/Hz
+    std::vector<LaserLine> additional_lines;
+    bool explicit_lasers = false;
     double wavelength;          // [meter]
     double rin;                 // [dB / hertz]
     double optical_power;       // [watt]

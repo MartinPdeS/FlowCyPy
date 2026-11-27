@@ -463,13 +463,15 @@ def test_analog_plot_displays_each_acquired_channel(flow_cytometer, opto_electro
     time = analog["Time"]
     voltages = {name: analog[name] for name in record.detector_names}
 
-    with patch.object(plt, "show") as show:
+    with plt.rc_context({"axes.labelsize": 13, "lines.linewidth": 0.75}), patch.object(plt, "show") as show:
         figure = record.plot_analog(include_scatterer=False)
     show.assert_not_called()
 
     for name, axis in zip(record.detector_names, figure.axes, strict=True):
         assert name in axis.get_ylabel()
+        assert axis.yaxis.label.get_fontsize() == 13
         (line,) = axis.lines
+        assert line.get_linewidth() == 0.75
         np.testing.assert_allclose(
             line.get_xdata(orig=False), time.m_as(analog.time_units)
         )

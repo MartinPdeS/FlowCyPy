@@ -1,6 +1,8 @@
-"""Single-laser fluorescence for explicitly sampled particles."""
+"""Spectrally resolved fluorescence for explicitly sampled particles."""
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field
+from types import MappingProxyType
 import numpy as np
 from FlowCyPy.fluidics import distributions, populations
 from FlowCyPy.opto_electronics.coupling_model import ScatteringModel
@@ -47,8 +49,9 @@ class Fluorophore:
     ----------
     name : str
         Dye identifier, unique among labels on a population.
-    absorption_cross_section : area quantity
+    absorption_cross_section : area quantity or mapping of wavelength to area
         Molecular absorption cross section at the configured laser wavelength.
+        With multiple lasers, supply one wavelength-keyed value per line.
     quantum_yield : float
         Mean emitted photons per absorbed photon, between zero and one.
     emission_wavelengths : length quantity, shape (n,)
@@ -62,7 +65,7 @@ class Fluorophore:
     """
 
     name: str
-    absorption_cross_section: ureg.Quantity
+    absorption_cross_section: ureg.Quantity | Mapping
     quantum_yield: float
     emission_wavelengths: ureg.Quantity
     photon_weights: tuple[float, ...]
@@ -82,11 +85,22 @@ class Fluorophore:
             self.emission_wavelengths.m_as("nm"), dtype=float, copy=True
         )
         weights = np.asarray(self.photon_weights, dtype=float)
-        area = float(self.absorption_cross_section.m_as("meter**2"))
-        if not self.name.strip() or not np.isfinite(area) or area < 0:
-            raise ValueError(
-                "Provide a dye name and a finite nonnegative absorption cross section."
-            )
+        areas = self.absorption_cross_section
+        if isinstance(areas, Mapping):
+            if not areas:
+                raise ValueError("Provide at least one absorption cross section.")
+            for wavelength in areas:
+                nm = float(wavelength.m_as("nm"))
+                if not np.isfinite(nm) or nm <= 0:
+                    raise ValueError("Excitation wavelengths must be finite and positive.")
+            object.__setattr__(self, "absorption_cross_section", MappingProxyType(dict(areas)))
+            areas = areas.values()
+        else:
+            areas = (areas,)
+        for value in areas:
+            area = float(value.m_as("meter**2"))
+            if not self.name.strip() or not np.isfinite(area) or area < 0:
+                raise ValueError("Provide a dye name and finite nonnegative absorption cross sections.")
         if not 0 <= self.quantum_yield <= 1:
             raise ValueError("quantum_yield must be between zero and one.")
         if (
@@ -217,7 +231,53 @@ def _validate_labels(*, labels, sampling_method):
 
 
 def _couple_channel(*, events, source, detector, compute_cross_section):
-    """Write total collected peak power and its spectral contributions per event."""
+    """Write the peak power and fluorescence components of one detector."""
+    for block, scatter, emissions, total in _line_powers(
+        events=events, source=source, detector=detector, compute_cross_section=compute_cross_section
+    ):
+        if emissions:
+            block.metadata.setdefault("FluorescencePower", {})[detector.name] = (scatter, emissions)
+        block.set_quantity_column(detector.name, total)
+
+
+def _couple_lasers(*, events, beam, detector, compute_cross_section):
+    """Combine excitation lines on the same events and retain their photon wavelengths."""
+    name = detector.name
+    totals = {}
+    for index, laser in enumerate(beam.lasers):
+        source = beam if index == 0 else type(beam)(
+            wavelength=laser.wavelength, optical_power=laser.optical_power,
+            waist_y=beam.waist_y, waist_z=beam.waist_z, polarization=beam.polarization,
+        )
+        nm = float(laser.wavelength.m_as("nm"))
+        suffix = f"[{nm:g} nm]"
+        for block, scatter, emissions, total in _line_powers(
+            events=events, source=source, detector=detector,
+            compute_cross_section=compute_cross_section, multiple=True,
+        ):
+            block.set_quantity_column(name + suffix, total)
+            if compute_cross_section:
+                block.set_quantity_column("Csca" + suffix, block.get_quantity("Csca"))
+            if index == 0:
+                totals[block.name] = total.copy()
+                block.metadata.setdefault("FluorescencePower", {})[name] = (0 * total, [])
+            else:
+                totals[block.name] += total
+            components = block.metadata["FluorescencePower"][name][1]
+            if "scatter" in detector.signals:
+                components.append((scatter, {nm: 1.0}, 0.0, index))
+            for amplitude, weights, *delay in emissions:
+                components.append((amplitude, weights, delay[0] if delay else 0.0, index))
+    for block in events:
+        if not block.empty:
+            block.set_quantity_column(name, totals[block.name])
+            if compute_cross_section:
+                first_nm = beam.wavelength.m_as("nm")
+                block.set_quantity_column("Csca", block.get_quantity(f"Csca[{first_nm:g} nm]"))
+
+
+def _line_powers(*, events, source, detector, compute_cross_section, multiple=False):
+    """Yield scatter, spectrally resolved fluorescence, and total power per population."""
     accepts_scatter = "scatter" in detector.signals and (
         detector.optical_filter is None
         or detector.optical_filter.transmits(wavelength=source.wavelength)
@@ -257,9 +317,19 @@ def _couple_channel(*, events, source, detector, compute_cross_section):
             fraction = (np.sqrt(1 - inner**2) - np.sqrt(1 - outer**2)) / 2
         for label in labels:
             dye = label.fluorophore
+            cross_section = dye.absorption_cross_section
+            if isinstance(cross_section, Mapping):
+                nm = source.wavelength.m_as("nm")
+                matches = [value for line, value in cross_section.items()
+                           if np.isclose(line.m_as("nm"), nm, rtol=1e-12, atol=0)]
+                if len(matches) != 1:
+                    raise ValueError(f"{dye.name} requires one absorption cross section at {nm:g} nm.")
+                cross_section = matches[0]
+            elif multiple:
+                raise ValueError(f"Supply wavelength-specific absorption cross sections for {dye.name}.")
             dye_amplitude = (
                 irradiance
-                * dye.absorption_cross_section.m_as("m**2")
+                * cross_section.m_as("m**2")
                 * block.get_quantity(label.column_name).magnitude
                 * dye.quantum_yield
                 * fraction
@@ -287,12 +357,7 @@ def _couple_channel(*, events, source, detector, compute_cross_section):
                 )
                 component = (dye_amplitude, spectral_weights)
                 emissions.append((*component, lifetime) if lifetime else component)
-        if emissions:
-            block.metadata.setdefault("FluorescencePower", {})[detector.name] = (
-                scatter,
-                emissions,
-            )
-        block.set_quantity_column(detector.name, total)
+        yield block, scatter, emissions, total
 
 
 def _decay_bin_averages(*, excitation, interval_seconds, lifetime_seconds):
@@ -339,29 +404,50 @@ def _decay_bin_averages(*, excitation, interval_seconds, lifetime_seconds):
     return emitted * excitation.units
 
 
-def _apply_spectral_noise(*, source, detectors, power, emission, generator):
-    """Apply common excitation noise and wavelength-specific photon statistics."""
-    components = [(detector.name, None, 0.0) for detector in detectors]
-    traces = [power[name] for name, _, _ in components]
+def _apply_spectral_noise(*, source, detectors, power, emission, generator, bandwidth=None):
+    """Apply each laser's RIN before lifetime response and photon shot noise.
+
+    Spectral keys contain the detector, photon wavelength in nm and optionally
+    lifetime in seconds and excitation laser index. In a multi-line beam the
+    unassigned background has no excitation laser.
+    """
+    multi = source._has_multiple_lasers
+    components = [(detector.name, None, 0.0, None if multi else 0) for detector in detectors]
+    traces = [power[component[0]] for component in components]
     for key, trace in emission.items():
-        name, wavelength, *delay = key
-        lifetime = delay[0] if delay else 0.0
-        if len(delay) > 1 or not np.isfinite(lifetime) or lifetime < 0:
-            raise ValueError(
-                "Emission keys require a channel, wavelength in nm and optional nonnegative lifetime in seconds."
-            )
-        components.append((name, wavelength, lifetime))
+        name, wavelength, *details = key
+        lifetime = details[0] if details else 0.0
+        if len(details) > 2 or not np.isfinite(lifetime) or lifetime < 0:
+            raise ValueError("Invalid spectral key or fluorescence lifetime.")
+        laser_index = details[1] if len(details) == 2 else (None if multi else 0)
+        components.append((name, wavelength, lifetime, laser_index))
         traces.append(trace)
-    if source.include_rin_noise and source.rin is not None:
-        # One excitation fluctuation applies to every wavelength and channel.
-        inputs = {str(index): trace for index, trace in enumerate(traces)}
-        noisy = source.add_rin_to_signal_dict(
-            {"Time": power["Time"], **inputs},
-            seed=_next_noise_seed(generator=generator),
-        )
-        traces = [noisy[key] for key in inputs]
+
+    if source.include_rin_noise:
+        for index, laser in enumerate(source.lasers):
+            if laser.rin is None:
+                continue
+            positions = [i for i, component in enumerate(components) if component[3] == index]
+            if not positions:
+                continue
+            noise_source = source
+            if source._explicit_lasers:
+                noise_bandwidth = source.bandwidth
+                if not np.isfinite(noise_bandwidth.m_as("Hz")):
+                    noise_bandwidth = bandwidth
+                noise_source = type(source)(
+                    wavelength=laser.wavelength, optical_power=laser.optical_power,
+                    waist_y=source.waist_y, waist_z=source.waist_z,
+                    rin=laser.rin, bandwidth=noise_bandwidth,
+                )
+            inputs = {str(i): traces[i] for i in positions}
+            noisy = noise_source.add_rin_to_signal_dict(
+                {"Time": power["Time"], **inputs}, seed=_next_noise_seed(generator=generator)
+            )
+            for i in positions:
+                traces[i] = noisy[str(i)]
     combined = {"Time": power["Time"]}
-    for (name, wavelength, lifetime), trace in zip(components, traces, strict=True):
+    for (name, wavelength, lifetime, _), trace in zip(components, traces, strict=True):
         if lifetime and trace.size > 1:
             interval = (power["Time"][1] - power["Time"][0]).m_as("second")
             trace = _decay_bin_averages(

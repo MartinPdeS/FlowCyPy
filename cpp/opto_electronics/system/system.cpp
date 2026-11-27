@@ -47,7 +47,18 @@ struct OptoElectronics {
         return signals;
     }
 
+    py::dict apply_spectral_noise(py::dict signals, const py::dict& emission, const py::object& generator) const {
+        auto bandwidth = digitizer.attr("bandwidth").cast<py::object>();
+        if (bandwidth.is_none()) bandwidth = digitizer.attr("sampling_rate").cast<py::object>() / py::float_(2.0);
+        return py::module_::import("FlowCyPy.fluorescence").attr("_apply_spectral_noise")(
+            "source"_a = source, "detectors"_a = detectors, "power"_a = signals,
+            "emission"_a = emission, "generator"_a = generator, "bandwidth"_a = bandwidth).cast<py::dict>();
+    }
+
     py::dict apply_source_noise_to_optical_signals(py::dict signals, const py::object& generator) const {
+        if (source.attr("_explicit_lasers").cast<bool>()) {
+            return apply_spectral_noise(signals, py::dict(), generator);
+        }
         if (source.attr("include_rin_noise").cast<bool>() && !source.attr("rin").is_none()) {
             signals = source.attr("add_rin_to_signal_dict")(
                 "signal_dict"_a = signals, "seed"_a = next_noise_seed(generator));
@@ -72,7 +83,11 @@ struct OptoElectronics {
         }
         auto model = py::module_::import("FlowCyPy.opto_electronics.coupling_model").attr("ScatteringModel");
         for (auto detector : detectors) {
-            if (detector.attr("optical_filter").is_none() &&
+            if (source.attr("_has_multiple_lasers").cast<bool>()) {
+                py::module_::import("FlowCyPy.fluorescence").attr("_couple_lasers")(
+                    "events"_a = events, "beam"_a = source, "detector"_a = detector,
+                    "compute_cross_section"_a = compute_cross_section);
+            } else if (detector.attr("optical_filter").is_none() &&
                 py::len(detector.attr("signals")) == 1 &&
                 detector.attr("signals")[py::int_(0)].cast<std::string>() == "scatter") {
                 model("source"_a = source, "detector"_a = detector).attr("run")(
@@ -103,9 +118,7 @@ struct OptoElectronics {
         if (emission.empty()) {
             signals = apply_source_noise_to_optical_signals(signals, streams[0]);
         } else {
-            signals = py::module_::import("FlowCyPy.fluorescence").attr("_apply_spectral_noise")(
-                "source"_a = source, "detectors"_a = detectors, "power"_a = signals,
-                "emission"_a = emission, "generator"_a = streams[0]).cast<py::dict>();
+            signals = apply_spectral_noise(signals, emission, streams[0]);
         }
         signals = convert_optical_power_to_photocurrent(signals);
         signals = apply_detector_current_noise(signals, streams[1]);

@@ -12,7 +12,7 @@ from FlowCyPy.dyes import (
 )
 from FlowCyPy.fluidics import distributions, populations
 from FlowCyPy.fluorescence import Bandpass, Fluorophore, Label, _decay_bin_averages
-from FlowCyPy.opto_electronics import Amplifier
+from FlowCyPy.opto_electronics import Amplifier, Laser, source
 from FlowCyPy.systems.bd import facs_canto
 from FlowCyPy.units import ureg
 
@@ -352,3 +352,91 @@ def test_label_counts_follow_each_outer_diameter(*, core_shell, loading):
 def test_label_requires_one_valid_loading(settings):
     with pytest.raises((ValueError, TypeError)):
         Label(fluorophore=fitc(), **settings)
+
+
+@pytest.mark.parametrize("profile", [source.Gaussian, source.FlatTop])
+def test_colocated_lasers_add_on_the_same_particles(*, profile):
+    """Recover each single-line event power and their summed noiseless waveform."""
+    lines = tuple(Laser(wavelength=nm * ureg.nm, optical_power=power * ureg.mW)
+                  for nm, power in [(405, 8), (488, 20)])
+    dye = fitc(relative_absorption={405 * ureg.nm: 0.1, 488 * ureg.nm: 0.8})
+    instrument = facs_canto(lasers=lines)
+    optics = instrument.opto_electronics
+    optics.detectors = [
+        pmt(name="violet", signals=("scatter",), optical_filter=Bandpass(center=405 * ureg.nm, width=10 * ureg.nm),
+            phi_angle=90 * ureg.degree, numerical_aperture=0.8, dark_current=0 * ureg.ampere),
+        pmt(name="green", signals=("fluorescence",), phi_angle=90 * ureg.degree, numerical_aperture=0.8,
+            dark_current=0 * ureg.ampere),
+    ]
+    instrument.fluidics.scatterer_collection.add_population(populations.SpherePopulation(
+        name="beads", concentration=1e9 * ureg.particle / ureg.mL, diameter=300 * ureg.nm,
+        refractive_index=1.59, medium_refractive_index=1.33,
+        labels=[Label(fluorophore=dye, molecules_per_area=1e3 / ureg.um**2)],
+    ))
+    records = []
+    for selection in [(lines[0],), (lines[1],), lines]:
+        optics.source = profile(lasers=selection, waist_y=65 * ureg.um, waist_z=10 * ureg.um,
+                                include_shot_noise=False, include_rin_noise=False)
+        records.append(instrument.acquire(run_time=0.2 * ureg.ms, random_state=23))
+    violet, blue, combined = records
+    block = combined.event_collection[0]
+    assert len(block) > 0
+    assert np.all(block.get_quantity("violet[488 nm]").magnitude == 0)
+    for channel in ("green", "violet"):
+        for line, record in zip(lines, (violet, blue), strict=True):
+            single = record.event_collection[0]
+            np.testing.assert_array_equal(single.get_quantity("Label:FITC").magnitude,
+                                          block.get_quantity("Label:FITC").magnitude)
+            column = f"{channel}[{line.wavelength.m_as('nm'):g} nm]"
+            np.testing.assert_allclose(block.get_quantity(column).m_as("W"), single.get_quantity(channel).m_as("W"), atol=0)
+        np.testing.assert_allclose(combined.signal.analog[channel].m_as("V"),
+                                   (violet.signal.analog[channel] + blue.signal.analog[channel]).m_as("V"), atol=1e-22)
+
+
+def test_laser_configuration():
+    """Check the public source namespace, unit conversions and ambiguous settings."""
+    line = source.Laser(wavelength=0.488 * ureg.um, optical_power=10 * ureg.mW)
+    assert isinstance(line, Laser)
+    geometry = {"waist_y": 10 * ureg.um, "waist_z": 5 * ureg.um}
+    with pytest.raises(ValueError, match="At least one"):
+        source.Gaussian(lasers=[], **geometry)
+    with pytest.raises(ValueError, match="distinct"):
+        source.FlatTop(lasers=[line, line], **geometry)
+    with pytest.raises(ValueError, match="optical_power"):
+        facs_canto(lasers=[line], optical_power=2 * ureg.mW)
+
+
+@pytest.mark.parametrize("noisy_violet", [False, True])
+def test_laser_rin_follows_excitation_across_detectors(*, noisy_violet):
+    """Separate independent excitations even when their photons share a wavelength."""
+    lines = [
+        Laser(wavelength=405 * ureg.nm, optical_power=10 * ureg.mW,
+              rin=-90 * ureg.dB_per_Hz if noisy_violet else None),
+        Laser(wavelength=488 * ureg.nm, optical_power=10 * ureg.mW, rin=-100 * ureg.dB_per_Hz),
+    ]
+    optics = facs_canto(lasers=lines, include_shot_noise=False).opto_electronics
+    optics.amplifier = Amplifier(gain=1 * ureg.volt / ureg.ampere, bandwidth=None)
+    optics.detectors = [pmt(name=name, phi_angle=90 * ureg.degree, numerical_aperture=0.8,
+                            dark_current=0 * ureg.ampere) for name in ("violet", "blue", "both")]
+    power = optics.initialize_optical_signal_dict(run_time=2 * ureg.ms, background_power=0 * ureg.W)
+    trace = np.ones(power["Time"].size) * ureg.pW
+    emission = {
+        ("violet", 520, 0, 0): trace, ("blue", 520, 0, 1): trace,
+        ("both", 520, 0, 0): trace, ("both", 520, 0, 1): trace,
+    }
+    for enabled in (True, False):
+        optics.source.include_rin_noise = enabled
+        signals = optics.convert_optical_power_to_voltage(
+            power, emission=emission, random_generator=np.random.default_rng(42)
+        )
+        violet = signals["violet"].m_as("V")
+        blue = signals["blue"].m_as("V")
+        np.testing.assert_allclose(signals["both"].m_as("V"), violet + blue, atol=0)
+        for values, laser in zip((violet, blue), lines, strict=True):
+            if enabled and laser.rin is not None:
+                variance = 10 ** (laser.rin.m_as("dB_per_Hz") / 10) * optics.digitizer.sampling_rate.m_as("Hz") / 2
+                assert values.std() / values.mean() == pytest.approx(np.sqrt(variance), rel=0.05)
+            else:
+                assert np.ptp(values) == 0
+        if enabled and noisy_violet:
+            assert abs(np.corrcoef(violet, blue)[0, 1]) < 0.05

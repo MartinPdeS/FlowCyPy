@@ -2,7 +2,6 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any
 import matplotlib.pyplot as plt
-import MPSPlots
 import numpy as np
 from TypedUnit import Frequency, Time, Voltage
 from FlowCyPy.digital_processing import DigitalProcessing
@@ -350,18 +349,14 @@ class RunRecord:
             for name, axis in zip(axis_names, axes_array)
         }
 
-        for axis in axes.values():
-            axis.yaxis.tick_right()
-
         for detector_name in self.detector_names:
             axis = axes[detector_name]
             axis.set_ylabel(
                 (
-                    rf"{detector_name} [{signal_units._repr_latex_()}]"
+                    f"{detector_name} [{signal_units:~P}]"
                     if signal_units is not None
                     else detector_name
                 ),
-                labelpad=20,
             )
 
         if include_scatterer:
@@ -370,7 +365,7 @@ class RunRecord:
                 time_units=time_units,
             )
 
-            axes["scatterer"].set_ylabel("Scatterer", labelpad=20)
+            axes["scatterer"].set_ylabel("Scatterer")
             axes["scatterer"].set_yticks([])
 
         return figure, axes
@@ -384,8 +379,6 @@ class RunRecord:
                 time,
                 self.signal.analog[detector_name],
                 label="Analog Signal",
-                linestyle="-",
-                color="black",
             )
 
     def _plot_digital_on_axes(self, axes: dict[str, plt.Axes]) -> None:
@@ -403,7 +396,7 @@ class RunRecord:
                     facecolor=plt.cm.tab10(int(segment_id) % 10),
                     alpha=0.3,
                 )
-                axis.step(time, signal, where="mid", color="black", linestyle="-")
+                axis.step(time, signal, where="mid")
 
     def plot_analog(
         self,
@@ -446,44 +439,43 @@ class RunRecord:
         if self.signal.analog is None:
             raise ValueError("No analog signal is available in this run record.")
 
-        with plt.style.context(MPSPlots.styles.scientific):
-            self.signal.analog.normalize_units(signal_units="max", time_units="max")
+        self.signal.analog.normalize_units(signal_units="max", time_units="max")
 
-            figure, axes = self.get_axes_dict(
+        figure, axes = self.get_axes_dict(
+            signal_units=self.signal.analog.signal_units,
+            time_units=self.signal.analog.time_units,
+            figure_size=figure_size,
+            include_scatterer=include_scatterer,
+        )
+
+        self._plot_analog_on_axes(axes=axes)
+
+        if (
+            self.digital_processing is not None
+            and self.digital_processing.discriminator is not None
+        ):
+            self.digital_processing.discriminator._add_to_ax(
+                axes[self.digital_processing.discriminator.trigger_channel],
                 signal_units=self.signal.analog.signal_units,
-                time_units=self.signal.analog.time_units,
-                figure_size=figure_size,
-                include_scatterer=include_scatterer,
             )
 
-            self._plot_analog_on_axes(axes=axes)
+        if title is not None:
+            figure.suptitle(title)
 
-            if (
-                self.digital_processing is not None
-                and self.digital_processing.discriminator is not None
-            ):
-                self.digital_processing.discriminator._add_to_ax(
-                    axes[self.digital_processing.discriminator.trigger_channel],
-                    signal_units=self.signal.analog.signal_units,
-                )
+        if xlim is not None:
+            for axis in axes.values():
+                axis.set_xlim(xlim)
 
-            if title is not None:
-                figure.suptitle(title)
+        if ylim is not None:
+            for detector_name in self.detector_names:
+                axes[detector_name].set_ylim(ylim)
 
-            if xlim is not None:
-                for axis in axes.values():
-                    axis.set_xlim(xlim)
+        figure.tight_layout(rect=(0, 0, 1, 0.98) if title is not None else None)
 
-            if ylim is not None:
-                for detector_name in self.detector_names:
-                    axes[detector_name].set_ylim(ylim)
+        if save_as is not None:
+            figure.savefig(save_as, bbox_inches="tight")
 
-            figure.tight_layout(rect=(0, 0, 1, 0.98) if title is not None else None)
-
-            if save_as is not None:
-                figure.savefig(save_as, bbox_inches="tight")
-
-            return figure
+        return figure
 
     def plot_digital(
         self,
@@ -526,36 +518,35 @@ class RunRecord:
         if self.signal.digital is None:
             raise ValueError("No digital signal is available in this run record.")
 
-        with plt.style.context(MPSPlots.styles.scientific):
-            self.signal.digital.to_compact()
+        self.signal.digital.to_compact()
 
-            time_units = self.signal.digital.attrs["units"]["Time"]
+        time_units = self.signal.digital.attrs["units"]["Time"]
 
-            figure, axes = self.get_axes_dict(
-                time_units=time_units,
-                figure_size=figure_size,
-                include_scatterer=include_scatterer,
-            )
+        figure, axes = self.get_axes_dict(
+            time_units=time_units,
+            figure_size=figure_size,
+            include_scatterer=include_scatterer,
+        )
 
-            self._plot_digital_on_axes(axes=axes)
+        self._plot_digital_on_axes(axes=axes)
 
-            if title is not None:
-                figure.suptitle(title)
+        if title is not None:
+            figure.suptitle(title)
 
-            if xlim is not None:
-                for axis in axes.values():
-                    axis.set_xlim(xlim)
+        if xlim is not None:
+            for axis in axes.values():
+                axis.set_xlim(xlim)
 
-            if ylim is not None:
-                for detector_name in self.detector_names:
-                    axes[detector_name].set_ylim(ylim)
+        if ylim is not None:
+            for detector_name in self.detector_names:
+                axes[detector_name].set_ylim(ylim)
 
-            figure.tight_layout(rect=(0, 0, 1, 0.98) if title is not None else None)
+        figure.tight_layout(rect=(0, 0, 1, 0.98) if title is not None else None)
 
-            if save_as is not None:
-                figure.savefig(save_as, bbox_inches="tight")
+        if save_as is not None:
+            figure.savefig(save_as, bbox_inches="tight")
 
-            return figure
+        return figure
 
     def plot_peaks(
         self,

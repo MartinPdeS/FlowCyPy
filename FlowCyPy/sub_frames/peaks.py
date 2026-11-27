@@ -1,13 +1,12 @@
 from typing import Any
 import matplotlib.pyplot as plt
-import MPSPlots
 import numpy
 import numpy as np
 import pandas as pd
 import pint_pandas
 import seaborn as sns
-from MPSPlots import helper
 from TypedUnit import Quantity
+from ._plotting import figure_options
 from .peak_metrics import PeakMetricsMixin
 
 
@@ -292,7 +291,7 @@ class PeakDataFrame(PeakMetricsMixin, pd.DataFrame):
 
         return series, unit
 
-    @helper.post_mpl_plot
+    @figure_options
     def plot_hist(
         self,
         x: tuple[str, str],
@@ -346,65 +345,64 @@ class PeakDataFrame(PeakMetricsMixin, pd.DataFrame):
         plt.Figure
             The histogram figure.
         """
-        with plt.style.context(MPSPlots.styles.scientific):
-            figure, ax = plt.subplots(1, 1, figsize=figure_size)
+        figure, ax = plt.subplots(1, 1, figsize=figure_size)
 
-            if xscale not in {"linear", "log"}:
-                raise ValueError(
-                    f"Unsupported xscale: {xscale!r}. Expected 'linear' or 'log'."
-                )
-
-            if yscale not in {"linear", "log"}:
-                raise ValueError(
-                    f"Unsupported yscale: {yscale!r}. Expected 'linear' or 'log'."
-                )
-
-            series, unit = self._get_plot_series(x, clip_value=clip_data)
-            values = np.asarray(series, dtype=float)
-
-            valid_mask = np.isfinite(values)
-
-            if xscale == "log":
-                valid_mask &= values > 0
-
-            values = values[valid_mask]
-
-            if values.size == 0:
-                raise ValueError("No valid data points remain after scale filtering.")
-
-            hist_bins = bins
-
-            if isinstance(bins, int):
-                hist_bins = self._get_marginal_bins(values, xscale, bin_count=bins)
-
-            sns.histplot(
-                x=values,
-                ax=ax,
-                kde=kde,
-                bins=hist_bins,
-                color=color,
-                binrange=binrange,
-                edgecolor="black",
-                linewidth=1.0,
+        if xscale not in {"linear", "log"}:
+            raise ValueError(
+                f"Unsupported xscale: {xscale!r}. Expected 'linear' or 'log'."
             )
 
-            detector_name, feature_name = x
-            ax.set_xlabel(xlabel or self._get_axis_label(x, unit=unit))
-            ax.set_ylabel(ylabel or "Counts")
-            ax.set_title(title or f"Distribution of {detector_name} | {feature_name}")
-            ax.set_xscale(xscale)
-            ax.set_yscale(yscale)
+        if yscale not in {"linear", "log"}:
+            raise ValueError(
+                f"Unsupported yscale: {yscale!r}. Expected 'linear' or 'log'."
+            )
 
-            if xlim is not None:
-                ax.set_xlim(xlim)
+        series, unit = self._get_plot_series(x, clip_value=clip_data)
+        values = np.asarray(series, dtype=float)
 
-            if ylim is not None:
-                ax.set_ylim(ylim)
+        valid_mask = np.isfinite(values)
 
-            if save_as is not None:
-                figure.savefig(save_as)
+        if xscale == "log":
+            valid_mask &= values > 0
 
-            return figure
+        values = values[valid_mask]
+
+        if values.size == 0:
+            raise ValueError("No valid data points remain after scale filtering.")
+
+        hist_bins = bins
+
+        if isinstance(bins, int):
+            hist_bins = self._get_marginal_bins(values, xscale, bin_count=bins)
+
+        sns.histplot(
+            x=values,
+            ax=ax,
+            kde=kde,
+            bins=hist_bins,
+            color=color,
+            binrange=binrange,
+            edgecolor="black",
+            linewidth=1.0,
+        )
+
+        detector_name, feature_name = x
+        ax.set_xlabel(xlabel or self._get_axis_label(x, unit=unit))
+        ax.set_ylabel(ylabel or "Counts")
+        ax.set_title(title or f"Distribution of {detector_name} | {feature_name}")
+        ax.set_xscale(xscale)
+        ax.set_yscale(yscale)
+
+        if xlim is not None:
+            ax.set_xlim(xlim)
+
+        if ylim is not None:
+            ax.set_ylim(ylim)
+
+        if save_as is not None:
+            figure.savefig(save_as)
+
+        return figure
 
     def plot_2d(
         self,
@@ -505,101 +503,121 @@ class PeakDataFrame(PeakMetricsMixin, pd.DataFrame):
         tuple[matplotlib.figure.Figure, matplotlib.axes.Axes]
             The created or reused figure and main axes.
         """
-        with plt.style.context(MPSPlots.styles.scientific):
-            x_channel, x_feature = x
-            y_channel, y_feature = y
+        x_channel, x_feature = x
+        y_channel, y_feature = y
 
-            if figsize is not None:
-                figure_size = figsize
+        if figsize is not None:
+            figure_size = figsize
 
-            features = list(dict.fromkeys([x_feature, y_feature]))
-            df = self.loc[[x_channel, y_channel], features].sort_index()
+        features = list(dict.fromkeys([x_feature, y_feature]))
+        df = self.loc[[x_channel, y_channel], features].sort_index()
 
-            x_series = self.clip_data(signal=df.loc[x], clip_value=clip_data)
-            y_series = self.clip_data(signal=df.loc[y], clip_value=clip_data)
+        x_series = self.clip_data(signal=df.loc[x], clip_value=clip_data)
+        y_series = self.clip_data(signal=df.loc[y], clip_value=clip_data)
 
-            x_unit = None
-            y_unit = None
+        x_unit = None
+        y_unit = None
 
-            if hasattr(x_series, "pint") and len(x_series) > 0:
-                x_unit = x_series.max().to_compact().units
-                x_series = x_series.pint.to(x_unit)
+        if hasattr(x_series, "pint") and len(x_series) > 0:
+            x_unit = x_series.max().to_compact().units
+            x_series = x_series.pint.to(x_unit)
 
-            if hasattr(y_series, "pint") and len(y_series) > 0:
-                y_unit = y_series.max().to_compact().units
-                y_series = y_series.pint.to(y_unit)
+        if hasattr(y_series, "pint") and len(y_series) > 0:
+            y_unit = y_series.max().to_compact().units
+            y_series = y_series.pint.to(y_unit)
 
-            plot_dataframe = pd.DataFrame(
-                {
-                    "x": numpy.asarray(x_series, dtype=float),
-                    "y": numpy.asarray(y_series, dtype=float),
-                }
+        plot_dataframe = pd.DataFrame(
+            {
+                "x": numpy.asarray(x_series, dtype=float),
+                "y": numpy.asarray(y_series, dtype=float),
+            }
+        )
+
+        current_xlabel = xlabel or self._get_axis_label(x, unit=x_unit)
+        current_ylabel = ylabel or self._get_axis_label(y, unit=y_unit)
+
+        if xscale not in {"linear", "log"}:
+            raise ValueError(
+                f"Unsupported xscale: {xscale!r}. Expected 'linear' or 'log'."
             )
 
-            current_xlabel = xlabel or self._get_axis_label(x, unit=x_unit)
-            current_ylabel = ylabel or self._get_axis_label(y, unit=y_unit)
-
-            if xscale not in {"linear", "log"}:
-                raise ValueError(
-                    f"Unsupported xscale: {xscale!r}. Expected 'linear' or 'log'."
-                )
-
-            if yscale not in {"linear", "log"}:
-                raise ValueError(
-                    f"Unsupported yscale: {yscale!r}. Expected 'linear' or 'log'."
-                )
-
-            if plot_type not in {"scatter", "kde", "hexbin"}:
-                raise ValueError(
-                    f"Unsupported plot_type: {plot_type!r}. "
-                    "Expected 'scatter', 'kde', or 'hexbin'."
-                )
-
-            if color_scale not in {"linear", "log"}:
-                raise ValueError(
-                    f"Unsupported color_scale: {color_scale!r}. "
-                    "Expected 'linear' or 'log'."
-                )
-
-            valid_mask = np.isfinite(plot_dataframe["x"]) & np.isfinite(plot_dataframe["y"])
-
-            if xscale == "log":
-                valid_mask &= plot_dataframe["x"] > 0
-
-            if yscale == "log":
-                valid_mask &= plot_dataframe["y"] > 0
-
-            plot_dataframe = plot_dataframe.loc[valid_mask].copy()
-
-            if plot_dataframe.empty:
-                raise ValueError("No valid data points remain after scale filtering.")
-
-            if marginal_nbins < 1:
-                raise ValueError("marginal_nbins must be a positive integer.")
-
-            x_values = plot_dataframe["x"].to_numpy(dtype=float)
-            y_values = plot_dataframe["y"].to_numpy(dtype=float)
-
-            effective_scatter_alpha = (
-                scatter_alpha if scatter_alpha is not None else alpha
+        if yscale not in {"linear", "log"}:
+            raise ValueError(
+                f"Unsupported yscale: {yscale!r}. Expected 'linear' or 'log'."
             )
 
-            x_bins = self._get_marginal_bins(
-                x_values,
-                xscale,
-                bin_count=marginal_nbins,
-            )
-            y_bins = self._get_marginal_bins(
-                y_values,
-                yscale,
-                bin_count=marginal_nbins,
+        if plot_type not in {"scatter", "kde", "hexbin"}:
+            raise ValueError(
+                f"Unsupported plot_type: {plot_type!r}. "
+                "Expected 'scatter', 'kde', or 'hexbin'."
             )
 
-            def draw_main_artist(target_ax: plt.Axes):
+        if color_scale not in {"linear", "log"}:
+            raise ValueError(
+                f"Unsupported color_scale: {color_scale!r}. "
+                "Expected 'linear' or 'log'."
+            )
+
+        valid_mask = np.isfinite(plot_dataframe["x"]) & np.isfinite(plot_dataframe["y"])
+
+        if xscale == "log":
+            valid_mask &= plot_dataframe["x"] > 0
+
+        if yscale == "log":
+            valid_mask &= plot_dataframe["y"] > 0
+
+        plot_dataframe = plot_dataframe.loc[valid_mask].copy()
+
+        if plot_dataframe.empty:
+            raise ValueError("No valid data points remain after scale filtering.")
+
+        if marginal_nbins < 1:
+            raise ValueError("marginal_nbins must be a positive integer.")
+
+        x_values = plot_dataframe["x"].to_numpy(dtype=float)
+        y_values = plot_dataframe["y"].to_numpy(dtype=float)
+
+        effective_scatter_alpha = (
+            scatter_alpha if scatter_alpha is not None else alpha
+        )
+
+        x_bins = self._get_marginal_bins(
+            x_values,
+            xscale,
+            bin_count=marginal_nbins,
+        )
+        y_bins = self._get_marginal_bins(
+            y_values,
+            yscale,
+            bin_count=marginal_nbins,
+        )
+
+        def draw_main_artist(target_ax: plt.Axes):
+            artist = None
+
+            if plot_type == "scatter":
+                artist = target_ax.scatter(
+                    x_values,
+                    y_values,
+                    alpha=effective_scatter_alpha,
+                    s=scatter_size,
+                    color="C1",
+                )
+
+            elif plot_type == "kde":
+                sns.kdeplot(
+                    x=x_values,
+                    y=y_values,
+                    ax=target_ax,
+                    fill=fill,
+                    cmap=cmap,
+                    bw_adjust=bandwidth_adjust,
+                    alpha=kde_alpha,
+                )
                 artist = None
 
-                if plot_type == "scatter":
-                    artist = target_ax.scatter(
+                if show_scatter:
+                    target_ax.scatter(
                         x_values,
                         y_values,
                         alpha=effective_scatter_alpha,
@@ -607,156 +625,123 @@ class PeakDataFrame(PeakMetricsMixin, pd.DataFrame):
                         color="C1",
                     )
 
-                elif plot_type == "kde":
-                    sns.kdeplot(
-                        x=x_values,
-                        y=y_values,
-                        ax=target_ax,
-                        fill=fill,
-                        cmap=cmap,
-                        bw_adjust=bandwidth_adjust,
-                        alpha=kde_alpha,
-                    )
-                    artist = None
+            elif plot_type == "hexbin":
+                hexbin_kwargs = {
+                    "x": x_values,
+                    "y": y_values,
+                    "gridsize": hexbin_grid_size,
+                    "cmap": cmap,
+                    "mincnt": hexbin_min_count,
+                    "reduce_C_function": hexbin_reduce_function,
+                    "linewidths": 0.0,
+                    "xscale": xscale,
+                    "yscale": yscale,
+                }
 
-                    if show_scatter:
-                        target_ax.scatter(
-                            x_values,
-                            y_values,
-                            alpha=effective_scatter_alpha,
-                            s=scatter_size,
-                            color="C1",
-                        )
+                if color_scale == "log":
+                    hexbin_kwargs["bins"] = "log"
 
-                elif plot_type == "hexbin":
-                    hexbin_kwargs = {
-                        "x": x_values,
-                        "y": y_values,
-                        "gridsize": hexbin_grid_size,
-                        "cmap": cmap,
-                        "mincnt": hexbin_min_count,
-                        "reduce_C_function": hexbin_reduce_function,
-                        "linewidths": 0.0,
-                        "xscale": xscale,
-                        "yscale": yscale,
-                    }
+                artist = target_ax.hexbin(**hexbin_kwargs)
 
-                    if color_scale == "log":
-                        hexbin_kwargs["bins"] = "log"
-
-                    artist = target_ax.hexbin(**hexbin_kwargs)
-
-                    if show_scatter:
-                        target_ax.scatter(
-                            x_values,
-                            y_values,
-                            alpha=min(effective_scatter_alpha, 0.15),
-                            s=max(scatter_size * 0.5, 1),
-                            color="black",
-                        )
-
-                return artist
-
-            if show_marginals:
-                grid = sns.JointGrid(data=plot_dataframe, x="x", y="y")
-                grid.figure.set_size_inches(*figure_size)
-
-                main_artist = draw_main_artist(grid.ax_joint)
-
-                sns.histplot(
-                    data=plot_dataframe,
-                    x="x",
-                    ax=grid.ax_marg_x,
-                    bins=x_bins,
-                    legend=False,
-                    edgecolor="black",
-                    linewidth=1.0,
-                )
-                sns.histplot(
-                    data=plot_dataframe,
-                    y="y",
-                    ax=grid.ax_marg_y,
-                    bins=y_bins,
-                    legend=False,
-                    edgecolor="black",
-                    linewidth=1.0,
-                )
-
-                grid.ax_joint.set_xscale(xscale)
-                grid.ax_joint.set_yscale(yscale)
-                grid.ax_marg_x.set_xscale(xscale)
-                grid.ax_marg_y.set_yscale(yscale)
-
-                if xlim is not None:
-                    grid.ax_joint.set_xlim(xlim)
-                    grid.ax_marg_x.set_xlim(xlim)
-
-                if ylim is not None:
-                    grid.ax_joint.set_ylim(ylim)
-                    grid.ax_marg_y.set_ylim(ylim)
-
-                grid.ax_joint.set_xlabel(current_xlabel)
-                grid.ax_joint.set_ylabel(current_ylabel)
-                grid.ax_joint.tick_params(
-                    axis="both",
-                    which="both",
-                    bottom=True,
-                    left=True,
-                    top=False,
-                    right=False,
-                    labelbottom=True,
-                    labelleft=True,
-                    labeltop=False,
-                    labelright=False,
-                )
-                self._hide_marginal_axis_ticks(grid.ax_marg_x)
-                self._hide_marginal_axis_ticks(grid.ax_marg_y)
-
-                if title is not None:
-                    grid.figure.suptitle(title)
-
-                if plot_type == "hexbin" and show_colorbar and main_artist is not None:
-                    colorbar_label = "log10(count)" if color_scale == "log" else "count"
-                    grid.figure.colorbar(
-                        main_artist, ax=grid.ax_joint, pad=0.02, label=colorbar_label
+                if show_scatter:
+                    target_ax.scatter(
+                        x_values,
+                        y_values,
+                        alpha=min(effective_scatter_alpha, 0.15),
+                        s=max(scatter_size * 0.5, 1),
+                        color="black",
                     )
 
-                if save_as is not None:
-                    grid.figure.savefig(save_as)
+            return artist
 
-                return grid.figure, grid.ax_joint
+        if show_marginals:
+            grid = sns.JointGrid(data=plot_dataframe, x="x", y="y")
+            grid.figure.set_size_inches(*figure_size)
 
-            if ax is None:
-                figure, ax = plt.subplots(figsize=figure_size)
-            else:
-                figure = ax.figure if figure is None else figure
+            main_artist = draw_main_artist(grid.ax_joint)
 
-            main_artist = draw_main_artist(ax)
+            sns.histplot(
+                data=plot_dataframe,
+                x="x",
+                ax=grid.ax_marg_x,
+                bins=x_bins,
+                legend=False,
+                edgecolor="black",
+                linewidth=1.0,
+            )
+            sns.histplot(
+                data=plot_dataframe,
+                y="y",
+                ax=grid.ax_marg_y,
+                bins=y_bins,
+                legend=False,
+                edgecolor="black",
+                linewidth=1.0,
+            )
 
-            ax.set_xscale(xscale)
-            ax.set_yscale(yscale)
+            grid.ax_joint.set_xscale(xscale)
+            grid.ax_joint.set_yscale(yscale)
+            grid.ax_marg_x.set_xscale(xscale)
+            grid.ax_marg_y.set_yscale(yscale)
 
             if xlim is not None:
-                ax.set_xlim(xlim)
+                grid.ax_joint.set_xlim(xlim)
+                grid.ax_marg_x.set_xlim(xlim)
 
             if ylim is not None:
-                ax.set_ylim(ylim)
+                grid.ax_joint.set_ylim(ylim)
+                grid.ax_marg_y.set_ylim(ylim)
 
-            ax.set_xlabel(current_xlabel)
-            ax.set_ylabel(current_ylabel)
-            ax.set_title(title or "")
+            grid.ax_joint.set_xlabel(current_xlabel)
+            grid.ax_joint.set_ylabel(current_ylabel)
+            self._hide_marginal_axis_ticks(grid.ax_marg_x)
+            self._hide_marginal_axis_ticks(grid.ax_marg_y)
+
+            if title is not None:
+                grid.figure.suptitle(title)
 
             if plot_type == "hexbin" and show_colorbar and main_artist is not None:
                 colorbar_label = "log10(count)" if color_scale == "log" else "count"
-                figure.colorbar(main_artist, ax=ax, pad=0.02, label=colorbar_label)
+                grid.figure.colorbar(
+                    main_artist, ax=grid.ax_joint, pad=0.02, label=colorbar_label
+                )
 
             if save_as is not None:
-                figure.savefig(save_as)
+                grid.figure.savefig(save_as)
 
-            figure.tight_layout()
-            return figure, ax
+            return grid.figure, grid.ax_joint
 
-    @helper.post_mpl_plot
+        if ax is None:
+            figure, ax = plt.subplots(figsize=figure_size)
+        else:
+            figure = ax.figure if figure is None else figure
+
+        main_artist = draw_main_artist(ax)
+
+        ax.set_xscale(xscale)
+        ax.set_yscale(yscale)
+
+        if xlim is not None:
+            ax.set_xlim(xlim)
+
+        if ylim is not None:
+            ax.set_ylim(ylim)
+
+        ax.set_xlabel(current_xlabel)
+        ax.set_ylabel(current_ylabel)
+        ax.set_title(title or "")
+
+        if plot_type == "hexbin" and show_colorbar and main_artist is not None:
+            colorbar_label = "log10(count)" if color_scale == "log" else "count"
+            figure.colorbar(main_artist, ax=ax, pad=0.02, label=colorbar_label)
+
+        if save_as is not None:
+            figure.savefig(save_as)
+
+        figure.tight_layout()
+        return figure, ax
+
+    @figure_options
     def plot_3d(self, x: str, y: str, z: str) -> plt.Figure:
         """
         Create a 3D scatter plot of a feature across three detectors.
@@ -789,9 +774,9 @@ class PeakDataFrame(PeakMetricsMixin, pd.DataFrame):
 
         ax.scatter(x_series, y_series, z_series)
 
-        ax.set_xlabel(f"{x_detector} : {x_feature}", labelpad=20)
-        ax.set_ylabel(f"{y_detector} : {y_feature}", labelpad=20)
-        ax.set_zlabel(f"{z_detector} : {z_feature}", labelpad=20)
+        ax.set_xlabel(f"{x_detector} : {x_feature}")
+        ax.set_ylabel(f"{y_detector} : {y_feature}")
+        ax.set_zlabel(f"{z_detector} : {z_feature}")
 
         ax.set_title("Peaks Properties")
 

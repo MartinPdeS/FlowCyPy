@@ -18,7 +18,18 @@ from FlowCyPy.opto_electronics import (
     OptoElectronics,
     source,
 )
+from FlowCyPy.opto_electronics.laser import Laser
 from FlowCyPy.units import ureg
+
+
+def preset_beam(*, lasers, wavelength, optical_power, default_rin=None, **settings):
+    """Build a shared Gaussian profile for the preset or user-supplied lasers."""
+    if lasers is None:
+        power = 20 * ureg.milliwatt if optical_power is None else optical_power
+        return source.Gaussian(wavelength=wavelength, optical_power=power, rin=default_rin, **settings)
+    if optical_power is not None:
+        raise ValueError("Set optical_power on each Laser when supplying lasers.")
+    return source.Gaussian(lasers=lasers, **settings)
 
 
 def assemble(
@@ -85,21 +96,31 @@ class ScatterChannel:
 
 @dataclass(frozen=True, kw_only=True)
 class ScatterSystem:
-    """Single-laser scattering model using RosettaX geometry and reference electronics.
+    """Scattering model using a shared beam profile and reference electronics.
 
     Parameters
     ----------
-    wavelength : Length
-        Laser wavelength for all configured channels.
+    lasers : sequence of Laser, optional
+        Default excitation lines for every instrument built from this configuration.
+    wavelength : Length, optional
+        Single-line configuration with power specified when building the instrument.
     channels : tuple of ScatterChannel
         Collection geometry for each detector. The first channel triggers acquisition.
     """
 
-    wavelength: Length
+    wavelength: Length | None = None
+    lasers: tuple[Laser, ...] | None = None
     channels: tuple[ScatterChannel, ...]
 
     def __post_init__(self) -> None:
         """Require at least one collection channel for triggering."""
+        if (self.wavelength is None) == (self.lasers is None):
+            raise ValueError("Specify either lasers or wavelength for a scattering system.")
+        if self.lasers is not None:
+            lines = tuple(self.lasers)
+            if not lines or not all(isinstance(line, Laser) for line in lines):
+                raise ValueError("lasers must contain one or more Laser objects.")
+            object.__setattr__(self, "lasers", lines)
         if not self.channels:
             raise ValueError(
                 "A scattering system requires at least one detector channel."
@@ -108,7 +129,8 @@ class ScatterSystem:
     def __call__(
         self,
         *,
-        optical_power: Power = 20 * ureg.milliwatt,
+        lasers: tuple[Laser, ...] | None = None,
+        optical_power: Power | None = None,
         sample_volume_flow: SampleFlowRate | FlowRate = SampleFlowRate.MEDIUM,
         sheath_volume_flow: SheathFlowRate | FlowRate = SheathFlowRate.DEFAULT,
         background_power: Power = 0 * ureg.watt,
@@ -118,6 +140,8 @@ class ScatterSystem:
 
         Parameters
         ----------
+        lasers : sequence of Laser, optional
+            Co-located excitation lines sharing the preset beam profile.
         optical_power, background_power : Power
             Incident laser power and constant optical background per detector.
         sample_volume_flow, sheath_volume_flow : FlowRate or flow-rate preset
@@ -132,7 +156,8 @@ class ScatterSystem:
         """
         optics = OptoElectronics(
             detectors=[channel.build() for channel in self.channels],
-            source=source.Gaussian(
+            source=preset_beam(
+                lasers=self.lasers if lasers is None else lasers,
                 wavelength=self.wavelength,
                 optical_power=optical_power,
                 waist_y=65 * ureg.micrometer,

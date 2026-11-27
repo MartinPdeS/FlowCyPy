@@ -5,7 +5,13 @@ from FlowCyPy import digital_processing, opto_electronics
 from FlowCyPy.detectors.photomultipliers import pmt
 from FlowCyPy.flow_cytometer import FlowCytometer
 from FlowCyPy.fluidics import SampleFlowRate, SheathFlowRate
-from FlowCyPy.systems._assembly import ScatterChannel, ScatterSystem, assemble
+from FlowCyPy.opto_electronics.laser import Laser
+from FlowCyPy.systems._assembly import (
+    ScatterChannel,
+    ScatterSystem,
+    assemble,
+    preset_beam,
+)
 from FlowCyPy.units import ureg
 
 
@@ -13,7 +19,8 @@ def facs_canto(
     *,
     sample_volume_flow: SampleFlowRate | FlowRate = SampleFlowRate.MEDIUM,
     sheath_volume_flow: SheathFlowRate | FlowRate = SheathFlowRate.DEFAULT,
-    optical_power: Power = 20 * ureg.milliwatt,
+    lasers: tuple[Laser, ...] | None = None,
+    optical_power: Power | None = None,
     background_power: Power = 0 * ureg.watt,
     threshold: str | Voltage = "4sigma",
     include_shot_noise: bool = True,
@@ -25,6 +32,8 @@ def facs_canto(
     ----------
     sample_volume_flow, sheath_volume_flow : FlowRate or flow-rate preset
         Volumetric flow rates through the reference cell.
+    lasers : sequence of Laser, optional
+        Co-located excitation lines sharing the preset beam profile.
     optical_power, background_power : Power
         Laser power and constant background optical power for each channel.
     threshold : str or voltage quantity
@@ -37,7 +46,8 @@ def facs_canto(
     FlowCytometer
         A fresh acquisition chain and an empty sample collection.
     """
-    source = opto_electronics.source.Gaussian(
+    source = preset_beam(
+        lasers=lasers,
         waist_y=65 * ureg.micrometer,
         waist_z=10 * ureg.micrometer,
         wavelength=488 * ureg.nanometer,

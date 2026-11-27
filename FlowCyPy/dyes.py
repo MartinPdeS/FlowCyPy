@@ -1,5 +1,6 @@
 """Reference fluorophores with measurement sources in the fluorescence model guide."""
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from math import log
 from FlowCyPy.fluorescence import Fluorophore
@@ -31,30 +32,33 @@ class DyePreset:
     quantum_yield: float
     lifetime: ureg.Quantity
 
-    def __call__(self, *, relative_absorption: float = 1.0) -> Fluorophore:
-        """Build a dye for a single laser using one emission bin at the maximum.
+    def __call__(self, *, relative_absorption: float | Mapping = 1.0) -> Fluorophore:
+        """Build a dye for the configured lasers with one emission bin at the maximum.
 
         Parameters
         ----------
-        relative_absorption : float, optional
+        relative_absorption : float or mapping of wavelength to float, optional
             Absorbance at the laser wavelength divided by peak absorbance.
-            The default uses the peak cross section.
+            The default uses the peak cross section. For multiple lasers,
+            provide a wavelength-keyed fraction for each excitation line.
 
         Returns
         -------
         Fluorophore
             Dye ready for a Label. Use measured photon weights for spillover studies.
         """
-        if not 0 <= relative_absorption <= 1:
+        fractions = relative_absorption.values() if isinstance(relative_absorption, Mapping) else (relative_absorption,)
+        if not all(0 <= fraction <= 1 for fraction in fractions):
             raise ValueError("relative_absorption must be between zero and one.")
         # Beer–Lambert conversion from L/(mol cm) to m² per molecule.
-        avogadro_per_mole = 6.02214076e23
-        cross_section = (
-            relative_absorption * self.peak_extinction_coefficient * 0.1 * log(10) / avogadro_per_mole
-        )
+        peak = self.peak_extinction_coefficient * 0.1 * log(10) / 6.02214076e23 * ureg.meter**2
+        if isinstance(relative_absorption, Mapping):
+            cross_section = {line: fraction * peak for line, fraction in relative_absorption.items()}
+        else:
+            cross_section = relative_absorption * peak
         return Fluorophore(
             name=self.name,
-            absorption_cross_section=cross_section * ureg.meter**2,
+            absorption_cross_section=cross_section,
             quantum_yield=self.quantum_yield,
             lifetime=self.lifetime,
             emission_wavelengths=[self.emission_maximum.m_as("nm")] * ureg.nm,

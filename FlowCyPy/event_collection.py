@@ -18,7 +18,6 @@ from collections.abc import Iterator, Mapping
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 import matplotlib.pyplot as plt
-import MPSPlots
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -592,129 +591,128 @@ class EventCollection:
         matplotlib.figure.Figure
             Generated histogram figure.
         """
-        with plt.style.context(MPSPlots.styles.scientific):
-            population_dataframe, target_units = self._build_dataframe_and_units(
+        population_dataframe, target_units = self._build_dataframe_and_units(
+            filter_population=filter_population
+        )
+
+        figure, ax = plt.subplots(1, 1, figsize=figure_size)
+
+        if len(population_dataframe) == 0:
+            ax.set(
+                xlabel=x,
+                title=f"Distribution of {x}",
+            )
+            return figure
+
+        dataframe = population_dataframe.reset_index("Population")
+        dataframe[x] = dataframe[x].to_numpy(dtype=float)
+
+        if xscale not in {"linear", "log"}:
+            raise ValueError(
+                f"Unsupported xscale: {xscale!r}. Expected 'linear' or 'log'."
+            )
+
+        if yscale not in {"linear", "log"}:
+            raise ValueError(
+                f"Unsupported yscale: {yscale!r}. Expected 'linear' or 'log'."
+            )
+
+        valid_mask = np.isfinite(dataframe[x])
+
+        if xscale == "log":
+            valid_mask &= dataframe[x] > 0
+
+        dataframe = dataframe.loc[valid_mask].copy()
+
+        if dataframe.empty:
+            raise ValueError("No valid data points remain after scale filtering.")
+
+        if scale_by_concentration:
+            population_weight_map = self._get_population_weight_map(
                 filter_population=filter_population
             )
+            dataframe["Weight"] = dataframe["Population"].map(population_weight_map)
+        else:
+            dataframe["Weight"] = 1.0
 
-            figure, ax = plt.subplots(1, 1, figsize=figure_size)
-
-            if len(population_dataframe) == 0:
-                ax.set(
-                    xlabel=x,
-                    title=f"Distribution of {x}",
-                )
-                return figure
-
-            dataframe = population_dataframe.reset_index("Population")
-            dataframe[x] = dataframe[x].to_numpy(dtype=float)
-
-            if xscale not in {"linear", "log"}:
-                raise ValueError(
-                    f"Unsupported xscale: {xscale!r}. Expected 'linear' or 'log'."
-                )
-
-            if yscale not in {"linear", "log"}:
-                raise ValueError(
-                    f"Unsupported yscale: {yscale!r}. Expected 'linear' or 'log'."
-                )
-
-            valid_mask = np.isfinite(dataframe[x])
-
-            if xscale == "log":
-                valid_mask &= dataframe[x] > 0
-
-            dataframe = dataframe.loc[valid_mask].copy()
-
-            if dataframe.empty:
-                raise ValueError("No valid data points remain after scale filtering.")
-
-            if scale_by_concentration:
-                population_weight_map = self._get_population_weight_map(
-                    filter_population=filter_population
-                )
-                dataframe["Weight"] = dataframe["Population"].map(population_weight_map)
+        if scale_by_bin:
+            if binrange is None:
+                minimum_value = dataframe[x].min()
+                maximum_value = dataframe[x].max()
             else:
-                dataframe["Weight"] = 1.0
-
-            if scale_by_bin:
-                if binrange is None:
-                    minimum_value = dataframe[x].min()
-                    maximum_value = dataframe[x].max()
-                else:
-                    minimum_value, maximum_value = binrange
-
-                if isinstance(bins, int):
-                    bin_edges = np.linspace(minimum_value, maximum_value, bins + 1)
-                else:
-                    bin_edges = np.asarray(bins)
-
-                bin_width = np.diff(bin_edges)[0]
-                dataframe["Weight"] = dataframe["Weight"] / bin_width
-
-            hist_bins = bins
+                minimum_value, maximum_value = binrange
 
             if isinstance(bins, int):
-                hist_bins = self._get_marginal_bins(
-                    dataframe[x].to_numpy(dtype=float),
-                    xscale,
-                    bin_count=bins,
-                )
+                bin_edges = np.linspace(minimum_value, maximum_value, bins + 1)
+            else:
+                bin_edges = np.asarray(bins)
 
-            if isinstance(hist_bins, np.ndarray):
-                hist_bins = hist_bins.tolist()
+            bin_width = np.diff(bin_edges)[0]
+            dataframe["Weight"] = dataframe["Weight"] / bin_width
 
-            histplot_kwargs = {}
+        hist_bins = bins
 
-            if scale_by_concentration or scale_by_bin:
-                histplot_kwargs["weights"] = dataframe["Weight"]
-
-            sns.histplot(
-                data=dataframe,
-                x=x,
-                ax=ax,
-                kde=kde,
-                bins=hist_bins,
-                hue="Population",
-                color=color,
-                binrange=binrange,
-                common_norm=common_norm,
-                common_bins=common_bins,
-                edgecolor="black",
-                linewidth=1.0,
-                **histplot_kwargs,
+        if isinstance(bins, int):
+            hist_bins = self._get_marginal_bins(
+                dataframe[x].to_numpy(dtype=float),
+                xscale,
+                bin_count=bins,
             )
 
-            x_label = self._get_axis_label(column_name=x, target_units=target_units)
+        if isinstance(hist_bins, np.ndarray):
+            hist_bins = hist_bins.tolist()
 
-            if scale_by_concentration and not scale_by_bin:
-                y_label = "particle per milliliter"
-            elif scale_by_concentration and scale_by_bin:
-                x_unit = target_units.get(x, None)
+        histplot_kwargs = {}
 
-                if x_unit is None:
-                    y_label = "particle / (milliliter * bin)"
-                else:
-                    y_label = f"Particle (mL {x_unit:~P})$^{{-1}}$"
+        if scale_by_concentration or scale_by_bin:
+            histplot_kwargs["weights"] = dataframe["Weight"]
+
+        sns.histplot(
+            data=dataframe,
+            x=x,
+            ax=ax,
+            kde=kde,
+            bins=hist_bins,
+            hue="Population",
+            color=color,
+            binrange=binrange,
+            common_norm=common_norm,
+            common_bins=common_bins,
+            edgecolor="black",
+            linewidth=1.0,
+            **histplot_kwargs,
+        )
+
+        x_label = self._get_axis_label(column_name=x, target_units=target_units)
+
+        if scale_by_concentration and not scale_by_bin:
+            y_label = "particle per milliliter"
+        elif scale_by_concentration and scale_by_bin:
+            x_unit = target_units.get(x, None)
+
+            if x_unit is None:
+                y_label = "particle / (milliliter * bin)"
             else:
-                y_label = "Counts"
+                y_label = f"Particle (mL {x_unit:~P})$^{{-1}}$"
+        else:
+            y_label = "Counts"
 
-            ax.set_xlabel(xlabel or x_label)
-            ax.set_ylabel(ylabel or y_label)
-            ax.set_title(title or f"Distribution of {x}")
-            ax.set_xscale(xscale)
-            ax.set_yscale(yscale)
+        ax.set_xlabel(xlabel or x_label)
+        ax.set_ylabel(ylabel or y_label)
+        ax.set_title(title or f"Distribution of {x}")
+        ax.set_xscale(xscale)
+        ax.set_yscale(yscale)
 
-            if xlim is not None:
-                ax.set_xlim(xlim)
+        if xlim is not None:
+            ax.set_xlim(xlim)
 
-            if ylim is not None:
-                ax.set_ylim(ylim)
+        if ylim is not None:
+            ax.set_ylim(ylim)
 
-            if save_as is not None:
-                figure.savefig(save_as)
+        if save_as is not None:
+            figure.savefig(save_as)
 
-            return figure
+        return figure
 
     def plot_2d(
         self,
@@ -768,129 +766,116 @@ class EventCollection:
             If invalid axis scales are provided or no valid data remain after
             filtering for the requested scales.
         """
-        with plt.style.context(MPSPlots.styles.scientific):
-            population_dataframe, target_units = self._build_dataframe_and_units(
-                filter_population=filter_population
+        population_dataframe, target_units = self._build_dataframe_and_units(
+            filter_population=filter_population
+        )
+
+        dataframe = population_dataframe.reset_index()
+
+        if xscale not in {"linear", "log"}:
+            raise ValueError(
+                f"Unsupported xscale: {xscale!r}. Expected 'linear' or 'log'."
             )
 
-            dataframe = population_dataframe.reset_index()
-
-            if xscale not in {"linear", "log"}:
-                raise ValueError(
-                    f"Unsupported xscale: {xscale!r}. Expected 'linear' or 'log'."
-                )
-
-            if yscale not in {"linear", "log"}:
-                raise ValueError(
-                    f"Unsupported yscale: {yscale!r}. Expected 'linear' or 'log'."
-                )
-
-            valid_mask = np.isfinite(dataframe[x]) & np.isfinite(dataframe[y])
-
-            if xscale == "log":
-                valid_mask &= dataframe[x] > 0
-
-            if yscale == "log":
-                valid_mask &= dataframe[y] > 0
-
-            dataframe = dataframe.loc[valid_mask].copy()
-
-            if dataframe.empty:
-                raise ValueError("No valid data points remain after scale filtering.")
-
-            if marginal_nbins < 1:
-                raise ValueError("marginal_nbins must be a positive integer.")
-
-            x_bins = self._get_marginal_bins(
-                dataframe[x].to_numpy(dtype=float),
-                xscale,
-                bin_count=marginal_nbins,
-            )
-            y_bins = self._get_marginal_bins(
-                dataframe[y].to_numpy(dtype=float),
-                yscale,
-                bin_count=marginal_nbins,
+        if yscale not in {"linear", "log"}:
+            raise ValueError(
+                f"Unsupported yscale: {yscale!r}. Expected 'linear' or 'log'."
             )
 
-            grid = sns.JointGrid(
-                data=dataframe,
-                x=x,
-                y=y,
-            )
-            grid.figure.set_size_inches(*figure_size)
+        valid_mask = np.isfinite(dataframe[x]) & np.isfinite(dataframe[y])
 
-            sns.scatterplot(
-                data=dataframe,
-                x=x,
-                y=y,
-                hue="Population",
-                ax=grid.ax_joint,
-                alpha=alpha,
-            )
+        if xscale == "log":
+            valid_mask &= dataframe[x] > 0
 
-            sns.histplot(
-                data=dataframe,
-                x=x,
-                hue="Population",
-                ax=grid.ax_marg_x,
-                bins=x_bins,
-                legend=False,
-                edgecolor="black",
-                linewidth=1.0,
-            )
+        if yscale == "log":
+            valid_mask &= dataframe[y] > 0
 
-            sns.histplot(
-                data=dataframe,
-                y=y,
-                hue="Population",
-                ax=grid.ax_marg_y,
-                bins=y_bins,
-                legend=False,
-                edgecolor="black",
-                linewidth=1.0,
-            )
+        dataframe = dataframe.loc[valid_mask].copy()
 
-            grid.ax_joint.set_xlabel(
-                xlabel or self._get_axis_label(column_name=x, target_units=target_units)
-            )
-            grid.ax_joint.set_ylabel(
-                ylabel or self._get_axis_label(column_name=y, target_units=target_units)
-            )
-            grid.ax_joint.set_xscale(xscale)
-            grid.ax_joint.set_yscale(yscale)
-            grid.ax_marg_x.set_xscale(xscale)
-            grid.ax_marg_y.set_yscale(yscale)
+        if dataframe.empty:
+            raise ValueError("No valid data points remain after scale filtering.")
 
-            if xlim is not None:
-                grid.ax_joint.set_xlim(xlim)
-                grid.ax_marg_x.set_xlim(xlim)
+        if marginal_nbins < 1:
+            raise ValueError("marginal_nbins must be a positive integer.")
 
-            if ylim is not None:
-                grid.ax_joint.set_ylim(ylim)
-                grid.ax_marg_y.set_ylim(ylim)
+        x_bins = self._get_marginal_bins(
+            dataframe[x].to_numpy(dtype=float),
+            xscale,
+            bin_count=marginal_nbins,
+        )
+        y_bins = self._get_marginal_bins(
+            dataframe[y].to_numpy(dtype=float),
+            yscale,
+            bin_count=marginal_nbins,
+        )
 
-            grid.ax_joint.tick_params(
-                axis="both",
-                which="both",
-                bottom=True,
-                left=True,
-                top=False,
-                right=False,
-                labelbottom=True,
-                labelleft=True,
-                labeltop=False,
-                labelright=False,
-            )
-            self._hide_marginal_axis_ticks(grid.ax_marg_x)
-            self._hide_marginal_axis_ticks(grid.ax_marg_y)
+        grid = sns.JointGrid(
+            data=dataframe,
+            x=x,
+            y=y,
+        )
+        grid.figure.set_size_inches(*figure_size)
 
-            if title is not None:
-                grid.figure.suptitle(title)
+        sns.scatterplot(
+            data=dataframe,
+            x=x,
+            y=y,
+            hue="Population",
+            ax=grid.ax_joint,
+            alpha=alpha,
+        )
 
-            if save_as is not None:
-                grid.figure.savefig(save_as)
+        sns.histplot(
+            data=dataframe,
+            x=x,
+            hue="Population",
+            ax=grid.ax_marg_x,
+            bins=x_bins,
+            legend=False,
+            edgecolor="black",
+            linewidth=1.0,
+        )
 
-            return grid.figure
+        sns.histplot(
+            data=dataframe,
+            y=y,
+            hue="Population",
+            ax=grid.ax_marg_y,
+            bins=y_bins,
+            legend=False,
+            edgecolor="black",
+            linewidth=1.0,
+        )
+
+        grid.ax_joint.set_xlabel(
+            xlabel or self._get_axis_label(column_name=x, target_units=target_units)
+        )
+        grid.ax_joint.set_ylabel(
+            ylabel or self._get_axis_label(column_name=y, target_units=target_units)
+        )
+        grid.ax_joint.set_xscale(xscale)
+        grid.ax_joint.set_yscale(yscale)
+        grid.ax_marg_x.set_xscale(xscale)
+        grid.ax_marg_y.set_yscale(yscale)
+
+        if xlim is not None:
+            grid.ax_joint.set_xlim(xlim)
+            grid.ax_marg_x.set_xlim(xlim)
+
+        if ylim is not None:
+            grid.ax_joint.set_ylim(ylim)
+            grid.ax_marg_y.set_ylim(ylim)
+
+        self._hide_marginal_axis_ticks(grid.ax_marg_x)
+        self._hide_marginal_axis_ticks(grid.ax_marg_y)
+
+        if title is not None:
+            grid.figure.suptitle(title)
+
+        if save_as is not None:
+            grid.figure.savefig(save_as)
+
+        return grid.figure
 
     def plot_3d(
         self,
@@ -920,40 +905,36 @@ class EventCollection:
         matplotlib.figure.Figure
             Generated 3D scatter figure.
         """
-        with plt.style.context(MPSPlots.styles.scientific):
-            population_dataframe, target_units = self._build_dataframe_and_units(
-                filter_population=filter_population
+        population_dataframe, target_units = self._build_dataframe_and_units(
+            filter_population=filter_population
+        )
+
+        dataframe = population_dataframe.reset_index()
+
+        figure = plt.figure()
+        ax = figure.add_subplot(111, projection="3d")
+
+        for population_name, group in dataframe.groupby(hue):
+            ax.scatter(
+                group[x].to_numpy(dtype=float),
+                group[y].to_numpy(dtype=float),
+                group[z].to_numpy(dtype=float),
+                label=population_name,
+                alpha=alpha,
             )
 
-            dataframe = population_dataframe.reset_index()
+        ax.set_xlabel(
+            self._get_axis_label(column_name=x, target_units=target_units),
+        )
+        ax.set_ylabel(
+            self._get_axis_label(column_name=y, target_units=target_units),
+        )
+        ax.set_zlabel(
+            self._get_axis_label(column_name=z, target_units=target_units),
+        )
+        ax.set_title("Scatterer Sampling Distribution")
 
-            figure = plt.figure()
-            ax = figure.add_subplot(111, projection="3d")
-
-            for population_name, group in dataframe.groupby(hue):
-                ax.scatter(
-                    group[x].to_numpy(dtype=float),
-                    group[y].to_numpy(dtype=float),
-                    group[z].to_numpy(dtype=float),
-                    label=population_name,
-                    alpha=alpha,
-                )
-
-            ax.set_xlabel(
-                self._get_axis_label(column_name=x, target_units=target_units),
-                labelpad=20,
-            )
-            ax.set_ylabel(
-                self._get_axis_label(column_name=y, target_units=target_units),
-                labelpad=20,
-            )
-            ax.set_zlabel(
-                self._get_axis_label(column_name=z, target_units=target_units),
-                labelpad=20,
-            )
-            ax.set_title("Scatterer Sampling Distribution")
-
-            return figure
+        return figure
 
     def _add_explicit_model_to_ax(
         self,

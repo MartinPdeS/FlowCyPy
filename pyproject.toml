@@ -51,7 +51,7 @@ dependencies = [
     "numpy >=2.0",
     'pint >=0.24,<0.26',
     "PyMieSim>=6.0.4,<6.1",
-    'MPSPlots >=1.8.9',
+    'matplotlib',
     "TypedUnit>=0.2.9"
 ]
 

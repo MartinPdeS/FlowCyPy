@@ -17,18 +17,24 @@ from FlowCyPy.units import ureg
 # The first channel is the default trigger. The forward detector has a central
 # obscuration, specified by its inner numerical aperture.
 
+ssc = ScatterChannel(
+    name="SSC",
+    phi_angle=90 * ureg.degree,
+    numerical_aperture=1.0,
+    sampling=500
+)
+
+fsc = ScatterChannel(
+    name="FSC",
+    phi_angle=0 * ureg.degree,
+    numerical_aperture=0.3,
+    cache_numerical_aperture=0.1,
+    sampling=500
+)
+
 scatter_system = ScatterSystem(
     wavelength=488 * ureg.nanometer,
-    channels=(
-        ScatterChannel(name="SSC", phi_angle=90 * ureg.degree, numerical_aperture=1.0, sampling=500),
-        ScatterChannel(
-            name="FSC",
-            phi_angle=0 * ureg.degree,
-            numerical_aperture=0.3,
-            cache_numerical_aperture=0.1,
-            sampling=500,
-        ),
-    ),
+    channels=(ssc, fsc)
 )
 
 # %%

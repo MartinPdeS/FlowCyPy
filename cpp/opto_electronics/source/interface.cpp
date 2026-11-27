@@ -6,14 +6,49 @@
 #include <pint/pint.h>
 #include <cmath>
 #include <limits>
+#include <set>
 
 
 namespace py = pybind11;
 using namespace FlowCyPy;
 
 
+template<class Profile>
+auto laser_constructor() {
+    return py::init([](py::iterable lasers, py::kwargs settings) {
+        const auto laser_type = py::module_::import("FlowCyPy.opto_electronics.laser").attr("Laser");
+        std::shared_ptr<Profile> profile;
+        std::set<double> wavelengths;
+        if (settings.contains("wavelength") || settings.contains("optical_power"))
+            throw py::value_error("Supply either lasers or wavelength and optical_power.");
+        if (settings.contains("rin"))
+            throw py::value_error("Set rin on each Laser when supplying lasers.");
+        for (const auto line : lasers) {
+            if (!py::isinstance(line, laser_type))
+                throw py::type_error("lasers must contain Laser objects.");
+            const double wavelength = line.attr("wavelength").attr("m_as")("m").cast<double>();
+            if (!wavelengths.insert(wavelength).second)
+                throw py::value_error("Each laser must have a distinct wavelength.");
+            if (!profile) {
+                settings["rin"] = line.attr("rin");
+                profile = py::type::of<Profile>()(
+                    line.attr("wavelength"), line.attr("optical_power"), **settings
+                ).template cast<std::shared_ptr<Profile>>();
+            } else {
+                const auto density = line.attr("rin");
+                profile->additional_lines.push_back({wavelength, line.attr("optical_power").attr("m_as")("W").cast<double>(),
+                    density.is_none() ? std::numeric_limits<double>::quiet_NaN() : density.attr("m_as")("dB_per_Hz").cast<double>()});
+            }
+        }
+        if (!profile) throw py::value_error("At least one Laser is required.");
+        profile->explicit_lasers = true;
+        return profile;
+    });
+}
+
 PYBIND11_MODULE(source, module) {
     py::object ureg = get_shared_ureg();
+    module.attr("Laser") = py::module_::import("FlowCyPy.opto_electronics.laser").attr("Laser");
 
     module.doc() = R"doc(
         Optical source models for FlowCyPy.
@@ -49,6 +84,23 @@ PYBIND11_MODULE(source, module) {
             relative intensity noise.
         )doc"
         )
+        .def_property_readonly("lasers", [ureg](const BaseSource& beam) {
+            const auto laser = py::module_::import("FlowCyPy.opto_electronics.laser").attr("Laser");
+            auto build = [&](double wavelength, double power, double rin) {
+                return laser(py::arg("wavelength") = py::float_(wavelength) * ureg.attr("meter"),
+                             py::arg("optical_power") = py::float_(power) * ureg.attr("watt"),
+                             py::arg("rin") = std::isnan(rin) ? py::object(py::none()) : py::float_(rin) * ureg.attr("dB_per_Hz"));
+            };
+            py::list lines;
+            lines.append(build(beam.wavelength, beam.optical_power, beam.rin));
+            for (const auto& [wavelength, power, rin] : beam.additional_lines)
+                lines.append(build(wavelength, power, rin));
+            return py::tuple(lines);
+        }, "Monochromatic lasers sharing this profile, in configuration order.")
+        .def_property_readonly("_explicit_lasers", [](const BaseSource& beam) { return beam.explicit_lasers; })
+        .def_property_readonly("_has_multiple_lasers", [](const BaseSource& beam) {
+            return !beam.additional_lines.empty();
+        })
         .def_property_readonly(
             "wavelength",
             [ureg](const BaseSource& source) {
@@ -97,6 +149,7 @@ PYBIND11_MODULE(source, module) {
                 }
             },
             [](BaseSource& source, const py::object& rin) {
+                if (source.explicit_lasers) throw py::value_error("Set rin on each Laser.");
                 if (rin.is_none()) {
                     source.rin = std::numeric_limits<double>::quiet_NaN();
                 } else {
@@ -706,6 +759,8 @@ PYBIND11_MODULE(source, module) {
             field amplitude decays smoothly away from the beam center.
         )doc"
         )
+        .def(laser_constructor<Gaussian>(), py::kw_only(), py::arg("lasers"),
+             "Build this profile from Laser objects, shared waists and optional source settings.")
         .def(
             py::init(
                 [ureg](
@@ -877,6 +932,8 @@ PYBIND11_MODULE(source, module) {
             a relatively homogeneous optical field over the interrogation region.
         )doc"
     )
+        .def(laser_constructor<FlatTop>(), py::kw_only(), py::arg("lasers"),
+             "Build this profile from Laser objects, shared waists and optional source settings.")
         .def(
             py::init(
                 [ureg](
