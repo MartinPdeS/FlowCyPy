@@ -265,12 +265,13 @@ def plot_log_density(
         density_minimum_count,
     )
 
+    density_normalization = LogNorm()
     density_mesh = axis.pcolormesh(
         x_bins,
         y_bins,
         masked_density_counts,
         cmap=density_colormap,
-        norm=LogNorm(),
+        norm=density_normalization,
         shading="auto",
     )
 
@@ -429,25 +430,24 @@ def make_opto_electronics(
         include_shot_noise=include_shot_noise,
     )
 
-    detectors = [
-        Detector(
-            name="SSC",
-            phi_angle=90 * ureg.degree,
-            numerical_aperture=1.1,
-            responsivity=side_responsivity,
-            bandwidth=10 * ureg.megahertz,
-            current_noise_density=side_current_noise_density,
-        ),
-        Detector(
-            name="FSC",
-            phi_angle=0 * ureg.degree,
-            numerical_aperture=0.1,
-            cache_numerical_aperture=0.04,
-            responsivity=forward_responsivity,
-            bandwidth=10 * ureg.megahertz,
-            current_noise_density=forward_current_noise_density,
-        ),
-    ]
+    side_detector = Detector(
+        name="SSC",
+        phi_angle=90 * ureg.degree,
+        numerical_aperture=1.1,
+        responsivity=side_responsivity,
+        bandwidth=10 * ureg.megahertz,
+        current_noise_density=side_current_noise_density,
+    )
+    forward_detector = Detector(
+        name="FSC",
+        phi_angle=0 * ureg.degree,
+        numerical_aperture=0.1,
+        cache_numerical_aperture=0.04,
+        responsivity=forward_responsivity,
+        bandwidth=10 * ureg.megahertz,
+        current_noise_density=forward_current_noise_density,
+    )
+    detectors = [side_detector, forward_detector]
 
     amplifier = Amplifier(
         gain=1 * ureg.volt / ureg.ampere,
@@ -479,20 +479,18 @@ def make_opto_electronics(
     analog_processing = []
 
     if cutoff_frequency is not None:
-        analog_processing.append(
-            circuits.BesselLowPass(
-                cutoff_frequency=cutoff_frequency,
-                order=2,
-                gain=2,
-            )
+        low_pass_filter = circuits.BesselLowPass(
+            cutoff_frequency=cutoff_frequency,
+            order=2,
+            gain=2,
         )
+        analog_processing.append(low_pass_filter)
 
-    analog_processing.append(
-        circuits.BaselineRestorationServo(
-            time_constant=time_constant,
-            initialize_with_first_sample=False,
-        )
+    baseline_restoration = circuits.BaselineRestorationServo(
+        time_constant=time_constant,
+        initialize_with_first_sample=False,
     )
+    analog_processing.append(baseline_restoration)
 
     return OptoElectronics(
         source=light_source,
@@ -520,11 +518,12 @@ def make_digital_processing(
         max_triggers=-1,
     )
 
+    peak_support = peak_locator.FullWindowSupport()
     global_peak_locator = peak_locator.GlobalPeakLocator(
         compute_width=False,
         compute_area=True,
         allow_negative_area=True,
-        support=peak_locator.FullWindowSupport(),
+        support=peak_support,
         polarity="positive",
         height_mode="peak_to_baseline",
         baseline_mode="edge_mean",

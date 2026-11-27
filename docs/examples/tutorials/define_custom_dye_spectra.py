@@ -26,22 +26,21 @@ wavelengths = np.array([505, 515, 525, 535, 545, 555, 565, 575, 585]) * ureg.nm
 # The cross sections are illustrative values at the 488 nm laser wavelength.
 # Both dyes use prompt emission. To model a measured decay, also pass
 # lifetime as a time quantity when constructing the fluorophore.
-dyes = [
-    Fluorophore(
-        name="Green dye",
-        absorption_cross_section=2e-20 * ureg.meter**2,
-        quantum_yield=0.8,
-        emission_wavelengths=wavelengths,
-        photon_weights=(8, 15, 35, 25, 10, 5, 2, 0, 0),
-    ),
-    Fluorophore(
-        name="Orange dye",
-        absorption_cross_section=1e-20 * ureg.meter**2,
-        quantum_yield=0.6,
-        emission_wavelengths=wavelengths,
-        photon_weights=(0, 0, 2, 4, 7, 15, 28, 30, 14),
-    ),
-]
+green_dye = Fluorophore(
+    name="Green dye",
+    absorption_cross_section=2e-20 * ureg.meter**2,
+    quantum_yield=0.8,
+    emission_wavelengths=wavelengths,
+    photon_weights=(8, 15, 35, 25, 10, 5, 2, 0, 0),
+)
+orange_dye = Fluorophore(
+    name="Orange dye",
+    absorption_cross_section=1e-20 * ureg.meter**2,
+    quantum_yield=0.6,
+    emission_wavelengths=wavelengths,
+    photon_weights=(0, 0, 2, 4, 7, 15, 28, 30, 14),
+)
+dyes = [green_dye, orange_dye]
 bandpass = Bandpass(center=530 * ureg.nm, width=30 * ureg.nm)
 transmitted = bandpass.transmits(wavelength=wavelengths)
 
@@ -54,7 +53,12 @@ transmitted = bandpass.transmits(wavelength=wavelengths)
 # conversion to detector voltage.
 
 figure, axes = plt.subplots(
-    2, 1, sharex=True, sharey=True, figsize=(7, 5), layout="constrained"
+    nrows=2,
+    ncols=1,
+    sharex=True,
+    sharey=True,
+    figsize=(7, 5),
+    layout="constrained",
 )
 for axis, dye in zip(axes, dyes, strict=True):
     fraction = np.asarray(dye.photon_weights)
@@ -77,9 +81,10 @@ plt.show()
 # when predicting the ratio from the spectra.
 
 instrument = facs_canto(include_shot_noise=False, include_rin_noise=False)
+orange_filter = Bandpass(center=570 * ureg.nm, width=30 * ureg.nm)
 filters = {
     "green": bandpass,
-    "orange": Bandpass(center=570 * ureg.nm, width=30 * ureg.nm),
+    "orange": orange_filter,
 }
 instrument.opto_electronics.detectors = [
     pmt(
@@ -93,12 +98,13 @@ instrument.opto_electronics.detectors = [
     for channel, optical_filter in filters.items()
 ]
 for dye in dyes:
+    label = Label(fluorophore=dye, molecules_per_particle=20_000)
     beads = microbeads(
         name=dye.name,
         diameter=300 * ureg.nm,
         refractive_index=1.59,
         concentration=1e8 * ureg.particle / ureg.milliliter,
-        labels=[Label(fluorophore=dye, molecules_per_particle=20_000)],
+        labels=[label],
     )
     instrument.fluidics.scatterer_collection.add_population(beads)
 

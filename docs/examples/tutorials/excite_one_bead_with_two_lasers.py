@@ -6,6 +6,7 @@ Compare the green fluorescence excited by 405 nm and 488 nm lasers at a
 single interrogation spot. The preset supplies a shared Gaussian beam profile.
 """
 
+import matplotlib.pyplot as plt
 from FlowCyPy.detectors.photomultipliers import pmt
 from FlowCyPy.dyes import fitc
 from FlowCyPy.fluorescence import Bandpass, Label
@@ -24,15 +25,23 @@ instrument = facs_canto(lasers=[violet, blue])
 # spectrum in the intended medium. Each bead carries one shared dye count.
 
 dye = fitc(relative_absorption={violet.wavelength: 0.1, blue.wavelength: 0.8})
+label = Label(fluorophore=dye, molecules_per_particle=10_000)
 beads = microbeads(
-    name="FITC beads", diameter=300 * ureg.nm, refractive_index=1.59,
+    name="FITC beads",
+    diameter=300 * ureg.nm,
+    refractive_index=1.59,
     concentration=1e8 * ureg.particle / ureg.mL,
-    labels=[Label(fluorophore=dye, molecules_per_particle=10_000)],
+    labels=[label],
 )
 instrument.fluidics.scatterer_collection.add_population(beads)
+
+optical_filter = Bandpass(center=530 * ureg.nm, width=30 * ureg.nm)
 green = pmt(
-    name="Green", phi_angle=90 * ureg.degree, numerical_aperture=0.8,
-    signals=("fluorescence",), optical_filter=Bandpass(center=530 * ureg.nm, width=30 * ureg.nm),
+    name="Green",
+    phi_angle=90 * ureg.degree,
+    numerical_aperture=0.8,
+    signals=("fluorescence",),
+    optical_filter=optical_filter,
 )
 optics = instrument.opto_electronics
 optics.detectors = [*optics.detectors, green]
@@ -45,3 +54,10 @@ record = instrument.acquire(run_time=200 * ureg.microsecond, random_state=42)
 events = record.event_collection[0]
 for channel in ("Green[405 nm]", "Green[488 nm]", "Green"):
     print(f"{channel}: {events.get_quantity(channel).m_as('pW')[:3]} pW")
+
+# %%
+# Compare the forward scatter, side scatter and combined green fluorescence
+# voltages on the same acquisition time axis.
+
+record.plot_analog(include_scatterer=False)
+plt.show()

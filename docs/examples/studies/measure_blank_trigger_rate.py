@@ -52,15 +52,14 @@ for run_index, seed in enumerate(seeds):
     record = instrument.acquire(run_time=duration, random_state=seed)
     assert len(record.event_collection[0]) == 0
     for threshold_index, threshold in enumerate(thresholds):
-        settings = DigitalProcessing(
-            discriminator=discriminator.FixedWindow(
-                trigger_channel="side",
-                threshold=threshold,
-                pre_buffer=4,
-                post_buffer=8,
-                max_triggers=-1,
-            )
+        trigger_window = discriminator.FixedWindow(
+            trigger_channel="side",
+            threshold=threshold,
+            pre_buffer=4,
+            post_buffer=8,
+            max_triggers=-1,
         )
+        settings = DigitalProcessing(discriminator=trigger_window)
         processed = record.process(digital_processing=settings)
         counts[run_index, threshold_index] = processed.number_of_triggers or 0
 

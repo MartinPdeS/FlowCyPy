@@ -21,7 +21,7 @@ ssc = ScatterChannel(
     name="SSC",
     phi_angle=90 * ureg.degree,
     numerical_aperture=1.0,
-    sampling=500
+    sampling=500,
 )
 
 fsc = ScatterChannel(
@@ -29,12 +29,12 @@ fsc = ScatterChannel(
     phi_angle=0 * ureg.degree,
     numerical_aperture=0.3,
     cache_numerical_aperture=0.1,
-    sampling=500
+    sampling=500,
 )
 
 scatter_system = ScatterSystem(
     wavelength=488 * ureg.nanometer,
-    channels=(ssc, fsc)
+    channels=(ssc, fsc),
 )
 
 # %%

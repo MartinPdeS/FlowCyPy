@@ -59,7 +59,7 @@ def run_sec_swarm_demo(
         sheath_volume_flow=fluidics.SheathFlowRate.MEDIUM.value,
         width=200 * ureg.micrometer, #can be changed to fit an experimental setup
         height=100 * ureg.micrometer, #^^
-        perfectly_aligned=True
+        perfectly_aligned=True,
     )
 
     # Initialize a collection to hold different scatterer populations.
@@ -82,18 +82,19 @@ def run_sec_swarm_demo(
         mean=lp_refractive_index_mean, # Corrected to use LP_refractive_index_mean
         standard_deviation=lp_refractive_index_standard_deviation,
         low_cutoff=None, # can be used to not incude lp particles that would overlap with evs
-        high_cutoff=None #can be used if data generated gives few very high values which are not wanted
+        high_cutoff=None, #can be used if data generated gives few very high values which are not wanted
     )
     # Calculate the proportion of LPs that are kept within the defined cutoffs.
     lp_kept_joint = lp_diameter_distribution.proportion_within_cutoffs() * lp_refractive_index_distribution.proportion_within_cutoffs()
     # Create the LP population with its properties and sampling method.
+    lp_sampling_method = fluidics.populations.GammaModel(number_of_samples=gamma_monte_carlo_samples)
     lp_population = fluidics.populations.SpherePopulation(
         name="LPs",
         medium_refractive_index=medium_refractive_index,
         concentration=lp_concentration * lp_kept_joint,
         diameter=lp_diameter_distribution,
         refractive_index=lp_refractive_index_distribution,
-        sampling_method=fluidics.populations.GammaModel(number_of_samples=gamma_monte_carlo_samples), # uses monte carlo sampling as decrease in runtime is more important than accuracy for lps
+        sampling_method=lp_sampling_method, # uses monte carlo sampling as decrease in runtime is more important than accuracy for lps
     )
 
     # 3. Extracellular Vesicle (EV) Population Construction
@@ -109,18 +110,19 @@ def run_sec_swarm_demo(
         mean=ev_refractive_index_mean,
         standard_deviation=ev_refractive_index_standard_deviation,
         low_cutoff=None, #can be used if data generated gives few very low values which are not wanted
-        high_cutoff=None # can be used to not include evs that would overlap with lps
+        high_cutoff=None, # can be used to not include evs that would overlap with lps
     )
     # Calculate the proportion of EVs that are kept within the defined cutoffs.
     ev_kept_joint = ev_diameter_distribution.proportion_within_cutoffs() * ev_refractive_index_distribution.proportion_within_cutoffs()
     # Create the EV population with its properties and sampling method.
+    ev_sampling_method = fluidics.populations.ExplicitModel()
     ev_population = fluidics.populations.SpherePopulation(
         name="EVs",
         medium_refractive_index=medium_refractive_index,
         concentration=ev_concentration * ev_kept_joint,
         diameter=ev_diameter_distribution,
         refractive_index=ev_refractive_index_distribution,
-        sampling_method=fluidics.populations.ExplicitModel(), # uses explicit model to increase accuracy as there are fewer evs than lps
+        sampling_method=ev_sampling_method, # uses explicit model to increase accuracy as there are fewer evs than lps
     )
 
     # Add populations to the scatterer collection if they exist and have non-zero concentration.
@@ -144,7 +146,7 @@ def run_sec_swarm_demo(
         waist_y=60 * ureg.micrometer,
         wavelength=wavelength,
         optical_power=200 * ureg.milliwatt,
-        include_shot_noise=False #this is set to false to make sure the results are easy to interpret
+        include_shot_noise=False, #this is set to false to make sure the results are easy to interpret
     )
 
     # Configure the side scatter detector.
@@ -153,7 +155,7 @@ def run_sec_swarm_demo(
         phi_angle=90 * ureg.degree,
         numerical_aperture=0.9 * ureg.AU,
         responsivity=10 * ureg.ampere / ureg.watt,
-        dark_current=20 * ureg.nanoampere
+        dark_current=20 * ureg.nanoampere,
     )
 
     # Configure the forward scatter detector.
@@ -163,7 +165,7 @@ def run_sec_swarm_demo(
         numerical_aperture=0.2 * ureg.AU,
         cache_numerical_aperture=0.08 * ureg.AU,
         responsivity=10 * ureg.ampere / ureg.watt,
-        dark_current=20 * ureg.nanoampere
+        dark_current=20 * ureg.nanoampere,
     )
 
     # Configure the amplifier for signal processing.
@@ -177,13 +179,16 @@ def run_sec_swarm_demo(
     digitizer = opto_electronics.Digitizer(
         bit_depth=20,
         use_auto_range=True,
-        sampling_rate=30 * ureg.megahertz
+        sampling_rate=30 * ureg.megahertz,
     )
 
     # Define analog processing filters.
-    analog_processing = [
-        opto_electronics.circuits.BesselLowPass(cutoff_frequency=2 * ureg.megahertz, order=4, gain=2),
-    ]
+    low_pass_filter = opto_electronics.circuits.BesselLowPass(
+        cutoff_frequency=2 * ureg.megahertz,
+        order=4,
+        gain=2,
+    )
+    analog_processing = [low_pass_filter]
 
     # Instantiate the OptoElectronics module with detectors, source, amplifier, digitizer, and analog processing.
     _opto_electronics = opto_electronics.OptoElectronics(
@@ -191,7 +196,7 @@ def run_sec_swarm_demo(
         source=beam,
         amplifier=amplifier,
         digitizer=digitizer,
-        analog_processing=analog_processing
+        analog_processing=analog_processing,
     )
 
     # 5. Digital Processing Setup

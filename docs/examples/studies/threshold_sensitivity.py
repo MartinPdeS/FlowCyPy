@@ -17,20 +17,24 @@ from FlowCyPy.units import ureg
 # ---------------------------------
 instrument = aurora(optical_power=25 * ureg.milliwatt)
 scatterer_collection = instrument.fluidics.scatterer_collection
+medium_refractive_index = distributions.Delta(1.33)
+diameter_distribution = distributions.RosinRammler(
+    scale=100 * ureg.nanometer,
+    shape=12,
+)
+refractive_index_distribution = distributions.Normal(
+    mean=1.40,
+    standard_deviation=0.002,
+    low_cutoff=1.33,
+)
+sampling_method = populations.ExplicitModel()
 population = populations.SpherePopulation(
     name="Near-threshold population",
-    medium_refractive_index=distributions.Delta(1.33),
+    medium_refractive_index=medium_refractive_index,
     concentration=1e10 * ureg.particle / ureg.milliliter,
-    diameter=distributions.RosinRammler(
-        scale=100 * ureg.nanometer,
-        shape=12,
-    ),
-    refractive_index=distributions.Normal(
-        mean=1.40,
-        standard_deviation=0.002,
-        low_cutoff=1.33,
-    ),
-    sampling_method=populations.ExplicitModel(),
+    diameter=diameter_distribution,
+    refractive_index=refractive_index_distribution,
+    sampling_method=sampling_method,
 )
 
 scatterer_collection.add_population(population)
@@ -52,15 +56,17 @@ event_capture = pd.DataFrame()
 window_counts = []
 
 for threshold_value in threshold_values:
+    trigger_window = discriminator.DynamicWindow(
+        trigger_channel="SSC",
+        threshold=threshold_value,
+        pre_buffer=40,
+        post_buffer=40,
+        max_triggers=-1,
+    )
+    peak_algorithm = peak_locator.GlobalPeakLocator()
     digital_processing = DigitalProcessing(
-        discriminator=discriminator.DynamicWindow(
-            trigger_channel="SSC",
-            threshold=threshold_value,
-            pre_buffer=40,
-            post_buffer=40,
-            max_triggers=-1,
-        ),
-        peak_locator=peak_locator.GlobalPeakLocator(),
+        discriminator=trigger_window,
+        peak_locator=peak_algorithm,
     )
 
     run_record = acquisition.process(digital_processing=digital_processing)

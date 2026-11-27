@@ -11,6 +11,7 @@ Apply these conventions to new and edited Python code. Leave unrelated existing 
 - Avoid redundant self-alias imports such as `from package.module import Name as Name`; import the name directly unless the alias clarifies its meaning.
 - Keep simple, single-purpose UI component calls on one line when practical, even when a text string is long. Use multiline formatting when several arguments or nested components make the call easier to read.
 - Prefer descriptive variable and parameter names over abbreviations, including for local values and callback parameters.
+- When composing objects, assign each configurable component to a descriptively named variable before passing it to the enclosing constructor. For multiline constructor calls, put one keyword argument per line and include a trailing comma. Keep short, simple component definitions on one line when readable.
 - Avoid extracting a helper used only once unless it improves clarity or separates behavior that belongs in another layer.
 - Keep callbacks focused on reading inputs, calling a service or workflow, and returning outputs. Move domain decisions and complicated data conversion into the appropriate service or workflow module.
 - Write comments to explain non-obvious reasoning, scientific assumptions, or compatibility constraints; do not use them to narrate code that is already clear.

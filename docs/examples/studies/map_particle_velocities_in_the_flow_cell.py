@@ -113,7 +113,8 @@ figure, ax = plt.subplots()
 for region, label in [(flow_cell.sheath, "Sheath"), (flow_cell.sample, "Sample")]:
     width = region.width.m_as("micrometer")
     height = region.height.m_as("micrometer")
-    ax.add_patch(plt.Rectangle((-width / 2, -height / 2), width, height, fill=False))
+    channel_outline = plt.Rectangle((-width / 2, -height / 2), width, height, fill=False)
+    ax.add_patch(channel_outline)
     ax.annotate(label, (0, height / 2))
 
 particles = ax.scatter(

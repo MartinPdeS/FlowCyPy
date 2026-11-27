@@ -27,18 +27,30 @@ violet = Laser(wavelength=405 * ureg.nm, optical_power=8 * ureg.mW, rin=-90 * ur
 blue = Laser(wavelength=488 * ureg.nm, optical_power=20 * ureg.mW, rin=-100 * ureg.dB_per_Hz)
 instrument = facs_canto(lasers=[violet, blue], include_shot_noise=False)
 optics = instrument.opto_electronics
-optics.detectors = [
-    pmt(name=name, phi_angle=angle * ureg.degree, numerical_aperture=0.3,
-        optical_filter=Bandpass(center=laser.wavelength, width=10 * ureg.nm),
-        dark_current=0 * ureg.ampere)
-    for name, angle, laser in [
-        ("Violet side", 90, violet), ("Violet forward", 0, violet), ("Blue side", 90, blue)
-    ]
-]
+detectors = []
+for name, angle, laser in [
+    ("Violet side", 90, violet),
+    ("Violet forward", 0, violet),
+    ("Blue side", 90, blue),
+]:
+    optical_filter = Bandpass(center=laser.wavelength, width=10 * ureg.nm)
+    detector = pmt(
+        name=name,
+        phi_angle=angle * ureg.degree,
+        numerical_aperture=0.3,
+        optical_filter=optical_filter,
+        dark_current=0 * ureg.ampere,
+    )
+    detectors.append(detector)
+optics.detectors = detectors
 # An ideal transimpedance amplifier preserves the sample-by-sample fluctuations.
 optics.amplifier = Amplifier(gain=10 * ureg.volt / ureg.ampere, bandwidth=None)
-beads = microbeads(name="Beads", diameter=300 * ureg.nm, refractive_index=1.59,
-                   concentration=2e7 * ureg.particle / ureg.mL)
+beads = microbeads(
+    name="Beads",
+    diameter=300 * ureg.nm,
+    refractive_index=1.59,
+    concentration=2e7 * ureg.particle / ureg.mL,
+)
 instrument.fluidics.scatterer_collection.add_population(beads)
 
 noisy_record = instrument.acquire(run_time=2 * ureg.ms, random_state=42)
