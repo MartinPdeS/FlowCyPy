@@ -1,0 +1,14 @@
+introduction: |-
+  Follow a particle population from the flow cell through illumination, optical
+  scattering, analog electronics, and digitization. Reusing the same acquired waveform
+  lets you compare filter settings without changing particle arrivals or detector
+  noise.
+
+  See the `usage guide <https://github.com/MartinPdeS/FlowCyPy/blob/HEAD/USAGE.rst>`__ for further examples and implementation details.
+  Open the `project notebook in Colab <https://colab.research.google.com/github/MartinPdeS/FlowCyPy/blob/master/notebook.ipynb>`__.
+figure:
+  path: docs/images/readme_analog.png
+  caption: Analog detector signals during a simulated acquisition.
+quickstart:
+  title: Compare two analog filters
+  source: docs/examples/studies/compare_analog_filters.py

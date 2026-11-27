@@ -19,7 +19,7 @@ version = "1.6.0"
 description = "A package for light scattering computation."
 license = {file = "LICENSE"}
 readme = "README.rst"
-urls = {"Documentation" = "https://martinpdes.github.io/FlowCyPy/", "Repository" = "https://github.com/MartinPdeS/FlowCyPy"}
+urls = {"Documentation" = "https://martinpdes.github.io/FlowCyPy/", "Repository" = "https://github.com/MartinPdeS/FlowCyPy", "Zenodo" = "https://doi.org/10.5281/zenodo.19097313"}
 requires-python = ">=3.11"
 authors = [{ name="Martin Poinsinet de Sivry-Houle", email="martin.poinsinet.de.sivry@gmail.com"}]
 classifiers = [
@@ -116,3 +116,6 @@ no-lines-before = ["standard-library", "third-party", "first-party", "local-fold
 version-file = "FlowCyPy/_version.py"
 version-method = "literal"
 conda-recipe = "conda.recipe/meta.yaml"
+
+[dependency-groups]
+readme = ["martinpdes-maintenance @ git+https://github.com/MartinPdeS/MartinPdeS-maintenance.git@1f47c0ca92f8d6fd7440190aa16c7bea662cd26d"]

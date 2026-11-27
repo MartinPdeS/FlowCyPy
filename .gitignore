@@ -45,3 +45,7 @@ docs/source/sg_execution_times.rst
 *CmakeFiles*
 
 cmake_install.cmake
+
+!/readme.yml
+
+!/USAGE.rst
